@@ -1,0 +1,202 @@
+package xyz.akimlc.themetool.ui.page.theme
+
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import kotlinx.coroutines.launch
+import top.yukonga.miuix.kmp.basic.ButtonDefaults
+import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.LazyColumn
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
+import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.TextButton
+import top.yukonga.miuix.kmp.basic.TextField
+import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.icons.useful.Cancel
+import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
+import xyz.akimlc.themetool.repository.theme.SearchThemeRepository
+import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
+import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
+import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
+
+
+@Composable
+fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewModel) {
+
+    val productListState = viewModel.productList.collectAsState(initial = emptyList())
+
+    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
+    val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    val keywords = remember { mutableStateOf("") }  //关键字
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = "主题搜索", scrollBehavior = scrollBehavior
+            )
+        }) { paddingValue ->
+
+        LazyColumn(
+            modifier = Modifier.fillMaxHeight(),
+            topAppBarScrollBehavior = scrollBehavior,
+            contentPadding = paddingValue
+        ) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .padding(horizontal = 12.dp),
+                    insideMargin = PaddingValues(vertical = 8.dp),
+                    color = if (isSystemInDarkTheme()) Color(0xFF4D3313) else Color(0xFFFFF6EB)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            "当前还不支持国际版主题搜索哟~",
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp, end = 8.dp),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isSystemInDarkTheme()) Color(0xFFFFA83F) else Color(
+                                0xFFFFA83F
+                            )
+                        )
+                        Image(
+                            modifier = Modifier
+                                .padding(end = 24.dp)
+                                .size(14.dp, 14.dp),
+                            imageVector = MiuixIcons.Useful.Cancel,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(colorScheme.onSurfaceVariantActions)
+                        )
+                    }
+                }
+                TextField(
+                    value = keywords.value,
+                    onValueChange = {
+                        keywords.value = it
+                    },
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 12.dp),
+                    label = "搜索的主题名称",
+                )
+            }
+            item {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(top = 6.dp)
+                        .padding(bottom = 8.dp),
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                    text = "搜索",
+                    onClick = {
+                        Toast.makeText(context, "正在搜索: ${keywords.value}", Toast.LENGTH_SHORT)
+                            .show()
+                        coroutineScope.launch {
+                            SearchThemeRepository().searchTheme(keywords.value, viewModel,context)
+                        }
+                    }
+                )
+            }
+            item {
+                ResultView(viewModel = viewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun ResultView(viewModel: SearchThemeViewModel) {
+    val isShow = remember { mutableStateOf(false) } // 初始状态为 false
+    val selectedProduct = remember { mutableStateOf<ProductData?>(null) } // 记录选中的产品
+    val productListState = viewModel.productList.collectAsState(initial = emptyList())
+    val themeInfoState = viewModel.themeInfoState
+    val productList = productListState.value
+
+
+    productList.chunked(3).forEach { rowProducts ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween // 均匀分布
+        ) {
+            rowProducts.forEach { product ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f) // 让每个Item平分宽度
+                        .padding(horizontal = 4.dp)
+                        .padding(bottom = 8.dp)
+                        .clickable {
+                            selectedProduct.value = product
+                            isShow.value = true
+                            viewModel.parseTheme(product.uuid)
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AsyncImage(
+                        model = product.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(product.name, textAlign = TextAlign.Center, fontSize = 15.sp)
+                }
+            }
+            // 补充空白列，防止最后一行元素不足3个时不对齐
+            repeat(3 - rowProducts.size) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+    if (isShow.value) {
+        selectedProduct.value?.let { product ->
+            ThemeInfoDialog(isShow, product, themeInfoState.value) // 传入解析数据
+        }
+    }
+
+}

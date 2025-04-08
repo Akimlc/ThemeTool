@@ -1,0 +1,98 @@
+package xyz.akimlc.themetool.ui.page.about
+
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
+
+import androidx.compose.ui.unit.dp
+import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.LazyColumn
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
+import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import top.yukonga.miuix.kmp.extra.SuperArrow
+import xyz.akimlc.themetool.R
+
+@Composable
+fun ThanksPage() {
+    LocalUriHandler.current
+
+    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = "感谢列表", scrollBehavior = scrollBehavior
+            )
+        },
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier.fillMaxHeight(),
+            topAppBarScrollBehavior = scrollBehavior,
+            contentPadding = padding,
+        ) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 12.dp)
+                        .padding(top = 12.dp)
+                ) {
+                    SuperArrow(
+                        title = "258a",
+                        leftAction = {
+                            Image(
+                                painter = painterResource(R.mipmap.ic_258a),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 12.dp)
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(48.dp))
+                            )
+                        }
+                    )
+                    SuperArrow(
+                        title = "白逸泽",
+                        leftAction = {
+                            Image(
+                                painter = painterResource(R.mipmap.ic_yiran),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 12.dp)
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(48.dp))
+                            )
+                        }
+                    )
+                    SuperArrow(
+                        title = "一苒",
+                        leftAction = {
+                            Image(
+                                painter = painterResource(R.mipmap.ic_aze),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 12.dp)
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(48.dp))
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+    }
+}
+
+
