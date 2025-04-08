@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
@@ -31,12 +32,15 @@ import top.yukonga.miuix.kmp.basic.LazyColumn
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.extra.SuperDialog
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.MiuixPopupUtils.Companion.dismissDialog
 import xyz.akimlc.themetool.repository.font.TTF2ZIP.Companion.convert
+import xyz.akimlc.themetool.ui.compoent.ErrorNotice
 import xyz.akimlc.themetool.utils.FileUtils
 
 @Composable
@@ -47,6 +51,7 @@ fun ZipFontPage(navController: NavController) {
     var fontUri by remember { mutableStateOf<Uri?>(null) }
 
     var showConvertDialog = remember { mutableStateOf(false) }
+    val isShow = remember { mutableStateOf(true) }
     var convertProgress by remember { mutableStateOf(0f) }
     val scrollBehavior = MiuixScrollBehavior()
 
@@ -55,7 +60,7 @@ fun ZipFontPage(navController: NavController) {
     val selectFontLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode != RESULT_OK) {
+        if (result.resultCode!=RESULT_OK) {
             return@rememberLauncherForActivityResult
         }
         val data = result.data ?: return@rememberLauncherForActivityResult
@@ -88,17 +93,22 @@ fun ZipFontPage(navController: NavController) {
             contentPadding = padding
         ) {
             item {
+                ShowWaringDialog(isShow)
+                ErrorNotice(
+                    text = "当前功能存在实验性功能，不保证能正常使用！！！"
+                )
                 TextField(
                     label = "字体名称",
                     value = fontName,
                     onValueChange = { fontName = it },
                     modifier = Modifier
+                        .padding(top = 12.dp)
                         .padding(horizontal = 12.dp)
                         .padding(bottom = 12.dp),
                     keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
-                
+
                 // 添加ZIP文件名输入框
                 TextField(
                     label = "ZIP文件名",
@@ -110,7 +120,7 @@ fun ZipFontPage(navController: NavController) {
                     keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
-                
+
                 TextField(
                     label = "导入的字体",
                     value = importFont,
@@ -153,7 +163,7 @@ fun ZipFontPage(navController: NavController) {
                                     showToast("请输入字体名称")
                                     return@TextButton
                                 }
-                                
+
                                 zipName.isEmpty() -> {
                                     showToast("请输入ZIP文件名")
                                     return@TextButton
@@ -200,4 +210,52 @@ private fun ZipProgressDialog(
     ) {
         LinearProgressIndicator(progress)
     }
+}
+
+
+@Composable
+private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
+    SuperDialog(
+        title = "警告",
+        show = isShow,
+        content = {
+            Text(
+                "该功能未经过测试，不保证可用性。刷入会有手机变砖的风险。",
+                modifier = Modifier
+                    .fillMaxWidth(),
+                style = MiuixTheme.textStyles.main,
+            )
+            Text(
+                "使用该功能前请确保你掌握了救砖相关知识",
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .fillMaxWidth(),
+                style = MiuixTheme.textStyles.main,
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TextButton(
+                    text = "取消",
+                    onClick = {
+                        dismissDialog(isShow)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(12.dp))
+                TextButton(
+                    text = "确定",
+                    onClick = {
+                        dismissDialog(isShow)
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.textButtonColorsPrimary()
+                )
+
+            }
+        }
+    )
 }
