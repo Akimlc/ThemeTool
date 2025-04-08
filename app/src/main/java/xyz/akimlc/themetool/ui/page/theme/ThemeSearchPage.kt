@@ -48,6 +48,7 @@ import top.yukonga.miuix.kmp.icon.icons.useful.Cancel
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import xyz.akimlc.themetool.repository.theme.SearchThemeRepository
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
+import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 
@@ -77,39 +78,9 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
             contentPadding = paddingValue
         ) {
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 12.dp),
-                    insideMargin = PaddingValues(vertical = 8.dp),
-                    color = if (isSystemInDarkTheme()) Color(0xFF4D3313) else Color(0xFFFFF6EB)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            "当前还不支持国际版主题搜索哟~",
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 8.dp, end = 8.dp),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isSystemInDarkTheme()) Color(0xFFFFA83F) else Color(
-                                0xFFFFA83F
-                            )
-                        )
-                        Image(
-                            modifier = Modifier
-                                .padding(end = 24.dp)
-                                .size(14.dp, 14.dp),
-                            imageVector = MiuixIcons.Useful.Cancel,
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(colorScheme.onSurfaceVariantActions)
-                        )
-                    }
-                }
+                WarningNotice(
+                    text = "当前只支持搜索国内的主题哟~"
+                )
                 TextField(
                     value = keywords.value,
                     onValueChange = {
