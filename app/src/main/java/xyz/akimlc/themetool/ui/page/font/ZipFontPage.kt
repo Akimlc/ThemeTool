@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.LazyColumn
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
@@ -50,7 +52,7 @@ fun ZipFontPage(navController: NavController) {
     var fontUri by remember { mutableStateOf<Uri?>(null) }
 
     var showConvertDialog = remember { mutableStateOf(false) }
-    val isShow = remember { mutableStateOf(true) }
+    val isShow = remember { mutableStateOf(false) }
     var convertProgress by remember { mutableStateOf(0f) }
     val scrollBehavior = MiuixScrollBehavior()
 
@@ -74,6 +76,10 @@ fun ZipFontPage(navController: NavController) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
+    LaunchedEffect(Unit) {
+        delay(500)  //延迟5ms
+        isShow.value = true
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -199,7 +205,7 @@ private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
         show = isShow,
         content = {
             Text(
-                "该功能仅在基于a15的HyperOS2上通过测试",
+                "该功能仅在基于Android15的HyperOS2上通过测试",
                 modifier = Modifier
                     .fillMaxWidth(),
                 style = MiuixTheme.textStyles.main,
@@ -240,7 +246,6 @@ private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.textButtonColorsPrimary()
                 )
-
             }
         }
     )
