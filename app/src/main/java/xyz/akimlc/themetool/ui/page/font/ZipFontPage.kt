@@ -46,7 +46,6 @@ import xyz.akimlc.themetool.utils.FileUtils
 @Composable
 fun ZipFontPage(navController: NavController) {
     var importFont by remember { mutableStateOf("") }
-    var fontName by remember { mutableStateOf("") }
     var zipName by remember { mutableStateOf("") }
     var fontUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -67,10 +66,7 @@ fun ZipFontPage(navController: NavController) {
         val uri = data.data ?: return@rememberLauncherForActivityResult
         fontUri = uri
         importFont = FileUtils().getFileNameFromUri(context, uri) ?: "未知字体文件"
-        // 删除后缀
-        fontName = importFont.substringBeforeLast(".")
-        // 默认ZIP文件名与字体名相同
-        zipName = fontName
+        zipName = importFont.substringBeforeLast(".")
         focusManager.clearFocus()
     }
 
@@ -95,26 +91,14 @@ fun ZipFontPage(navController: NavController) {
             item {
                 ShowWaringDialog(isShow)
                 ErrorNotice(
-                    text = "当前功能存在实验性功能，不保证能正常使用！！！"
+                    text = "实验性功能，不保证生成的模块能正常使用！！！"
                 )
                 TextField(
                     label = "字体名称",
-                    value = fontName,
-                    onValueChange = { fontName = it },
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-                )
-
-                // 添加ZIP文件名输入框
-                TextField(
-                    label = "ZIP文件名",
                     value = zipName,
                     onValueChange = { zipName = it },
                     modifier = Modifier
+                        .padding(top = 12.dp)
                         .padding(horizontal = 12.dp)
                         .padding(bottom = 12.dp),
                     keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
@@ -159,13 +143,8 @@ fun ZipFontPage(navController: NavController) {
                                     return@TextButton
                                 }
 
-                                fontName.isEmpty() -> {
-                                    showToast("请输入字体名称")
-                                    return@TextButton
-                                }
-
                                 zipName.isEmpty() -> {
-                                    showToast("请输入ZIP文件名")
+                                    showToast("请输入字体名称") // 修改提示信息
                                     return@TextButton
                                 }
 
@@ -177,7 +156,7 @@ fun ZipFontPage(navController: NavController) {
                                         context,
                                         fontUri,
                                         importFont,
-                                        zipName, // 使用用户输入的ZIP文件名
+                                        zipName, 
                                         onProgressUpdate = { progress ->
                                             convertProgress = progress
                                         },
@@ -220,13 +199,20 @@ private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
         show = isShow,
         content = {
             Text(
-                "该功能未经过测试，不保证可用性。刷入会有手机变砖的风险。",
+                "该功能仅在基于a15的HyperOS2上通过测试",
                 modifier = Modifier
                     .fillMaxWidth(),
                 style = MiuixTheme.textStyles.main,
             )
             Text(
-                "使用该功能前请确保你掌握了救砖相关知识",
+                "不保证其他版本及系统的可用性，请谨慎刷入",
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .fillMaxWidth(),
+                style = MiuixTheme.textStyles.main,
+            )
+            Text(
+                "如若刷入，一切风险自行承担！！！",
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .fillMaxWidth(),
