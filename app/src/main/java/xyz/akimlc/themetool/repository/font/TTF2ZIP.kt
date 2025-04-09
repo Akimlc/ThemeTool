@@ -43,13 +43,17 @@ class TTF2ZIP {
 
                     // 获取模板ZIP文件
                     val templateZipFile = File(context.getExternalFilesDir("zip"), "template.zip")
-                    if (!templateZipFile.exists()) {
-                        // 如果模板文件不存在，从assets复制
-                        val assetManager = context.assets
-                        assetManager.open("template.zip").use { input ->
-                            FileOutputStream(templateZipFile).use { output ->
-                                input.copyTo(output)
-                            }
+                    
+                    // 每次都删除旧的模板文件，强制从assets复制最新的
+                    if (templateZipFile.exists()) {
+                        templateZipFile.delete()
+                    }
+                    
+                    // 从assets复制模板文件
+                    val assetManager = context.assets
+                    assetManager.open("template.zip").use { input ->
+                        FileOutputStream(templateZipFile).use { output ->
+                            input.copyTo(output)
                         }
                     }
 
