@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
@@ -19,17 +20,15 @@ jobs:
         shell: bash
 
       - name: Build Signed APK
-        run: bash ./gradlew assembleRelease --stacktrace --no-daemon
+        run: ./gradlew assembleRelease --stacktrace --no-daemon
         env:
-          KEYSTORE_PATH: "./keystore.jks"
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_PATH: "${{ github.workspace }}/keystore.jks"
+          KEYSTORE_PASS: "${{ secrets.KEY_STORE_PASSWORD }}"
+          KEY_ALIAS: "${{ secrets.ALIAS }}"
+          KEY_PASSWORD: "${{ secrets.KEY_PASSWORD }}"
 
-      - name: Update Release  APK
-        run: bash ./gradlew assembleRelease --stacktrace --no-daemon
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: ThemeTool-release
-          path: "app/build/outputs/apk/release/*.apk"
+          path: app/build/outputs/apk/release/*.apk
