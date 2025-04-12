@@ -1,7 +1,6 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -23,18 +22,26 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    val properties = Properties()
+    runCatching { properties.load(project.rootProject.file("local.properties").inputStream()) }
 
-    android.applicationVariants.all {
-        outputs.all {
-            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
-                val config = project.android.defaultConfig
-                val versionName = "v"+config.versionName
-                val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
-                val createTime = LocalDateTime.now().format(formatter)
-                this.outputFileName = "ThemeTool_${versionName}_${createTime}_$name.apk"
+    val keystorePath = properties.getProperty("KEYSTORE_PATH") ?: System.getenv("KEYSTORE_PATH")
+    val keystorePwd = properties.getProperty("KEYSTORE_PASS") ?: System.getenv("KEYSTORE_PASS") ?: System.getenv("KEY_STORE_PASSWORD")
+    val alias = properties.getProperty("KEY_ALIAS") ?: System.getenv("KEY_ALIAS")
+    val pwd = properties.getProperty("KEY_PASSWORD") ?: System.getenv("KEY_PASSWORD")
+
+    signingConfigs {
+        create("release") {
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = keystorePwd
+                keyAlias = alias
+                keyPassword = pwd
+                enableV3Signing = true
             }
         }
     }
+
     buildTypes {
         release {
             isShrinkResources = true
@@ -43,13 +50,25 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    android.applicationVariants.all {
+        outputs.all {
+            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+                val config = project.android.defaultConfig
+                val versionName = "v" + config.versionName
+                val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
+                val createTime = LocalDateTime.now().format(formatter)
+                this.outputFileName = "ThemeTool_${versionName}_${createTime}_$name.apk"
+            }
         }
     }
     compileOptions {
@@ -94,7 +113,6 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.7.7")
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-android
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
-
 
 
 }
