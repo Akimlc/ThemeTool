@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ThemeTool-release.apk
-          path: app/build/outputs/apk/release/ThemeTool_v*.apk
+          path: ./app/build/outputs/apk/release
