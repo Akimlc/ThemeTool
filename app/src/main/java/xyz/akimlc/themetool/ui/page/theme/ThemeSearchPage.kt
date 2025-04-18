@@ -1,20 +1,21 @@
 package xyz.akimlc.themetool.ui.page.theme
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -24,17 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.launch
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
-import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.LazyColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
@@ -43,10 +45,6 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.icons.useful.Cancel
-import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
-import xyz.akimlc.themetool.repository.theme.SearchThemeRepository
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
@@ -55,15 +53,9 @@ import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 
 @Composable
 fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewModel) {
-
-    val productListState = viewModel.productList.collectAsState(initial = emptyList())
-
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val coroutineScope = rememberCoroutineScope()
-
     val context = LocalContext.current
-
-    val keywords = remember { mutableStateOf("") }  //关键字
+    val keywords = remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -88,8 +80,7 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                     },
                     modifier = Modifier
                         .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
+                        .padding(horizontal = 12.dp),
                     label = "搜索的主题名称",
                 )
             }
@@ -103,10 +94,8 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     text = "搜索",
                     onClick = {
-                        Toast.makeText(context, "正在搜索: ${keywords.value}", Toast.LENGTH_SHORT)
-                            .show()
-                        coroutineScope.launch {
-                            SearchThemeRepository().searchTheme(keywords.value, viewModel,context)
+                        viewModel.searchTheme(keywords.value) {
+                            Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -115,6 +104,7 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                 ResultView(viewModel = viewModel)
             }
         }
+
     }
 }
 
@@ -125,8 +115,21 @@ fun ResultView(viewModel: SearchThemeViewModel) {
     val productListState = viewModel.productList.collectAsState(initial = emptyList())
     val themeInfoState = viewModel.themeInfoState
     val productList = productListState.value
-
-
+    val isSearchingState = viewModel.isSearching.collectAsState() // 监听加载状态
+    val isImageLoaded = remember { mutableStateOf(false) }
+    if (isSearchingState.value) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp)
+            )
+        }
+        return
+    }
     productList.chunked(3).forEach { rowProducts ->
         Row(
             modifier = Modifier
@@ -147,27 +150,40 @@ fun ResultView(viewModel: SearchThemeViewModel) {
                         },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     AsyncImage(
-                        model = product.imageUrl,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(product.imageUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentScale = ContentScale.Crop,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(12.dp)),
+                        onSuccess = {
+                            isImageLoaded.value = true
+                        }
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(product.name, textAlign = TextAlign.Center, fontSize = 15.sp)
+
+                    if (isImageLoaded.value) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(product.name, textAlign = TextAlign.Center, fontSize = 15.sp)
+                    }
+                }
+                // 补充空白列，防止最后一行元素不足3个时不对齐
+                repeat(3 - rowProducts.size % 3) {
+                    if (rowProducts.size % 3!=0) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
-            // 补充空白列，防止最后一行元素不足3个时不对齐
-            repeat(3 - rowProducts.size) {
-                Spacer(modifier = Modifier.weight(1f))
+        }
+        if (isShow.value) {
+            selectedProduct.value?.let { product ->
+                ThemeInfoDialog(isShow, product, themeInfoState.value) // 传入解析数据
             }
         }
-    }
-    if (isShow.value) {
-        selectedProduct.value?.let { product ->
-            ThemeInfoDialog(isShow, product, themeInfoState.value) // 传入解析数据
-        }
-    }
 
+    }
 }

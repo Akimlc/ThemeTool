@@ -1,8 +1,6 @@
 package xyz.akimlc.themetool.repository.theme
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -12,15 +10,15 @@ import xyz.akimlc.themetool.data.model.Response
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 
 
-class SearchThemeRepository {
+object SearchThemeRepository {
     object HttpClient {
         val client = OkHttpClient()
     }
-    suspend fun searchTheme(keywords: String, viewModel: SearchThemeViewModel,context: Context) {
 
+    suspend fun searchTheme(keywords: String): List<SearchThemeViewModel.ProductData> =
         withContext(Dispatchers.IO) {
             val url =
-                "https://api.zhuti.xiaomi.com/app/v9/uipages/search/THEME/index?leftPrice=0&keywords=${keywords}&miuiUIVersion=V150&region=CN"
+                "https://api.zhuti.xiaomi.com/app/v9/uipages/search/THEME/index?leftPrice=0&keywords=$keywords&miuiUIVersion=V150&region=CN"
             val request = Request.Builder().url(url).build()
 
             try {
@@ -32,13 +30,11 @@ class SearchThemeRepository {
                     val jsonString = response.body?.string()
                         ?: throw IllegalArgumentException("Response Body is Null")
 
-
-                    // 解析 JSON
                     val result =
-                        Json { ignoreUnknownKeys = true }.decodeFromString<Response.BaseResponse<Response.DomesticThemeApiData>>(
-                            jsonString
-                        )
-                    val productDataList = result.apiData.cards.flatMap { card ->
+                        Json { ignoreUnknownKeys = true }
+                            .decodeFromString<Response.BaseResponse<Response.DomesticThemeApiData>>(jsonString)
+
+                    result.apiData.cards.flatMap { card ->
                         card.products?.map { product ->
                             SearchThemeViewModel.ProductData(
                                 name = product.name,
@@ -47,19 +43,12 @@ class SearchThemeRepository {
                                 author = product.author,
                                 themeSize = product.fileSize
                             )
-                        } ?: emptyList()    //如果products = null，则返回空列表
-                    }
-                    // 更新 ViewModel 中的产品列表
-                    withContext(Dispatchers.Main) {
-                        if (productDataList.isEmpty()) {
-                            Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
-                        }
-                        viewModel.updateProductList(productDataList)
+                        } ?: emptyList()
                     }
                 }
             } catch (e: Exception) {
-                Log.e("SearchPage", "搜索失败", e)
+                Log.e("Repository", "网络请求失败", e)
+                throw e
             }
         }
-    }
 }
