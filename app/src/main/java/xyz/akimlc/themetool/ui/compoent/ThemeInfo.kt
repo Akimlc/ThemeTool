@@ -30,7 +30,7 @@ import top.yukonga.miuix.kmp.utils.MiuixPopupUtils.Companion.dismissDialog
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.repository.ThemeRepository
-import xyz.akimlc.themetool.viewmodel.FontSearchViewModel
+import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 
 @Composable
@@ -108,7 +108,7 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
 @Composable
 fun FontInfoDialog(
     isShow: MutableState<Boolean>,
-    product: FontSearchViewModel.ProductData,
+    product: SearchFontViewModel.ProductData,
     fontInfo: Info.FontInfo?
 ) {
     val context = LocalContext.current

@@ -7,11 +7,11 @@ import kotlinx.serialization.json.Json
 import okhttp3.Request
 import xyz.akimlc.themetool.data.model.Response
 import xyz.akimlc.themetool.utils.NetworkUtils
-import xyz.akimlc.themetool.viewmodel.FontSearchViewModel
+import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
 
 class SearchFontRepository {
-    suspend fun searchFont(keywords: String): List<FontSearchViewModel.ProductData> =
+    suspend fun searchFont(keywords: String): List<SearchFontViewModel.ProductData> =
         withContext(Dispatchers.IO) {
             val url =
                 "https://thm.market.intl.xiaomi.com/thm/search/v2/npage?keywords=${keywords}&category=Font"
@@ -31,7 +31,7 @@ class SearchFontRepository {
                 )
                 result.apiData.cards.flatMap { card ->
                     card.products?.map { product ->
-                        FontSearchViewModel.ProductData(
+                        SearchFontViewModel.ProductData(
                             name = product.name,
                             imageUrl = product.imageUrl,
                             uuid = product.uuid,

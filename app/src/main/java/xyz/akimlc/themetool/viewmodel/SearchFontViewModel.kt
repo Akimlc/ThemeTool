@@ -10,7 +10,7 @@ import xyz.akimlc.themetool.data.model.Info.FontInfo
 import xyz.akimlc.themetool.repository.ThemeRepository
 import xyz.akimlc.themetool.repository.theme.SearchFontRepository
 
-class FontSearchViewModel : ViewModel() {
+class SearchFontViewModel : ViewModel() {
     private val _productList = MutableStateFlow<List<ProductData>>(emptyList())
     val productList: StateFlow<List<ProductData>> get() = _productList
     val fontInfoState = MutableStateFlow<FontInfo?>(null)

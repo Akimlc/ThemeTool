@@ -34,11 +34,11 @@ import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.ui.compoent.FontInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
-import xyz.akimlc.themetool.viewmodel.FontSearchViewModel
-import xyz.akimlc.themetool.viewmodel.FontSearchViewModel.ProductData
+import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
+import xyz.akimlc.themetool.viewmodel.SearchFontViewModel.ProductData
 
 @Composable
-fun FontSearchPage(viewModel: FontSearchViewModel) {
+fun FontSearchPage(viewModel: SearchFontViewModel) {
     // 使用 .value 来访问 productList
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
@@ -106,7 +106,7 @@ fun FontSearchPage(viewModel: FontSearchViewModel) {
 }
 
 @Composable
-fun ResultView(viewModel: FontSearchViewModel) {
+fun ResultView(viewModel: SearchFontViewModel) {
     val isShow = remember { mutableStateOf<Boolean>(false) }
     val productListState = viewModel.productList.collectAsState(initial = emptyList())
     val productList = productListState.value

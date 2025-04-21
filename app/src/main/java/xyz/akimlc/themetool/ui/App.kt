@@ -24,7 +24,7 @@ import xyz.akimlc.themetool.ui.page.font.ZipFontPage
 import xyz.akimlc.themetool.ui.page.theme.ThemeParsePage
 import xyz.akimlc.themetool.ui.page.theme.ThemeSearchPage
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
-import xyz.akimlc.themetool.viewmodel.FontSearchViewModel
+import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.ParseViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 
@@ -81,7 +81,7 @@ fun App() {
         composable("ZipFontPage") {
             ZipFontPage(navController)
         }
-        composable("FontSearchPage") { FontSearchPage(FontSearchViewModel()) }
+        composable("FontSearchPage") { FontSearchPage(SearchFontViewModel()) }
         composable("MtzFontPage") { MtzFontPage(navController) }
     }
 }
