@@ -1,7 +1,6 @@
 package xyz.akimlc.themetool.repository.theme
 
-import android.content.Context
-import android.widget.Toast
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -11,14 +10,14 @@ import xyz.akimlc.themetool.utils.NetworkUtils
 import xyz.akimlc.themetool.viewmodel.FontSearchViewModel
 
 
-class SearchFontRespository {
-
-    suspend fun searchFont(keywords: String, viewModel: FontSearchViewModel,context: Context) {
+class SearchFontRepository {
+    suspend fun searchFont(keywords: String): List<FontSearchViewModel.ProductData> =
         withContext(Dispatchers.IO) {
             val url =
                 "https://thm.market.intl.xiaomi.com/thm/search/v2/npage?keywords=${keywords}&category=Font"
             val request = Request.Builder().url(url).build()
 
+            Log.d("SearchFontRepository", "searchFont: $url")
             NetworkUtils.HttpClient.client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw Exception("Unexpected code $response")
                 val responseBody = response.body?.string()
@@ -30,22 +29,15 @@ class SearchFontRespository {
                 }.decodeFromString<Response.BaseResponse<Response.GlobalFontApiData>>(
                     responseBody
                 )
-                val productDataList = result.apiData.cards.flatMap { card ->
-                    (card.products?: emptyList()).map { product ->
+                result.apiData.cards.flatMap { card ->
+                    card.products?.map { product ->
                         FontSearchViewModel.ProductData(
-                                name = product.name,
-                                imageUrl = product.imageUrl,
-                                uuid = product.uuid
-                            )
-                        }
-                }
-                withContext(Dispatchers.Main) {
-                    if (productDataList.isEmpty()) {
-                        Toast.makeText(context, "未找到相关字体", Toast.LENGTH_SHORT).show()
-                    }
-                    viewModel.updateProductList(productDataList)
+                            name = product.name,
+                            imageUrl = product.imageUrl,
+                            uuid = product.uuid,
+                        )
+                    } ?: emptyList()
                 }
             }
         }
-    }
 }

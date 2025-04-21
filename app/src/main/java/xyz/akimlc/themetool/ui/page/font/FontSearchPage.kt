@@ -1,13 +1,9 @@
 package xyz.akimlc.themetool.ui.page.font
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,27 +18,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.LazyColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.icons.useful.Cancel
-import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
-import xyz.akimlc.themetool.repository.theme.SearchFontRespository
 import xyz.akimlc.themetool.ui.compoent.FontInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.FontSearchViewModel
@@ -76,13 +65,13 @@ fun FontSearchPage(viewModel: FontSearchViewModel) {
                 )
                 TextField(
                     value = keywords.value,
+                    singleLine = true,
                     onValueChange = {
                         keywords.value = it
                     },
                     modifier = Modifier
                         .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
+                        .padding(horizontal = 12.dp),
                     label = "搜索的字体名称",
                 )
             }
@@ -96,15 +85,21 @@ fun FontSearchPage(viewModel: FontSearchViewModel) {
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     text = "搜索",
                     onClick = {
-                        Toast.makeText(context,"正在搜索...", Toast.LENGTH_SHORT).show()
+                        if (keywords.value.isEmpty()) {
+                            Toast.makeText(context, "请输入字体关键字", Toast.LENGTH_SHORT).show()
+                            return@TextButton
+                        }
                         coroutineScope.launch {
-                            SearchFontRespository().searchFont(keywords.value, viewModel,context)
+                            viewModel.searchFont(keywords.value) {
+                                Toast.makeText(context, "未找到相关字体", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
                         }
                     }
                 )
             }
             item {
-               ResultView(viewModel)
+                ResultView(viewModel)
             }
         }
     }
@@ -116,7 +111,20 @@ fun ResultView(viewModel: FontSearchViewModel) {
     val productListState = viewModel.productList.collectAsState(initial = emptyList())
     val productList = productListState.value
     val selectProduct = remember { mutableStateOf<ProductData?>(null) }
-
+    val isSearchingState = viewModel.isSearching.collectAsState()
+    if (isSearchingState.value) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp)
+            )
+        }
+        return
+    }
     productList.forEach { product ->
         Column {
             Card(
@@ -148,7 +156,7 @@ fun ResultView(viewModel: FontSearchViewModel) {
             }
         }
     }
-    if (isShow.value){
+    if (isShow.value) {
         selectProduct.value?.let { product ->
             FontInfoDialog(isShow, product, viewModel.fontInfoState.value)
         }
