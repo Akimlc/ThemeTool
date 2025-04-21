@@ -73,7 +73,8 @@ fun ThemeParsePage(
             item {
                 TextField(
                     modifier = Modifier
-                        .padding(12.dp),
+                        .padding(top = 12.dp)
+                        .padding(horizontal = 12.dp),
                     value = shareLink,
                     onValueChange = {
                         shareLink = it
@@ -88,7 +89,9 @@ fun ThemeParsePage(
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .padding(horizontal = 12.dp)
+                        .padding(top = 6.dp)
+                        .padding(bottom = 8.dp),
                 )
             }
             item {
