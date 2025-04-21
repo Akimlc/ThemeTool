@@ -61,7 +61,7 @@ fun MainPage(navController: NavController) {
 
     val items = listOf(
         NavigationItem("首页", ImageVector.vectorResource(R.drawable.ic_home)),
-        NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
+//        NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
         NavigationItem("关于", ImageVector.vectorResource(R.drawable.ic_about),)
     )
 
@@ -107,15 +107,15 @@ fun MainPage(navController: NavController) {
                         )
                     }
 
-                    1 -> {
-                        DownloadPage(
-                            navController = navController,
-                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
-                            padding = padding,
-                        )
-                    }
+//                    1 -> {
+//                        DownloadPage(
+//                            navController = navController,
+//                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
+//                            padding = padding,
+//                        )
+//                    }
 
-                    2 -> {
+                    1 -> {
                         AboutPage(navController)
                     }
                 }
