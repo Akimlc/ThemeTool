@@ -107,6 +107,26 @@ fun AboutPage(navController: NavController) {
             }
 
             item {
+                SmallTitle("交流/反馈")
+                Card(
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                ) {
+                    SuperArrow(
+                        title = "频道",
+                        onClick = {
+                            uriHandler.openUri("https://t.me/Theme_Tool")
+                        }
+                    )
+                    SuperArrow(
+                        title = "群组",
+                        onClick = {
+                            uriHandler.openUri("https://t.me/ThemeToolChat")
+                        }
+                    )
+                }
+            }
+
+            item {
                 SmallTitle("引用")
                 Card(
                     modifier = Modifier.padding(horizontal = 12.dp)
