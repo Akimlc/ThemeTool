@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.LazyColumn
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import xyz.akimlc.themetool.R
@@ -23,8 +24,8 @@ fun HomePage(
     padding: PaddingValues
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        topAppBarScrollBehavior = topAppBarScrollBehavior,
+        modifier = Modifier.fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         contentPadding = padding
     ) {
         item {

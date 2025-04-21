@@ -1,13 +1,10 @@
 package xyz.akimlc.themetool.ui.page
 
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,29 +12,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
-import top.yukonga.miuix.kmp.basic.HorizontalPager
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationItem
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.page.about.AboutPage
-import xyz.akimlc.themetool.ui.page.download.DownloadPage
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -62,7 +51,7 @@ fun MainPage(navController: NavController) {
     val items = listOf(
         NavigationItem("首页", ImageVector.vectorResource(R.drawable.ic_home)),
 //        NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
-        NavigationItem("关于", ImageVector.vectorResource(R.drawable.ic_about),)
+        NavigationItem("关于", ImageVector.vectorResource(R.drawable.ic_about))
     )
 
 
@@ -96,7 +85,7 @@ fun MainPage(navController: NavController) {
         }
     ) { padding ->
         HorizontalPager(
-            pagerState = pagerState,
+            state = pagerState,
             pageContent = { page ->
                 when (page) {
                     0 -> {
@@ -116,7 +105,11 @@ fun MainPage(navController: NavController) {
 //                    }
 
                     1 -> {
-                        AboutPage(navController)
+                        AboutPage(
+                            navController = navController,
+                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
+                            padding = padding,
+                        )
                     }
                 }
             }

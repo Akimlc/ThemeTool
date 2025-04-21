@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.LazyColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
@@ -56,8 +56,8 @@ fun AboutPage(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 .padding(horizontal = 12.dp),
-            topAppBarScrollBehavior = topAppBarScrollBehavior,
             contentPadding = padding,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
