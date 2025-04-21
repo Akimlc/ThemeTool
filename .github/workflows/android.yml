@@ -19,7 +19,6 @@ jobs:
         run: |
           echo ${{ secrets.SIGNING_KEY }} | base64 -d > keystore.jks
           bash ./gradlew assemble
-
         env:
           KEYSTORE_PATH: "../keystore.jks"
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
@@ -32,18 +31,10 @@ jobs:
           name: ThemeTool-release.apk
           path: ./app/build/outputs/apk/release
 
-      - name: Push Telegram Channel
-        env:
-          CHANNEL_ID: ${{secrets.TELEGRAM_CHANNEL_ID}}
-          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN}}
-          COMMIT_MESSAGE: |+
-            ```
-            ${{ github.event.head_commit.message }}
-            ```
-          run: |
-            ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            MESSAGE="New build for ThemeTool!%0ACommit: ${COMMIT_MESSAGE}%0ABuild: ${ARTIFACT_URL}"
-            curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-              -d chat_id="${CHANNEL_ID}" \
-              -d text="${MESSAGE}" \
-              -d parse_mode="Markdown"
+      - name: Upload Telegram Channel
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          document: ./app/build/outputs/apk/release/ThemeTool-release.apk
+          message: ${{ github.event.head_commit.message }}
