@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import xyz.akimlc.themetool.data.model.Info.FontInfo
 import xyz.akimlc.themetool.repository.ThemeRepository
-import xyz.akimlc.themetool.repository.theme.SearchFontRepository
+import xyz.akimlc.themetool.repository.font.SearchFontRepository
 
 class SearchFontViewModel : ViewModel() {
     private val _productList = MutableStateFlow<List<ProductData>>(emptyList())

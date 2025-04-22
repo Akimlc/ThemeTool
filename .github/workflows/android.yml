@@ -30,18 +30,3 @@ jobs:
         with:
           name: ThemeTool-release.apk
           path: ./app/build/outputs/apk/release
-
-      - name: Upload to Telegram via curl
-        run: |
-          APK_PATH="./app/build/outputs/apk/release/ThemeTool-release.apk"
-
-          COMMIT_MESSAGE="Commit message: \`${{ github.event.head_commit.message }}\`"
-
-          ESCAPED_MESSAGE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''${COMMIT_MESSAGE}'''))")
-
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F chat_id="${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-            -F disable_web_page_preview=true \
-            -F parse_mode="Markdown" \
-            -F caption="${COMMIT_MESSAGE}" \
-            -F document=@"$APK_PATH"
