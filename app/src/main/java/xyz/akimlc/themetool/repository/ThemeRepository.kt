@@ -58,7 +58,7 @@ class ThemeRepository {
                 //解析字体数据
                 val downloadUrlRoot = themeDetail.getString("downloadUrlRoot")
                 val downloadUrl1 = themeDetail.getString("downloadUrl")  //下载链接
-                val downloadUrl = "$downloadUrlRoot/download/$downloadUrl1"
+                val downloadUrl = "${downloadUrlRoot}download/$downloadUrl1"
                 val fileSize = themeDetail.getString("fileSize").toIntOrNull()  //字体大小
 
                 Log.d("ThemeRepository", "parseFont: $downloadUrl")
