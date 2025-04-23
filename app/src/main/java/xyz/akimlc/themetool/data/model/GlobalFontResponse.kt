@@ -3,19 +3,20 @@ package xyz.akimlc.themetool.data.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GlobalFontResponse (
-    val apiCode:String,
+data class GlobalFontResponse(
+    val apiCode: String,
     val apiMessage: String,
-    val apiData:ApiData
+    val apiData: ApiData
 )
 
 @Serializable
-data class ApiData (
+data class ApiData(
     val cards: List<Card>,
+    val fileService: String
 )
 
 @Serializable
-data class Card (
+data class Card(
     val extraInfo: ExtraInfo
 )
 

@@ -53,18 +53,19 @@ class ThemeRepository {
                 val jsonObject = JSONObject(body)
                 val apiData = jsonObject.getJSONObject("apiData")
                 val extraInfo = apiData.getJSONObject("extraInfo")
-                val themeDetail = extraInfo.getJSONObject("themeDetail")
+                val fontDetail = extraInfo.getJSONObject("themeDetail")
+                //下载链接：fileServer + downloadUrl
+                val fileServer = apiData.getString("fileServer")
+                val downloadUrl = fontDetail.getString("downloadUrl")
 
-                //解析字体数据
-                val downloadUrlRoot = themeDetail.getString("downloadUrlRoot")
-                val downloadUrl1 = themeDetail.getString("downloadUrl")  //下载链接
-                val downloadUrl = "${downloadUrlRoot}download/$downloadUrl1"
-                val fileSize = themeDetail.getString("fileSize").toIntOrNull()  //字体大小
+                val downloadUrlRoot = fileServer + downloadUrl
 
-                Log.d("ThemeRepository", "parseFont: $downloadUrl")
+                val fileSize = fontDetail.getString("fileSize").toIntOrNull()  //字体大小
+
+                Log.d("ThemeRepository", "parseFont: $downloadUrlRoot")
 
                 return@withContext Info.FontInfo(
-                    fontUrl = downloadUrl,
+                    fontUrl = downloadUrlRoot,
                     fontSize = fileSize ?: 0
                 )
 
