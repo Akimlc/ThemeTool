@@ -70,8 +70,8 @@ class TTF2ZIP {
                     val fontDir = File(tempDir, "system/fonts")
                     if (!fontDir.exists()) fontDir.mkdirs()
 
-                    // 复制字体文件到指定目录并重命名为fontchw4.ttf
-                    val fontFile = File(fontDir, "fontchw4.ttf")
+
+                    val fontFile = File(fontDir, "fontw4.ttf")
                     inputStream.use { input ->
                         FileOutputStream(fontFile).use { output ->
                             input.copyTo(output)
