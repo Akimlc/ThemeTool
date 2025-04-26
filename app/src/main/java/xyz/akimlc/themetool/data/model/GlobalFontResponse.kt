@@ -12,7 +12,8 @@ data class GlobalFontResponse(
 @Serializable
 data class ApiData(
     val cards: List<Card>,
-    val fileService: String
+    val fileService: String,
+    val hasMore: Boolean
 )
 
 @Serializable

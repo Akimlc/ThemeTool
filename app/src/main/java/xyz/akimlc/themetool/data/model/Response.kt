@@ -24,7 +24,8 @@ class Response {
     // GlobalFont 专属数据
     @Serializable
     data class GlobalFontApiData(
-        val cards: List<Card>
+        val cards: List<Card>,
+        val hasMore: Boolean
     )
 
     @Serializable

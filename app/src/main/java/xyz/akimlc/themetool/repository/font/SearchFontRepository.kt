@@ -11,10 +11,10 @@ import xyz.akimlc.themetool.utils.NetworkUtils
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
 class SearchFontRepository {
-    suspend fun searchFont(keywords: String): List<SearchFontViewModel.ProductData> =
+    suspend fun searchFont(keywords: String,page:Int): List<SearchFontViewModel.ProductData> =
         withContext(Dispatchers.IO) {
             val url =
-                "https://thm.market.intl.xiaomi.com/thm/search/v2/npage?keywords=${keywords}&category=Font"
+                "https://thm.market.intl.xiaomi.com/thm/search/v2/npage?keywords=${keywords}&category=Font&page=$page"
             val request = Request.Builder().url(url).build()
 
             Log.d("SearchFontRepository", "searchFont: $url")
