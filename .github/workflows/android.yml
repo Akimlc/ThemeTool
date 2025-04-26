@@ -18,7 +18,7 @@ jobs:
       - name: Build with Gradle
         run: |
           echo ${{ secrets.SIGNING_KEY }} | base64 -d > keystore.jks
-          bash ./gradlew assemble
+          ./gradlew :app:assembleRelease
         env:
           KEYSTORE_PATH: "../keystore.jks"
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
@@ -30,3 +30,20 @@ jobs:
         with:
           name: ThemeTool-release.apk
           path: ./app/build/outputs/apk/release
+      - name: Post to Telegram ci channel
+        if: ${{ success() && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && github.ref_type != 'tag' }}
+        env:
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          COMMIT_MESSAGE: |+
+            New CI from ThemeTool
+
+            ```
+            ${{ github.event.head_commit.message }}
+            ```
+        run: |
+          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
+            export RELEASE=$(find ./app/build/outputs/apk/release -name "*.apk")
+            ESCAPED=`python3 -c 'import json,os,urllib.parse; print(urllib.parse.quote(json.dumps(os.environ["COMMIT_MESSAGE"])))'`
+            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22:%22document%22,%20%22media%22:%22attach://release%22,%22parse_mode%22:%22MarkdownV2%22,%22caption%22:${ESCAPED}%7D%5D" -F release="@${RELEASE}"
+          fi
