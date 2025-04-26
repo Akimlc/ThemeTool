@@ -119,7 +119,7 @@ fun FontInfoDialog(
         if (isShow.value) {
             isLoading.value = true
             coroutineScope.launch {
-                fontInfoState.value = ThemeRepository().parseFont(product.uuid) // 解析主题信息
+                fontInfoState.value = ThemeRepository().parseFont(product.uuid) // 解析字体信息
                 isLoading.value = false
             }
 
