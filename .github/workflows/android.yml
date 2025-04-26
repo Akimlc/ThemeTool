@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ThemeTool-release.apk
-          path: ./app/build/outputs/apk/release -name "*.apk"
+          path: ./app/build/outputs/apk/release/*.apk
       - name: Post to Telegram ci channel
         if: ${{ success() && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && github.ref_type != 'tag' }}
         env:
