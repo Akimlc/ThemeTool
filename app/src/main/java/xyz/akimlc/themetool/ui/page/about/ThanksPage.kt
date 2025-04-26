@@ -89,6 +89,19 @@ fun ThanksPage() {
                             )
                         }
                     )
+                    SuperArrow(
+                        title = "YunZiA",
+                        leftAction = {
+                            Image(
+                                painter = painterResource(R.mipmap.ic_yunzia),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 12.dp)
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(48.dp))
+                            )
+                        }
+                    )
                 }
             }
         }
