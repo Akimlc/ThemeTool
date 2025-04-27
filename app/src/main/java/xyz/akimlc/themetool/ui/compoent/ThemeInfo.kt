@@ -137,7 +137,7 @@ fun FontInfoDialog(
             if (isLoading.value) {
                 Text("正在解析，请稍候...")
             } else {
-                Text("主题链接：${fontInfoState.value?.fontUrl ?: "解析失败"}")
+                Text("字体链接：${fontInfoState.value?.fontUrl ?: "解析失败"}")
             }
 
 

@@ -21,12 +21,8 @@ class SearchFontViewModel : ViewModel() {
 
     val fontInfoState = MutableStateFlow<FontInfo?>(null)
 
-    private var currentPage = 1
+    private var currentPage = 0
     private var currentKeyword = ""
-
-    fun updateProductList(products: List<ProductData>) {
-        _productList.value = products
-    }
 
     data class ProductData(
         val name: String,
