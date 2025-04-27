@@ -33,19 +33,18 @@ import xyz.akimlc.themetool.ui.page.about.AboutPage
 fun MainPage(navController: NavController) {
     val topAppBarScrollBehavior0 = MiuixScrollBehavior(rememberTopAppBarState())
     val topAppBarScrollBehavior1 = MiuixScrollBehavior(rememberTopAppBarState())
-    val topAppBarScrollBehavior2 = MiuixScrollBehavior(rememberTopAppBarState())
 
     val topAppBarScrollBehaviorList = listOf(
-        topAppBarScrollBehavior0, topAppBarScrollBehavior1, topAppBarScrollBehavior2
+        topAppBarScrollBehavior0, topAppBarScrollBehavior1
     )
-    val pagerState = rememberPagerState(pageCount = { 3 })
+    val pagerState = rememberPagerState(pageCount = { 2 })
     var targetPage by remember { mutableIntStateOf(pagerState.currentPage) }
     val coroutineScope = rememberCoroutineScope()
 
     val currentScrollBehavior = when (pagerState.currentPage) {
         0 -> topAppBarScrollBehaviorList[0]
         1 -> topAppBarScrollBehaviorList[1]
-        else -> topAppBarScrollBehaviorList[2]
+        else -> topAppBarScrollBehaviorList[0]
     }
 
     val items = listOf(
