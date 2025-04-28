@@ -42,9 +42,14 @@ class ThemeRepository {
     }
 
     suspend fun parseFont(uuid: String): Info.FontInfo? = withContext(Dispatchers.IO) {
-        val fontUrl = "https://api.zhuti.intl.xiaomi.com/app/v9/uipages/font/$uuid?isGlobal=true"
+        val fontUrl =
+            "https://api.zhuti.intl.xiaomi.com/app/v9/uipages/font/$uuid?isGlobal=true&language=zh_CN&devicePixel=1080&device=apollo&region=MC"
         val okHttpClient = OkHttpClient()
-        val request = Request.Builder().url(fontUrl).build()
+        val request = Request.Builder().url(fontUrl)
+            .addHeader(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
+            ).build()
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string()
         //解析数据
@@ -57,16 +62,11 @@ class ThemeRepository {
                 //下载链接：fileServer + downloadUrl
                 val fileServer = apiData.getString("fileServer")
                 val downloadUrl = fontDetail.getString("downloadUrl")
-
                 val fontName = fontDetail.getString("name")
-                val downloadUrlRoot = fileServer + downloadUrl
-
+                val downloadUrlRoot = "$fileServer$downloadUrl$fontName.mtz"
                 val fileSize = fontDetail.getString("fileSize").toIntOrNull()  //字体大小
-
-                Log.d("ThemeRepository", "parseFont: $downloadUrlRoot")
-
                 return@withContext Info.FontInfo(
-                    fontUrl = "$downloadUrlRoot/$fontName.mtz",
+                    fontUrl = downloadUrlRoot,
                     fontSize = fileSize ?: 0
                 )
 
