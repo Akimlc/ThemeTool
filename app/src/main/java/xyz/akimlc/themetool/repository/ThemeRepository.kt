@@ -63,7 +63,7 @@ class ThemeRepository {
                 val fileServer = apiData.getString("fileServer")
                 val downloadUrl = fontDetail.getString("downloadUrl")
                 val fontName = fontDetail.getString("name")
-                val downloadUrlRoot = "$fileServer$downloadUrl$fontName.mtz"
+                val downloadUrlRoot = "$fileServer$downloadUrl + / + $fontName.mtz"
                 val fileSize = fontDetail.getString("fileSize").toIntOrNull()  //字体大小
                 return@withContext Info.FontInfo(
                     fontUrl = downloadUrlRoot,
