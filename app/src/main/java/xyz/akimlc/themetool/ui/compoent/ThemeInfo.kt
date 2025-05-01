@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.repository.ThemeRepository
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
+import androidx.core.net.toUri
 
 @Composable
 fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeInfo: ThemeInfo?) {
@@ -109,12 +111,13 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
 fun FontInfoDialog(
     isShow: MutableState<Boolean>,
     product: SearchFontViewModel.ProductData,
-    fontInfo: Info.FontInfo?
+    value: Info.FontInfo?,
 ) {
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(true) }
     val fontInfoState = remember { mutableStateOf<Info.FontInfo?>(null) }
     val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(isShow.value) {
         if (isShow.value) {
             isLoading.value = true
@@ -122,9 +125,9 @@ fun FontInfoDialog(
                 fontInfoState.value = ThemeRepository().parseFont(product.uuid) // 解析字体信息
                 isLoading.value = false
             }
-
         }
     }
+
     SuperDialog(
         show = isShow,
         title = "字体信息",
@@ -134,43 +137,45 @@ fun FontInfoDialog(
     ) {
         Column {
             Text("字体名字：${product.name}")
+            Spacer(modifier = Modifier.height(8.dp))
             if (isLoading.value) {
                 Text("正在解析，请稍候...")
             } else {
                 Text("字体链接：${fontInfoState.value?.fontUrl ?: "解析失败"}")
             }
-
-
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
-                modifier = Modifier
-                    .padding(top = 12.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(
-                    "复制",
+                    text = "复制",
                     onClick = {
                         val fontState = fontInfoState.value
-                        if (fontState==null) {
-                            Toast.makeText(context, "正在解析，请稍候...", Toast.LENGTH_SHORT).show()
+                        if (fontState == null) {
+                            Toast.makeText(context, "解析失败，无法复制", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
-                        val clipboardManager =
-                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clipData = ClipData.newPlainText("Theme URL", fontInfo?.fontUrl)
+                        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clipData = ClipData.newPlainText("Theme URL", fontState.fontUrl)
                         clipboardManager.setPrimaryClip(clipData)
                         Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
                     },
+                    enabled = fontInfoState.value != null,
                     modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.width(12.dp))
+
+                Spacer(modifier = Modifier.width(12.dp))
+
                 TextButton(
-                    "下载", onClick = {
-                        val fontInfo = fontInfoState.value
-                        if (fontInfo==null) {
+                    text = "下载",
+                    onClick = {
+                        val fontState = fontInfoState.value
+                        if (fontState == null) {
                             Toast.makeText(context, "正在解析，请稍候...", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fontInfo.fontUrl))
+                        val intent = Intent(Intent.ACTION_VIEW, fontState.fontUrl.toUri())
                         context.startActivity(intent)
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
