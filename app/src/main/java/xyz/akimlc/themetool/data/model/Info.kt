@@ -12,4 +12,10 @@ class Info {
         val fontUrl: String,
         val fontSize: Int // 单位：字节
     )
+
+    data class GlobalTheme(
+        val name : String,
+        val fileSize: String,
+        val downloadUrl: String
+    )
 }

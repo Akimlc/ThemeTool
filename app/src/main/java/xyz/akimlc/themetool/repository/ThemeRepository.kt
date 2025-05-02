@@ -1,6 +1,5 @@
 package xyz.akimlc.themetool.repository
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -77,4 +76,44 @@ class ThemeRepository {
 
         return@withContext null
     }
+
+
+    suspend fun parseGlobalTheme(uuid: String): Info.GlobalTheme? = withContext(Dispatchers.IO) {
+        val url =
+            "https://api.zhuti.intl.xiaomi.com/app/v9/uipages/theme/$uuid?devicePixel=1080&isGlobal=true&miuiUIVersion=V160"
+
+        val okHttpClient = OkHttpClient()
+        val request = Request.Builder().url(url).addHeader(
+            "User-Agent",
+            "Mozilla/5.0 (Linux; Android 12; M2007J3SC Build/SP1A.210812.016; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4275 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/4275 MicroMessenger/8.0.20.2240(0x2800143C)WeChat/arm64 Weixin NetType/WIFI Language/zh"
+        ).build()
+
+        val response = okHttpClient.newCall(request).execute()
+        val body = response.body?.string()
+
+        if (body!=null) {
+            try {
+                val jsonObject = JSONObject(body)
+                val apiData = jsonObject.getJSONObject("apiData")
+                val extraInfo = apiData.getJSONObject("extraInfo")
+                val themeDetail = extraInfo.getJSONObject("themeDetail")
+                val fileServer = apiData.getString("fileServer")
+                val downloadUrl = themeDetail.getString("downloadUrl")
+
+                val name = themeDetail.getString("name")    //主题名字
+                val fileSize = themeDetail.getString("fileSize")    //主题大小
+                val themeDownloadUrl = "$fileServer$downloadUrl/$name.mtz" //下载链接
+                return@withContext Info.GlobalTheme(
+                    name = name,
+                    fileSize = fileSize,
+                    downloadUrl = themeDownloadUrl
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        return@withContext null
+    }
+
 }
