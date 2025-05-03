@@ -112,14 +112,22 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                             return@TextButton
                         }
 
-                        // 国内主题搜索
                         viewModel.searchTheme(keywords.value) {
                             Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
                         }
 
-                        // 国际主题搜索
-                        viewModel.searchGlobalTheme(keywords.value) {
-                            Toast.makeText(context, "未找到相关国际主题", Toast.LENGTH_SHORT).show()
+                        // 检查是否为纯英文
+                        val keyword = keywords.value
+                        val isEnglishOnly = keyword.matches(Regex("^[a-zA-Z0-9\\s]+$"))
+
+                        if (!isEnglishOnly) {
+                            // 不是英文就提示，国际搜索不执行
+                            Toast.makeText(context, "国际主题仅支持英文关键词", Toast.LENGTH_SHORT).show()
+                            viewModel.clearGlobalThemeResults()
+                        } else {
+                            viewModel.searchGlobalTheme(keyword) {
+                                Toast.makeText(context, "未找到相关国际主题", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 )

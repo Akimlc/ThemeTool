@@ -93,5 +93,10 @@ class SearchThemeViewModel : ViewModel() {
         }
     }
 
+    //清除主题列表
+    fun clearGlobalThemeResults() {
+        _globalThemeProductList.value = emptyList()
+    }
+
 
 }
