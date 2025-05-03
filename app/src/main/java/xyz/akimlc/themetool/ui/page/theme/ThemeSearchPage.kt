@@ -111,17 +111,15 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                             Toast.makeText(context, "请输入关键词", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
+
+                        // 国内主题搜索
                         viewModel.searchTheme(keywords.value) {
                             Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
                         }
-                        if (selectedTabIndex==1) {
-                            viewModel.searchGlobalTheme(keywords.value) {
-                                Toast.makeText(
-                                    context,
-                                    "未找到相关国际主题",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+
+                        // 国际主题搜索
+                        viewModel.searchGlobalTheme(keywords.value) {
+                            Toast.makeText(context, "未找到相关国际主题", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -134,22 +132,6 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                     onTabSelected = { index ->
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(index)
-                        }
-
-                        if (index==1) {
-                            if (keywords.value.isBlank()) {
-                                // 关键词为空，不执行搜索，不弹Toast
-                                return@TabRow
-                            }
-                            if (viewModel.globalThemeProductList.value.isEmpty()) {
-                                viewModel.searchGlobalTheme(keywords.value) {
-                                    Toast.makeText(
-                                        context,
-                                        "未找到相关国际主题",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
                         }
                     }
                 )
