@@ -19,6 +19,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.2.3"
+        versionCode = getGitCommitCount()
     }
     val properties = Properties()
     runCatching { properties.load(project.rootProject.file("local.properties").inputStream()) }
@@ -67,10 +68,10 @@ android {
         outputs.all {
             if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
                 val config = project.android.defaultConfig
-                val versionName = "v" + config.versionName
+                val versionName = "v" + config.versionName + config.versionCode
                 val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
                 val createTime = LocalDateTime.now().format(formatter)
-                this.outputFileName = "ThemeTool_${versionName}_${createTime}_$name.apk"
+                this.outputFileName = "ThemeTool_${versionName}(${versionCode})_${createTime}_$name.apk"
             }
         }
     }
@@ -86,7 +87,15 @@ android {
         buildConfig = true
     }
 }
-
+fun getGitCommitCount(): Int {
+    return try {
+        val process = Runtime.getRuntime().exec(arrayOf("git", "rev-list", "--count", "HEAD"))
+        val count = process.inputStream.bufferedReader().readText().trim()
+        count.toInt()
+    } catch (e: Exception) {
+        1
+    }
+}
 dependencies {
 
     implementation(libs.androidx.core.ktx)

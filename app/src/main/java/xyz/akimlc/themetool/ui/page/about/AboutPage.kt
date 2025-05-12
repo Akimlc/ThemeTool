@@ -75,7 +75,7 @@ fun AboutPage(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "版本号 ${BuildConfig.VERSION_NAME}",
+                        text = "版本号 ${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
