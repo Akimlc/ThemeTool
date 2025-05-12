@@ -20,6 +20,7 @@ class SearchFontViewModel : ViewModel() {
     private val _hasMore = MutableStateFlow(true) // 标记是否还有更多数据
 
     val fontInfoState = MutableStateFlow<FontInfo?>(null)
+    val isFontLoading = MutableStateFlow(false) // 添加加载状态
 
     private var currentPage = 0
     private var currentKeyword = ""
@@ -73,6 +74,7 @@ class SearchFontViewModel : ViewModel() {
     }
 
     fun parseFont(uuid: String) {
+        isFontLoading.value = true
         viewModelScope.launch {
             try {
                 val fontInfo = ThemeRepository().parseFont(uuid)
@@ -80,6 +82,8 @@ class SearchFontViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 fontInfoState.value = null
+            }finally {
+                isFontLoading.value = false
             }
         }
     }

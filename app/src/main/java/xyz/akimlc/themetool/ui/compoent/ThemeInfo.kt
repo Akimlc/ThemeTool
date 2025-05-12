@@ -1,5 +1,6 @@
 package xyz.akimlc.themetool.ui.compoent
 
+import androidx.compose.runtime.getValue
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -112,20 +114,15 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
 fun FontInfoDialog(
     isShow: MutableState<Boolean>,
     product: SearchFontViewModel.ProductData,
-    value: Info.FontInfo?,
+    viewModel: SearchFontViewModel
 ) {
     val context = LocalContext.current
-    val isLoading = remember { mutableStateOf(true) }
-    val fontInfoState = remember { mutableStateOf<Info.FontInfo?>(null) }
-    val coroutineScope = rememberCoroutineScope()
+    val isLoading by viewModel.isFontLoading.collectAsState()
+    val fontInfoState by viewModel.fontInfoState.collectAsState()
 
     LaunchedEffect(isShow.value) {
         if (isShow.value) {
-            isLoading.value = true
-            coroutineScope.launch {
-                fontInfoState.value = ThemeRepository().parseFont(product.uuid) // 解析字体信息
-                isLoading.value = false
-            }
+            viewModel.parseFont(product.uuid)
         }
     }
 
@@ -139,10 +136,10 @@ fun FontInfoDialog(
         Column {
             Text("字体名字：${product.name}")
             Spacer(modifier = Modifier.height(8.dp))
-            if (isLoading.value) {
+            if (isLoading) {
                 Text("正在解析，请稍候...")
             } else {
-                Text("字体链接：${fontInfoState.value?.fontUrl ?: "解析失败"}")
+                Text("字体链接：${fontInfoState?.fontUrl ?: "解析失败"}")
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -152,18 +149,17 @@ fun FontInfoDialog(
                 TextButton(
                     text = "复制",
                     onClick = {
-                        val fontState = fontInfoState.value
-                        if (fontState==null) {
+                        if (fontInfoState==null) {
                             Toast.makeText(context, "解析失败，无法复制", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
                         val clipboardManager =
                             context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clipData = ClipData.newPlainText("Theme URL", fontState.fontUrl)
+                        val clipData = ClipData.newPlainText("Font URL", fontInfoState?.fontUrl)
                         clipboardManager.setPrimaryClip(clipData)
                         Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
                     },
-                    enabled = fontInfoState.value!=null,
+                    enabled = fontInfoState!=null,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -172,12 +168,11 @@ fun FontInfoDialog(
                 TextButton(
                     text = "下载",
                     onClick = {
-                        val fontState = fontInfoState.value
-                        if (fontState==null) {
+                        if (fontInfoState == null) {
                             Toast.makeText(context, "正在解析，请稍候...", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
-                        val intent = Intent(Intent.ACTION_VIEW, fontState.fontUrl.toUri())
+                        val intent = Intent(Intent.ACTION_VIEW, fontInfoState!!.fontUrl.toUri())
                         context.startActivity(intent)
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),

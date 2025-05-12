@@ -108,7 +108,6 @@ fun FontSearchPage(viewModel: SearchFontViewModel) {
                         .clickable {
                             selectProduct.value = product
                             isShow.value = true
-                            viewModel.parseFont(product.uuid)
                         },
                     color = Color(0xFFBEBCBC)
                 ) {
@@ -142,7 +141,7 @@ fun FontSearchPage(viewModel: SearchFontViewModel) {
 
     if (isShow.value) {
         selectProduct.value?.let { product ->
-            FontInfoDialog(isShow, product, viewModel.fontInfoState.value)
+            FontInfoDialog(isShow, product, viewModel)
         }
     }
 }

@@ -1,5 +1,6 @@
 package xyz.akimlc.themetool.repository
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -9,6 +10,7 @@ import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.utils.StringUtils
 
 class ThemeRepository {
+    private val TAG = "ThemeRepository"
     suspend fun parseTheme(packId: String): Info.ThemeInfo? = withContext(Dispatchers.IO) {
         val themeInfoUrl =
             "https://thm.market.xiaomi.com/thm/download/v2/${packId}?miuiUIVersion=V150"
@@ -41,14 +43,17 @@ class ThemeRepository {
     }
 
     suspend fun parseFont(uuid: String): Info.FontInfo? = withContext(Dispatchers.IO) {
+        val ua = StringUtils().generalRandomUA()
+
         val fontUrl =
             "https://api.zhuti.intl.xiaomi.com/app/v9/uipages/font/$uuid?isGlobal=true&language=zh_CN&devicePixel=1080&device=apollo&region=MC"
         val okHttpClient = OkHttpClient()
         val request = Request.Builder().url(fontUrl)
             .addHeader(
                 "User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
+                ua
             ).build()
+        Log.d(TAG, "parseFont: 生成的UA：$ua")
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string()
         //解析数据

@@ -20,4 +20,13 @@ class StringUtils {
         return decodedName
     }
 
+    /**
+     * 生成一个随机英文 + 数字的UA(别问，问就是标准的User-Agent访问不了)
+     */
+    fun generalRandomUA(length: Int = 12): String {
+        val pool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        return (1..length)
+            .map { pool.random() }
+            .joinToString("")
+    }
 }
