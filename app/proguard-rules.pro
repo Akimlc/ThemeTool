@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-obfuscationdictionary output_dict.txt
+-classobfuscationdictionary output_dict.txt
+-packageobfuscationdictionary output_dict.txt
