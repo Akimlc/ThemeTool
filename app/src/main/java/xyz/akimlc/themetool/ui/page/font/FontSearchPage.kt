@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -32,13 +33,14 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.FontInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel.ProductData
 
 @Composable
-fun FontSearchPage(viewModel: SearchFontViewModel) {
+fun FontSearchPage(viewModel: SearchFontViewModel,navController: NavController) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -49,10 +51,13 @@ fun FontSearchPage(viewModel: SearchFontViewModel) {
     val productList = productListState.value
     val isSearchingState = viewModel.isSearching.collectAsState()
 
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = "字体搜索", scrollBehavior = scrollBehavior
+            BackTopAppBar(
+                title = "搜索字体",
+                scrollBehavior = scrollBehavior,
+                navController = navController
             )
         }) { paddingValue ->
 

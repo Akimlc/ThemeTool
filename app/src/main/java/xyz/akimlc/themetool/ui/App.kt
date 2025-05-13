@@ -76,12 +76,12 @@ fun App() {
             )
         }
         composable("ThanksPage") {
-            ThanksPage()
+            ThanksPage(navController)
         }
         composable("ZipFontPage") {
             ZipFontPage(navController)
         }
-        composable("FontSearchPage") { FontSearchPage(SearchFontViewModel()) }
+        composable("FontSearchPage") { FontSearchPage(SearchFontViewModel(),navController) }
         composable("MtzFontPage") { MtzFontPage(navController) }
     }
 }

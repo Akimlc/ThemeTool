@@ -40,6 +40,7 @@ import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.utils.MiuixPopupUtils.Companion.dismissDialog
 import xyz.akimlc.themetool.repository.font.TTF2MTZ.Companion.convert
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.utils.FileUtils
 
 @Composable
@@ -78,9 +79,10 @@ fun MtzFontPage(navController: NavController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            BackTopAppBar(
                 title = "TTF转MTZ",
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                navController = navController
             )
         }) { padding ->
         LazyColumn(

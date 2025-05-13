@@ -43,6 +43,7 @@ import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.MiuixPopupUtils.Companion.dismissDialog
 import xyz.akimlc.themetool.repository.font.TTF2ZIP.Companion.convert
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ErrorNotice
 import xyz.akimlc.themetool.utils.FileUtils
 
@@ -83,9 +84,10 @@ fun ZipFontPage(navController: NavController) {
     }
     Scaffold(
         topBar = {
-            TopAppBar(
+            BackTopAppBar(
                 title = "TTF转ZIP",
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                navController = navController
             )
         }) { padding ->
         LazyColumn(

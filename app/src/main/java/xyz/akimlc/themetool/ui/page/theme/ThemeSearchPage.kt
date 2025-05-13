@@ -49,6 +49,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
@@ -70,8 +71,10 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = "主题搜索", scrollBehavior = scrollBehavior
+            BackTopAppBar(
+                title = "主题搜索",
+                scrollBehavior = scrollBehavior,
+                navController = navController
             )
         }) { paddingValue ->
 

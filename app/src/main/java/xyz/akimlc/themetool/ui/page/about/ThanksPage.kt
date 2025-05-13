@@ -8,37 +8,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 
 @Composable
-fun ThanksPage() {
-    LocalUriHandler.current
-
+fun ThanksPage(navController: NavController) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = "感谢列表", scrollBehavior = scrollBehavior
+            BackTopAppBar(
+                title = "感谢列表",
+                scrollBehavior = scrollBehavior,
+                navController = navController
             )
         },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = padding,
         ) {

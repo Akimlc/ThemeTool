@@ -38,6 +38,7 @@ import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.viewmodel.ParseViewModel
 import androidx.core.net.toUri
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 
 @Composable
@@ -61,8 +62,10 @@ fun ThemeParsePage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = "主题解析", scrollBehavior = scroll
+            BackTopAppBar(
+                title = "主题解析",
+                scrollBehavior = scroll,
+                navController = navController
             )
         }) { paddingValues ->
         LazyColumn(
