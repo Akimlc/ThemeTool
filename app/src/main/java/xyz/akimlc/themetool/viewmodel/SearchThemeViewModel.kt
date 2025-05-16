@@ -25,9 +25,19 @@ class SearchThemeViewModel : ViewModel() {
     private val _isSearchingGlobal = MutableStateFlow(false)
     val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
     val isSearchingGlobal: StateFlow<Boolean> = _isSearchingGlobal.asStateFlow()
+    private val _isLoadingMore = MutableStateFlow(false)
+    val isLoadingMore: StateFlow<Boolean> = _isLoadingMore
 
-    //初始页数
-    private var globalPage = 0
+    private val _isGlobalLoadingMore = MutableStateFlow(false)
+    var isGlobalLoadingMore: StateFlow<Boolean> = _isGlobalLoadingMore
+
+
+    private var currentPage = 0
+    private var currentKeyword = ""
+    private var hasMore = true
+    private var globalCurrentPage = 0
+    private var globalCurrentKeyword = ""
+    private var globalThemeHasMore = true
 
     data class ProductData(
         val name: String,
@@ -43,60 +53,97 @@ class SearchThemeViewModel : ViewModel() {
         val imageUrl: String
     )
 
-    // 搜索主题
-    fun searchTheme(keywords: String, onEmpty: () -> Unit = {}) {
+    fun loadMoreGlobalTheme() {
+        if (_isGlobalLoadingMore.value || !globalThemeHasMore) return
         viewModelScope.launch {
-            _isSearching.value = true // 开始搜索
+            _isGlobalLoadingMore.value = true
             try {
-                val result = SearchThemeRepository.searchTheme(keywords)
-                _productList.value = result
-                if (result.isEmpty()) onEmpty()
+                val result = SearchThemeRepository.searchGlobalTheme(globalCurrentKeyword, globalCurrentPage)
+                if (result.isNotEmpty()) {
+                    _globalThemeProductList.value = _globalThemeProductList.value + result
+                    globalCurrentPage++
+                } else {
+                    globalThemeHasMore = false
+                }
             } catch (e: Exception) {
-                Log.e("SearchTheme", "搜索失败", e)
+                Log.e("SearchTheme", "国际加载更多失败", e)
             } finally {
-                _isSearching.value = false // 结束搜索
+                _isGlobalLoadingMore.value = false
             }
         }
     }
 
-    fun searchGlobalTheme(keywords: String, onEmpty: () -> Unit = {}) {
-        if (keywords.isBlank()) {
-            _globalThemeProductList.value = emptyList()
-            onEmpty()
-            return
-        }
+    fun loadMoreTheme() {
+        if (_isLoadingMore.value || !hasMore) return
         viewModelScope.launch {
-            _isSearchingGlobal.value = true
+            _isLoadingMore.value = true
             try {
-                val result = SearchThemeRepository.searchGlobalTheme(keywords)
-                _globalThemeProductList.value = result
-                if (result.isEmpty()) onEmpty()
+                val result = SearchThemeRepository.searchTheme(currentKeyword, currentPage)
+                if (result.isNotEmpty()) {
+                    _productList.value = _productList.value + result
+                    currentPage++
+                } else {
+                    hasMore = false
+                }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("SearchTheme", "加载更多失败", e)
+            } finally {
+                _isLoadingMore.value = false
+            }
+        }
+    }
+
+    fun searchGlobalTheme(keywords: String, onEmpty: () -> Unit) {
+        globalCurrentKeyword = keywords
+        globalCurrentPage = 0
+        globalThemeHasMore = true
+        _isSearchingGlobal.value = true
+        viewModelScope.launch {
+            try {
+                val result = SearchThemeRepository.searchGlobalTheme(keywords, globalCurrentPage)
+                _globalThemeProductList.value = result
+                if (result.isEmpty()){
+                    globalThemeHasMore = false
+                } else {
+                    globalCurrentPage++
+                }
+            } catch (e: Exception) {
+                Log.e("SearchTheme", "国际搜索失败", e)
+                onEmpty()
             } finally {
                 _isSearchingGlobal.value = false
             }
         }
     }
 
-
-    // 解析主题详情
-    fun parseTheme(uuid: String) {
+    fun searchTheme(keywords: String, onEmpty: () -> Unit = {}) {
+        currentKeyword = keywords
+        currentPage = 0
+        hasMore = true
+        _isSearching.value = true
         viewModelScope.launch {
             try {
-                val themeInfo = themeRepository.parseTheme(uuid)
-                themeInfoState.value = themeInfo
+                val result = SearchThemeRepository.searchTheme(keywords, 0)
+                _productList.value = result
+                if (result.isEmpty()) onEmpty()
+                else currentPage++
             } catch (e: Exception) {
-                Log.e("SearchTheme", "解析失败", e)
-                themeInfoState.value = null
+                Log.e("SearchTheme", "国内搜索失败", e)
+                onEmpty()
+            } finally {
+                _isSearching.value = false
             }
         }
     }
 
-    //清除主题列表
-    fun clearGlobalThemeResults() {
-        _globalThemeProductList.value = emptyList()
+    fun clearSearchResults() {
+        _productList.value = emptyList()
+        currentPage = 0
     }
 
+    fun clearGlobalThemeResults() {
+        _globalThemeProductList.value = emptyList()
+        globalCurrentPage = 0
+    }
 
 }
