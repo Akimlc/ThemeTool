@@ -187,7 +187,7 @@ fun FontInfoDialog(
 @Composable
 fun GlobalThemeInfoDialog(
     isShow: MutableState<Boolean>,
-    product: GlobalProductData
+    product: GlobalProductData,
 ) {
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(true) }

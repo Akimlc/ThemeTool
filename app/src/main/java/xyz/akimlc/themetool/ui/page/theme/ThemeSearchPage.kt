@@ -14,7 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,8 +50,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
-import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
+import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
@@ -63,109 +63,112 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val keywords = remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope() // 要加这一行
-
+    val coroutineScope = rememberCoroutineScope()
     val tabs = listOf("国内", "国际")
     val pagerState = rememberPagerState { tabs.size }
-    val selectedTabIndex by remember { derivedStateOf { pagerState.currentPage } } // 🔥
+    val selectedTabIndex by remember { derivedStateOf { pagerState.currentPage } }
 
+    val listState  = rememberLazyListState()
     Scaffold(
         topBar = {
-            BackTopAppBar(
+            BackDoubleTopAppBar(
                 title = "主题搜索",
                 scrollBehavior = scrollBehavior,
-                navController = navController
+                navController = navController,
+                onDoubleTop = {
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(0)
+                    }
+                }
             )
         }) { paddingValue ->
 
-        Column(
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxHeight()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .padding(paddingValue),
         ) {
 
-            WarningNotice(
-                text = "当前只支持搜索国内的主题哟~"
-            )
-            TextField(
-                value = keywords.value,
-                onValueChange = {
-                    keywords.value = it
-                },
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .padding(horizontal = 12.dp),
-                label = "搜索的主题名称",
-                singleLine = true
-            )
-
-
-            TextButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 6.dp)
-                    .padding(bottom = 8.dp),
-                colors = ButtonDefaults.textButtonColorsPrimary(),
-                text = "搜索",
-                onClick = {
-                    if (keywords.value.isBlank()) {
-                        Toast.makeText(context, "请输入关键词", Toast.LENGTH_SHORT).show()
-                        return@TextButton
-                    }
-                    viewModel.clearSearchResults()
-                    viewModel.clearGlobalThemeResults()
-                    viewModel.searchTheme(keywords.value) {
-                        Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
-                    }
-
-                    // 检查是否为纯英文
-                    val keyword = keywords.value
-                    val isEnglishOnly = keyword.matches(Regex("^[a-zA-Z0-9\\s]+$"))
-
-                    if (!isEnglishOnly) {
-                        // 不是英文就提示，国际搜索不执行
-                        Toast.makeText(context, "国际主题仅支持英文关键词", Toast.LENGTH_SHORT)
-                            .show()
+            item {
+                WarningNotice(
+                    text = "当前只支持搜索国内的主题哟~"
+                )
+                TextField(
+                    value = keywords.value,
+                    onValueChange = {
+                        keywords.value = it
+                    },
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .padding(horizontal = 12.dp),
+                    label = "搜索的主题名称",
+                    singleLine = true
+                )
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(top = 6.dp)
+                        .padding(bottom = 8.dp),
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                    text = "搜索",
+                    onClick = {
+                        if (keywords.value.isBlank()) {
+                            Toast.makeText(context, "请输入关键词", Toast.LENGTH_SHORT).show()
+                            return@TextButton
+                        }
+                        viewModel.clearSearchResults()
                         viewModel.clearGlobalThemeResults()
-                    } else {
-                        viewModel.searchGlobalTheme(keyword) {
-                            Toast.makeText(context, "未找到相关国际主题", Toast.LENGTH_SHORT)
-                                .show()
+                        viewModel.searchTheme(keywords.value) {
+                            Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
                         }
-                        viewModel.searchTheme(keyword){
-                            Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT)
+
+                        // 检查是否为纯英文
+                        val keyword = keywords.value
+                        val isEnglishOnly = keyword.matches(Regex("^[a-zA-Z0-9\\s]+$"))
+
+                        if (!isEnglishOnly) {
+                            // 不是英文就提示，国际搜索不执行
+                            Toast.makeText(context, "国际主题仅支持英文关键词", Toast.LENGTH_SHORT)
                                 .show()
+                            viewModel.clearGlobalThemeResults()
+                        } else {
+                            viewModel.searchGlobalTheme(keyword) {
+                                Toast.makeText(context, "未找到相关国际主题", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            viewModel.searchTheme(keyword) {
+                                Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
                         }
                     }
-                }
-            )
-
-
-            TabRow(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                tabs = tabs,
-                selectedTabIndex = selectedTabIndex,
-                onTabSelected = { index ->
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(index)
+                )
+            }
+            stickyHeader {
+                TabRow(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    tabs = tabs,
+                    selectedTabIndex = selectedTabIndex,
+                    onTabSelected = { index ->
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
                     }
-                }
-            )
-
-            HorizontalPager(
-                userScrollEnabled = false,
-                state = pagerState,
-            ) { page ->
-                when (page) {
-                    0 -> DomesticThemeResultView(viewModel)
-                    1 -> GlobalThemeResultView(viewModel)
+                )
+                HorizontalPager(
+                    userScrollEnabled = false,
+                    state = pagerState,
+                ) { page ->
+                    when (page) {
+                        0 -> DomesticThemeResultView(viewModel)
+                        1 -> GlobalThemeResultView(viewModel)
+                    }
                 }
             }
         }
-
-
     }
 }
 
@@ -190,61 +193,49 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel) {
             )
         }
         return
-    }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        itemsIndexed(productList.chunked(3)) { rowIndex, rowProducts ->
-            // 判断是否滑到底，加载更多
-            val flatIndex = rowIndex * 3 + rowProducts.lastIndex
-            if (flatIndex >= productList.lastIndex) {
-                LaunchedEffect(Unit) {
-                    viewModel.loadMoreTheme()
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                rowProducts.forEach { product ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f) // 让每个Item平分宽度
-                            .padding(horizontal = 4.dp)
-                            .padding(bottom = 8.dp)
-                            .clickable {
-                                selectedProduct.value = product
-                                isShow.value = true
-                            },
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(product.imageUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = null,
+    } else {
+        Column {
+            productList.chunked(3).forEachIndexed { rowIndex, rowProduct ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    rowProduct.forEach { product ->
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp)),
-                            onSuccess = {
-                                isImageLoaded.value = true
-                            }
-                        )
-                        if (isImageLoaded.value) {
+                                .weight(1f) // 让每个Item平分宽度
+                                .padding(horizontal = 4.dp)
+                                .padding(bottom = 8.dp)
+                                .clickable {
+                                    selectedProduct.value = product
+                                    isShow.value = true
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(product.imageUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(product.name, textAlign = TextAlign.Center, fontSize = 15.sp)
                         }
-                        repeat(3 - rowProducts.size % 3) {
-                            if (rowProducts.size % 3!=0) {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
-                        }
                     }
 
+                }
+                val flatIndex = rowIndex * 3 + rowProduct.lastIndex
+                if (flatIndex >= productList.lastIndex) {
+                    LaunchedEffect(Unit) {
+                        viewModel.loadMoreTheme()
+                    }
                 }
             }
             if (isShow.value) {
@@ -253,8 +244,8 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel) {
                 }
             }
         }
-
     }
+
 }
 
 @Composable
@@ -271,71 +262,52 @@ fun GlobalThemeResultView(viewModel: SearchThemeViewModel) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 24.dp),
+                .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(modifier = Modifier.size(48.dp))
         }
-        return
-    }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        itemsIndexed(globalThemeProductList.chunked(3)) { rowIndex, rowProducts ->
-            val flatIndex = rowIndex * 3 + rowProducts.lastIndex
-            if (flatIndex >= globalThemeProductList.lastIndex) {
-                LaunchedEffect(Unit) {
-                    viewModel.loadMoreGlobalTheme()
+    } else {
+        Column(modifier = Modifier.fillMaxSize()) {
+            globalThemeProductList.chunked(3).forEachIndexed { rowIndex, rowProduct ->
+                val flatIndex = rowIndex * 3 + rowProduct.lastIndex
+                if (flatIndex >= globalThemeProductList.lastIndex) {
+                    LaunchedEffect(Unit) {
+                        viewModel.loadMoreGlobalTheme()
+                    }
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                rowProducts.forEach { product ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f) // 让每个Item平分宽度
-                            .padding(horizontal = 4.dp)
-                            .padding(bottom = 8.dp)
-                            .clickable {
-                                selectedProduct.value = product
-                                isShow.value = true
-                            },
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(product.imageUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = null,
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    rowProduct.forEach { product ->
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp)),
-                            onSuccess = {
-                                isImageLoaded.value = true
-                            }
-                        )
-                        if (isImageLoaded.value) {
+                                .weight(1f)
+                                .padding(4.dp)
+                                .clickable {
+                                    selectedProduct.value = product
+                                    isShow.value = true
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(product.imageUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(product.name, textAlign = TextAlign.Center, fontSize = 15.sp)
                         }
-                        repeat(3 - rowProducts.size % 3) {
-                            if (rowProducts.size % 3!=0) {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
-                        }
                     }
-
-                }
-            }
-            if (isShow.value) {
-                selectedProduct.value?.let { product ->
-                    GlobalThemeInfoDialog(isShow, product)
                 }
             }
         }
