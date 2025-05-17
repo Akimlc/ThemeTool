@@ -1,10 +1,9 @@
 package xyz.akimlc.themetool.ui.compoent
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.view.HapticFeedbackConstants
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.icon.MiuixIcons
@@ -32,7 +31,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 fun BackTopAppBar(
     title: String,
     scrollBehavior: ScrollBehavior? = null,
-    navController: NavController
+    navController: NavController,
 ) {
     val context = LocalContext.current
 
@@ -48,9 +47,44 @@ fun BackTopAppBar(
                     navController.popBackStack()
                 }
             )
+        },
+    )
+}
+
+@SuppressLint("ContextCastToActivity")
+@Composable
+fun BackDoubleTopAppBar(
+    title: String,
+    scrollBehavior: ScrollBehavior? = null,
+    navController: NavController,
+    onDoubleTop: (() -> Unit)
+) {
+    val context = LocalContext.current
+    TopAppBar(
+        title = title,
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            TopButton(
+                modifier = Modifier.padding(start = 18.dp),
+                imageVector = MiuixIcons.Useful.Back,
+                contentDescription = null,
+                onClick = {
+                    navController.popBackStack()
+                }
+            )
+        },
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(
+                onDoubleTap = {
+                    onDoubleTop.invoke()
+                }
+            ) {
+
+            }
         }
     )
 }
+
 
 @Composable
 fun TopButton(
@@ -60,7 +94,7 @@ fun TopButton(
     tint: Color = colorScheme.onBackground,
     onClick: () -> Unit,
 
-    ){
+    ) {
     val view = LocalView.current
     Box(
         modifier
@@ -72,7 +106,7 @@ fun TopButton(
 
             },
         contentAlignment = Alignment.Center
-    ){
+    ) {
         Icon(
             imageVector,
             contentDescription = contentDescription,
