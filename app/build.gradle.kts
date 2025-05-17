@@ -68,7 +68,7 @@ android {
         outputs.all {
             if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
                 val config = project.android.defaultConfig
-                val versionName = "v" + config.versionName + config.versionCode
+                val versionName = "v" + config.versionName
                 val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
                 val createTime = LocalDateTime.now().format(formatter)
                 this.outputFileName = "ThemeTool_${versionName}(${versionCode})_${createTime}_$name.apk"
