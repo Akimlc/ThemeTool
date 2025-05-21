@@ -133,6 +133,7 @@ fun AboutPage(
                 SmallTitle("引用")
                 Card(
                     modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = 16.dp)
                 ) {
                     SuperArrow(
                         title = "MiuiX",
