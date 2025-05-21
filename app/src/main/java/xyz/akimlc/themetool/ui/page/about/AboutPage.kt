@@ -56,6 +56,7 @@ fun AboutPage(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .overScrollVertical()
                 .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 .padding(horizontal = 12.dp),
             contentPadding = padding,

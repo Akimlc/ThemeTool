@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SmallTitle
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem1
@@ -25,6 +26,7 @@ fun HomePage(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
+            .overScrollVertical()
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         contentPadding = padding
     ) {
@@ -80,6 +82,13 @@ fun HomePage(
                     icon = R.drawable.ic_mask,
                     onClick = {
                         navController.navigate("ZipFontPage")
+                    }
+                )
+                SuperArrowItem(
+                    title = "字体详细",
+                    icon = R.drawable.ic_mask,
+                    onClick = {
+                        navController.navigate("FontDetailPage")
                     }
                 )
             }

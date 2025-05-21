@@ -40,6 +40,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.repository.font.TTF2ZIP.Companion.convert
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ErrorNotice
@@ -91,6 +92,7 @@ fun ZipFontPage(navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
+                .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .padding(top = 12.dp),
             contentPadding = padding

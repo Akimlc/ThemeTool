@@ -38,6 +38,7 @@ import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.viewmodel.ParseViewModel
 import androidx.core.net.toUri
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 
@@ -70,6 +71,7 @@ fun ThemeParsePage(
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxHeight()
+                .overScrollVertical()
                 .nestedScroll(scroll.nestedScrollConnection),
             contentPadding = paddingValues
         ) {

@@ -33,6 +33,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.FontInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
@@ -62,7 +63,10 @@ fun FontSearchPage(viewModel: SearchFontViewModel,navController: NavController) 
         }) { paddingValue ->
 
         LazyColumn(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier
+                .fillMaxSize()
+                .overScrollVertical()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = paddingValue
         ) {
             item {

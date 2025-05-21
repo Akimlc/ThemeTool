@@ -50,6 +50,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
@@ -87,6 +88,7 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
             state = listState,
             modifier = Modifier
                 .fillMaxHeight()
+                .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .padding(paddingValue),
         ) {
