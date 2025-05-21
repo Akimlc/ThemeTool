@@ -1,6 +1,5 @@
 package xyz.akimlc.themetool.ui.compoent
 
-import androidx.compose.runtime.getValue
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -18,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,7 +30,6 @@ import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.extra.SuperDialog
-import top.yukonga.miuix.kmp.utils.MiuixPopupUtils.Companion.dismissDialog
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.repository.ThemeRepository
@@ -59,7 +58,7 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
         show = isShow,
         title = "主题信息",
         onDismissRequest = {
-            dismissDialog(isShow)
+            isShow.value = false
         }
     ) {
         Column {
@@ -130,7 +129,7 @@ fun FontInfoDialog(
         show = isShow,
         title = "字体信息",
         onDismissRequest = {
-            dismissDialog(isShow)
+            isShow.value = false
         }
     ) {
         Column {
@@ -168,7 +167,7 @@ fun FontInfoDialog(
                 TextButton(
                     text = "下载",
                     onClick = {
-                        if (fontInfoState == null) {
+                        if (fontInfoState==null) {
                             Toast.makeText(context, "正在解析，请稍候...", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
@@ -208,7 +207,7 @@ fun GlobalThemeInfoDialog(
         show = isShow,
         title = "主题信息",
         onDismissRequest = {
-            dismissDialog(isShow)
+            isShow.value = false
         }
     ) {
         Column {

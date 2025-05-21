@@ -38,10 +38,8 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
-import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.utils.MiuixPopupUtils.Companion.dismissDialog
 import xyz.akimlc.themetool.repository.font.TTF2ZIP.Companion.convert
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ErrorNotice
@@ -165,7 +163,7 @@ fun ZipFontPage(navController: NavController) {
                                         context,
                                         fontUri,
                                         importFont,
-                                        zipName, 
+                                        zipName,
                                         onProgressUpdate = { progress ->
                                             convertProgress = progress
                                         },
@@ -194,7 +192,9 @@ private fun ZipProgressDialog(
     SuperDialog(
         show = showDialog,
         title = "正在转换",
-        onDismissRequest = { dismissDialog(showDialog) }
+        onDismissRequest = {
+            showDialog.value = false
+        }
     ) {
         LinearProgressIndicator(progress)
     }
@@ -236,7 +236,7 @@ private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
                 TextButton(
                     text = "取消",
                     onClick = {
-                        dismissDialog(isShow)
+                        isShow.value = false
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -244,7 +244,7 @@ private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
                 TextButton(
                     text = "确定",
                     onClick = {
-                        dismissDialog(isShow)
+                        isShow.value = false
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.textButtonColorsPrimary()
