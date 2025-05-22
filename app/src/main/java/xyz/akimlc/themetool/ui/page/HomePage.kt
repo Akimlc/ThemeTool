@@ -84,13 +84,6 @@ fun HomePage(
                         navController.navigate("ZipFontPage")
                     }
                 )
-                SuperArrowItem(
-                    title = "字体详细",
-                    icon = R.drawable.ic_mask,
-                    onClick = {
-                        navController.navigate("FontDetailPage")
-                    }
-                )
             }
         }
     }
