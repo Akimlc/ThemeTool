@@ -52,6 +52,7 @@ import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
+import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
@@ -310,6 +311,11 @@ fun GlobalThemeResultView(viewModel: SearchThemeViewModel) {
                             Text(product.name, textAlign = TextAlign.Center, fontSize = 15.sp)
                         }
                     }
+                }
+            }
+            if (isShow.value) {
+                selectedProduct.value?.let { product ->
+                    GlobalThemeInfoDialog(isShow, product)
                 }
             }
         }
