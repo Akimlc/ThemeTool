@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import xyz.akimlc.themetool.data.model.FontDetail
 import xyz.akimlc.themetool.data.model.Info.FontInfo
 import xyz.akimlc.themetool.repository.ThemeRepository
 import xyz.akimlc.themetool.repository.font.SearchFontRepository
@@ -22,8 +23,9 @@ class SearchFontViewModel : ViewModel() {
     val fontInfoState = MutableStateFlow<FontInfo?>(null)
     val isFontLoading = MutableStateFlow(false) // 添加加载状态
 
+    private val _currentKeyword = MutableStateFlow("")
+    val currentKeyword: StateFlow<String> get() = _currentKeyword
     private var currentPage = 0
-    private var currentKeyword = ""
 
     data class ProductData(
         val name: String,
@@ -33,7 +35,7 @@ class SearchFontViewModel : ViewModel() {
 
     // 搜索字体，初次搜索时重置页码
     fun searchFont(keyword: String, onEmpty: () -> Unit = {}) {
-        currentKeyword = keyword
+        _currentKeyword.value = keyword
         currentPage = 0 // 每次新搜索时重置页数
         loadFonts(keyword, onEmpty)
     }
@@ -70,21 +72,7 @@ class SearchFontViewModel : ViewModel() {
     fun loadMoreFont() {
         if (_isSearching.value || !_hasMore.value) return // 如果正在加载或没有更多数据，直接返回
         currentPage++
-        loadFonts(currentKeyword)
+        loadFonts(_currentKeyword.value)
     }
 
-    fun parseFont(uuid: String) {
-        isFontLoading.value = true
-        viewModelScope.launch {
-            try {
-                val fontInfo = ThemeRepository().parseFont(uuid)
-                fontInfoState.value = fontInfo
-            } catch (e: Exception) {
-                e.printStackTrace()
-                fontInfoState.value = null
-            }finally {
-                isFontLoading.value = false
-            }
-        }
-    }
 }

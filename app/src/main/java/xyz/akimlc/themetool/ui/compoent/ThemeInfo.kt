@@ -119,12 +119,6 @@ fun FontInfoDialog(
     val isLoading by viewModel.isFontLoading.collectAsState()
     val fontInfoState by viewModel.fontInfoState.collectAsState()
 
-    LaunchedEffect(isShow.value) {
-        if (isShow.value) {
-            viewModel.parseFont(product.uuid)
-        }
-    }
-
     SuperDialog(
         show = isShow,
         title = "字体信息",

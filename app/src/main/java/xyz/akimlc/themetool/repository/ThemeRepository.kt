@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
+import xyz.akimlc.themetool.data.model.FontDetail
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.utils.StringUtils
 
@@ -42,7 +43,7 @@ class ThemeRepository {
         return@withContext null
     }
 
-    suspend fun parseFont(uuid: String): Info.FontInfo? = withContext(Dispatchers.IO) {
+    suspend fun parseFont(uuid: String): FontDetail? = withContext(Dispatchers.IO) {
         val ua = StringUtils().generalRandomUA()
 
         val fontUrl =
@@ -61,17 +62,36 @@ class ThemeRepository {
             try {
                 val jsonObject = JSONObject(body)
                 val apiData = jsonObject.getJSONObject("apiData")
+                val fileServer = apiData.getString("fileServer")
                 val extraInfo = apiData.getJSONObject("extraInfo")
+                val cards = apiData.getJSONArray("cards")
+
                 val fontDetail = extraInfo.getJSONObject("themeDetail")
                 //下载链接：fileServer + downloadUrl
-                val fileServer = apiData.getString("fileServer")
                 val downloadUrl = fontDetail.getString("downloadUrl")
                 val fontName = fontDetail.getString("name")
                 val downloadUrlRoot = "$fileServer$downloadUrl/$fontName.mtz"
                 val fileSize = fontDetail.getString("fileSize").toIntOrNull()  //字体大小
-                return@withContext Info.FontInfo(
-                    fontUrl = downloadUrlRoot,
-                    fontSize = fileSize ?: 0
+
+                //获取作者名字和头像
+                val designerCard = cards.getJSONObject(2)
+                val authorName = designerCard.optString("designerName"," ")
+                val authorIcon = designerCard.optString("designerIcon"," ")
+
+                //获取预览图
+                val overviewCard = cards.getJSONObject(0)
+                val themeProductOverview = overviewCard.getJSONObject("themeProductOverview")
+                val snapshotsArray = themeProductOverview.getJSONArray("snapshotsUrl")
+                val previewUrl = List(snapshotsArray.length()) { i ->
+                    snapshotsArray.getString(i)
+                }
+                Log.d(TAG, "parseFont: $fontName")
+                return@withContext FontDetail(
+                    fontName = fontName,
+                    fontAuthor = authorName,
+                    fontAuthorIcon = authorIcon,
+                    fontDownloadUrl = downloadUrlRoot,
+                    previewUrl = previewUrl
                 )
 
             } catch (e: Exception) {

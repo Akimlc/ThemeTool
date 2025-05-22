@@ -1,5 +1,6 @@
 package xyz.akimlc.themetool.ui.page.font
 
+import androidx.compose.runtime.getValue
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -31,27 +35,28 @@ import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
-import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
-import xyz.akimlc.themetool.ui.compoent.FontInfoDialog
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
+import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel.ProductData
 
 @Composable
-fun FontSearchPage(viewModel: SearchFontViewModel,navController: NavController) {
+fun FontSearchPage(
+    viewModel: SearchFontViewModel,
+    navController: NavController,
+    fontDetailViewModel: FontDetailViewModel
+) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
+    val keywordState by viewModel.currentKeyword.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val keywords = remember { mutableStateOf("") }
-    val isShow = remember { mutableStateOf(false) }
-    val selectProduct = remember { mutableStateOf<ProductData?>(null) }
+    val keywords = remember { mutableStateOf(keywordState) }
     val productListState = viewModel.productList.collectAsState(initial = emptyList())
     val productList = productListState.value
     val isSearchingState = viewModel.isSearching.collectAsState()
-
 
     Scaffold(
         topBar = {
@@ -115,8 +120,7 @@ fun FontSearchPage(viewModel: SearchFontViewModel,navController: NavController) 
                         .height(70.dp)
                         .fillMaxWidth()
                         .clickable {
-                            selectProduct.value = product
-                            isShow.value = true
+                            navController.navigate("FontDetailPage/${product.uuid}")
                         },
                     color = Color(0xFFBEBCBC)
                 ) {
@@ -145,12 +149,6 @@ fun FontSearchPage(viewModel: SearchFontViewModel,navController: NavController) 
                     }
                 }
             }
-        }
-    }
-
-    if (isShow.value) {
-        selectProduct.value?.let { product ->
-            FontInfoDialog(isShow, product, viewModel)
         }
     }
 }
