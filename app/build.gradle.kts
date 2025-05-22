@@ -71,7 +71,8 @@ android {
                 val versionName = "v" + config.versionName
                 val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
                 val createTime = LocalDateTime.now().format(formatter)
-                this.outputFileName = "ThemeTool_${versionName}(${versionCode})_${createTime}_$name.apk"
+                this.outputFileName =
+                    "ThemeTool_${versionName}(${versionCode})_${createTime}_$name.apk"
             }
         }
     }
@@ -108,11 +109,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.7")
-    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-android
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
-
-
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.kotlinx.coroutines.android)
 }
