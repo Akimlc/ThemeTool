@@ -1,4 +1,4 @@
-package xyz.akimlc.themetool.repository.font
+package xyz.akimlc.themetool.utils.font
 
 import android.content.Context
 import android.net.Uri

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -29,7 +28,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
-import xyz.akimlc.themetool.repository.ThemeRepository
+import xyz.akimlc.themetool.repository.Parse
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.GlobalProductData
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 
@@ -45,7 +44,7 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
         if (isShow.value) {
             isLoading.value = true
             coroutineScope.launch {
-                themeInfoState.value = ThemeRepository().parseTheme(product.uuid) // 解析主题信息
+                themeInfoState.value = Parse().parseTheme(product.uuid) // 解析主题信息
                 isLoading.value = false
             }
         }
@@ -116,7 +115,7 @@ fun GlobalThemeInfoDialog(
         if (isShow.value) {
             isLoading.value = true
             coroutineScope.launch {
-                themeState.value = ThemeRepository().parseGlobalTheme(product.uuid)
+                themeState.value = Parse().parseGlobalTheme(product.uuid)
                 isLoading.value = false
             }
         }

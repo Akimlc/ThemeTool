@@ -1,4 +1,4 @@
-package xyz.akimlc.themetool.repository.font
+package xyz.akimlc.themetool.utils.font
 
 import android.content.Context
 import android.net.Uri
@@ -43,12 +43,12 @@ class TTF2ZIP {
 
                     // 获取模板ZIP文件
                     val templateZipFile = File(context.getExternalFilesDir("zip"), "template.zip")
-                    
+
                     // 每次都删除旧的模板文件，强制从assets复制最新的
                     if (templateZipFile.exists()) {
                         templateZipFile.delete()
                     }
-                    
+
                     // 从assets复制模板文件
                     val assetManager = context.assets
                     assetManager.open("template.zip").use { input ->

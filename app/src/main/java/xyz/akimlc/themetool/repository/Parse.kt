@@ -10,7 +10,7 @@ import xyz.akimlc.themetool.data.model.FontDetail
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.utils.StringUtils
 
-class ThemeRepository {
+class Parse {
     private val TAG = "ThemeRepository"
     suspend fun parseTheme(packId: String): Info.ThemeInfo? = withContext(Dispatchers.IO) {
         val themeInfoUrl =

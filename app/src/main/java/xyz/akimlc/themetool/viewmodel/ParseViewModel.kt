@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
-import xyz.akimlc.themetool.repository.ThemeRepository
+import xyz.akimlc.themetool.repository.Parse
 
 class ParseViewModel(
-    private val repository: ThemeRepository = ThemeRepository()
+    private val repository: Parse = Parse()
 ) : ViewModel() {
 
     //获取到的主题状态

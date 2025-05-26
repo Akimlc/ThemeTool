@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import xyz.akimlc.themetool.data.model.FontDetail
-import xyz.akimlc.themetool.repository.ThemeRepository
+import xyz.akimlc.themetool.repository.Parse
 
 class FontDetailViewModel : ViewModel() {
     private val _fontDetail = MutableStateFlow<FontDetail?>(null)
@@ -23,7 +23,7 @@ class FontDetailViewModel : ViewModel() {
             _isLoading.value = true
             _errorMessage.value = null
             try {
-                val fontInfo = ThemeRepository().parseFont(uuid)
+                val fontInfo = Parse().parseFont(uuid)
                 _fontDetail.value = fontInfo
             } catch (e: Exception) {
                 _errorMessage.value = "加载字体数据失败"

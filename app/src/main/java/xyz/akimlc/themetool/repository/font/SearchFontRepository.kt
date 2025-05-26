@@ -10,6 +10,12 @@ import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
 class SearchFontRepository {
     private val TAG = "SearchFontRepository"
+
+
+    val json by lazy {
+        Json { ignoreUnknownKeys = true }
+    }
+
     suspend fun searchFont(keywords: String, page: Int): List<SearchFontViewModel.ProductData> =
         withContext(Dispatchers.IO) {
             val url =
@@ -28,11 +34,10 @@ class SearchFontRepository {
 
 
                 //解析JSon
-                val result = Json {
-                    ignoreUnknownKeys = true
-                }.decodeFromString<Response.BaseResponse<Response.GlobalFontApiData>>(
-                    responseBody
-                )
+                val result =
+                    json.decodeFromString<Response.BaseResponse<Response.GlobalFontApiData>>(
+                        responseBody
+                    )
                 result.apiData.cards.flatMap { card ->
                     card.products?.map { product ->
                         SearchFontViewModel.ProductData(

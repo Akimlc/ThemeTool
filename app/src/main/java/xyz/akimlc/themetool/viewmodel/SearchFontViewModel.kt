@@ -6,9 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import xyz.akimlc.themetool.data.model.FontDetail
 import xyz.akimlc.themetool.data.model.Info.FontInfo
-import xyz.akimlc.themetool.repository.ThemeRepository
 import xyz.akimlc.themetool.repository.font.SearchFontRepository
 
 class SearchFontViewModel : ViewModel() {

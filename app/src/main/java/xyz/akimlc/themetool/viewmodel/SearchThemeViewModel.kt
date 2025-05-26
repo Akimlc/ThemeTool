@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
-import xyz.akimlc.themetool.repository.ThemeRepository
+import xyz.akimlc.themetool.repository.Parse
 import xyz.akimlc.themetool.repository.theme.SearchThemeRepository
 
 class SearchThemeViewModel : ViewModel() {
-    private val themeRepository = ThemeRepository()
+    private val parse = Parse()
 
     private val _productList = MutableStateFlow<List<ProductData>>(emptyList())
     private val _globalThemeProductList = MutableStateFlow<List<GlobalProductData>>(emptyList())
