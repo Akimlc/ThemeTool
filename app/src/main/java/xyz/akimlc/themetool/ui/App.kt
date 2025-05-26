@@ -90,13 +90,16 @@ fun App() {
             FontSearchPage(
                 searchFontViewModel,
                 navController,
-                fontDetailViewModel
             )
         }
         composable("MtzFontPage") { MtzFontPage(navController) }
         composable("FontDetailPage/{uuid}") { backStackEntry ->
             val uuid = backStackEntry.arguments?.getString("uuid") ?: return@composable
-            FontDetailPage(navController = navController, viewModel = fontDetailViewModel, uuid = uuid)
+            FontDetailPage(
+                navController = navController,
+                viewModel = fontDetailViewModel,
+                uuid = uuid
+            )
         }
     }
 }

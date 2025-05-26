@@ -72,5 +72,7 @@ class SearchFontViewModel : ViewModel() {
         currentPage++
         loadFonts(_currentKeyword.value)
     }
-
+    fun setKeyword(newKeyword: String) {
+        _currentKeyword.value = newKeyword
+    }
 }

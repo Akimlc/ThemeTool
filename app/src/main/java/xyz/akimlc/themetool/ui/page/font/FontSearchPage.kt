@@ -1,6 +1,5 @@
 package xyz.akimlc.themetool.ui.page.font
 
-import androidx.compose.runtime.getValue
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,12 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -41,22 +36,18 @@ import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
-import xyz.akimlc.themetool.viewmodel.SearchFontViewModel.ProductData
 
 @Composable
 fun FontSearchPage(
     viewModel: SearchFontViewModel,
     navController: NavController,
-    fontDetailViewModel: FontDetailViewModel
 ) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val keywordState by viewModel.currentKeyword.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val keywords = remember { mutableStateOf(keywordState) }
-    val productListState = viewModel.productList.collectAsState(initial = emptyList())
-    val productList = productListState.value
-    val isSearchingState = viewModel.isSearching.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val keywordState by viewModel.currentKeyword.collectAsState()
+    val productList by viewModel.productList.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
 
     Scaffold(
         topBar = {
@@ -65,7 +56,8 @@ fun FontSearchPage(
                 scrollBehavior = scrollBehavior,
                 navController = navController
             )
-        }) { paddingValue ->
+        }
+    ) { paddingValue ->
 
         LazyColumn(
             modifier = Modifier
@@ -76,16 +68,20 @@ fun FontSearchPage(
         ) {
             item {
                 WarningNotice(text = "当前只支持国际版字体哟~")
+
                 TextField(
-                    value = keywords.value,
-                    singleLine = true,
-                    onValueChange = { keywords.value = it },
+                    value = keywordState,
+                    onValueChange = {
+                        viewModel.setKeyword(it)
+                    },
                     modifier = Modifier
                         .padding(top = 12.dp)
                         .padding(horizontal = 12.dp),
                     label = "搜索的字体名称",
+                    singleLine = true
                 )
             }
+
             item {
                 TextButton(
                     modifier = Modifier
@@ -94,14 +90,14 @@ fun FontSearchPage(
                         .padding(top = 6.dp)
                         .padding(bottom = 8.dp),
                     colors = ButtonDefaults.textButtonColorsPrimary(),
-                    text = "搜索",
+                    text = "搜素",
                     onClick = {
-                        if (keywords.value.isEmpty()) {
+                        if (keywordState.isBlank()) {
                             Toast.makeText(context, "请输入字体关键字", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
                         coroutineScope.launch {
-                            viewModel.searchFont(keywords.value) {
+                            viewModel.searchFont(keywordState) {
                                 Toast.makeText(context, "未找到相关字体", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -114,6 +110,7 @@ fun FontSearchPage(
                     // 最后一个，触发加载更多
                     viewModel.loadMoreFont()
                 }
+
                 Card(
                     modifier = Modifier
                         .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -137,7 +134,7 @@ fun FontSearchPage(
                 }
             }
 
-            if (isSearchingState.value) {
+            if (isSearching) {
                 item {
                     Box(
                         modifier = Modifier
