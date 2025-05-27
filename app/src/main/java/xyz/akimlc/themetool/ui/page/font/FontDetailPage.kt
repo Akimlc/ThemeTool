@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -144,8 +144,16 @@ fun FontDetailPage(
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text(fontAuthor ?: "未知作者")
+                            Text(
+                                fontAuthor ?: "未知作者",
+                                modifier = Modifier.basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    initialDelayMillis = 1000,
+                                    velocity = 30.dp
+                                )
+                            )
                         }
+                        Spacer(modifier = Modifier.width(12.dp))
                         TextButton(
                             text = "复制",
                             onClick = {
@@ -172,3 +180,4 @@ fun FontDetailPage(
         }
     }
 }
+
