@@ -95,9 +95,6 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
         ) {
 
             item {
-                WarningNotice(
-                    text = "当前只支持搜索国内的主题哟~"
-                )
                 TextField(
                     value = keywords.value,
                     onValueChange = {
