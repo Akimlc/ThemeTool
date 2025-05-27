@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -32,12 +30,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -45,6 +42,12 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
+import com.jvziyaoyao.scale.image.previewer.ImagePreviewer
+import com.jvziyaoyao.scale.zoomable.previewer.rememberPreviewerState
+import com.jvziyaoyao.scale.zoomable.zoomable.rememberZoomableState
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
@@ -67,22 +70,32 @@ fun FontDetailPage(
     val backgroundColor = MiuixTheme.colorScheme.background
     val scrollBehavior = MiuixScrollBehavior()
     val fontData by viewModel.fontDetail.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val context = LocalContext.current
+
     val fontName = fontData?.fontName
     val fontAuthor = fontData?.fontAuthor
     val fontAuthorIcon = fontData?.fontAuthorIcon
     val previewUrl = fontData?.previewUrl ?: emptyList()
     val fontDownloadUrl = fontData?.fontDownloadUrl
-    val isLoading by viewModel.isLoading.collectAsState()
-    val context = LocalContext.current
 
-    val selectedImageUrl = remember { mutableStateOf<String?>(null) }
     val selectedImageIndex = remember { mutableStateOf<Int?>(null) }
+
+    val coroutineScope = rememberCoroutineScope()
+    val previewerState = rememberPreviewerState(
+        pageCount = { previewUrl.size },
+        getKey = { index ->
+            if (previewUrl.isNotEmpty()) previewUrl[index]
+            else ""
+        }
+    )
+
 
     LaunchedEffect(uuid) {
         viewModel.loadFontData(uuid)
     }
 
-    if (isLoading || fontData==null) {
+    if (isLoading || fontData == null) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -94,10 +107,11 @@ fun FontDetailPage(
         }
         return
     }
+
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = fontName.toString(),
+                title = fontName ?: "",
                 scrollBehavior = scrollBehavior,
                 navController = navController
             )
@@ -126,8 +140,14 @@ fun FontDetailPage(
                                 .width(224.dp)
                                 .height(498.dp)
                                 .clickable {
-                                    selectedImageIndex.value = index
+                                    if (previewUrl.isNotEmpty()) {
+                                        coroutineScope.launch {
+                                            selectedImageIndex.value = index
+                                            previewerState.open(index)
+                                        }
+                                    }
                                 }
+
                         )
                     }
                 }
@@ -137,7 +157,7 @@ fun FontDetailPage(
                 Card(
                     modifier = Modifier
                         .padding(horizontal = 12.dp, vertical = 8.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
                 ) {
                     Row(
                         modifier = Modifier
@@ -155,9 +175,7 @@ fun FontDetailPage(
 
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 fontAuthor ?: "未知作者",
                                 modifier = Modifier.basicMarquee(
@@ -167,19 +185,21 @@ fun FontDetailPage(
                                 )
                             )
                         }
+
                         Spacer(modifier = Modifier.width(12.dp))
+
                         TextButton(
                             text = "复制",
                             onClick = {
-                                val clipboardManager =
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clipData =
-                                    ClipData.newPlainText("Font Download URL", fontDownloadUrl)
-                                clipboardManager.setPrimaryClip(clipData)
+                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip = ClipData.newPlainText("Font URL", fontDownloadUrl)
+                                clipboard.setPrimaryClip(clip)
                                 Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
-                            },
+                            }
                         )
+
                         Spacer(Modifier.width(8.dp))
+
                         TextButton(
                             text = "下载",
                             onClick = {
@@ -192,29 +212,28 @@ fun FontDetailPage(
                 }
             }
         }
-        selectedImageUrl.value?.let { url ->
+
+        // 🔍 显示全屏预览图
+        if (selectedImageIndex.value != null) {
             Dialog(
-                onDismissRequest = { selectedImageUrl.value = null },
-                properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-                    decorFitsSystemWindows = false
-                )
+                onDismissRequest = { selectedImageIndex.value = null },
+                properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = true) // 全屏显示
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black)
-                        .clickable { selectedImageUrl.value = null },
-                ) {
-                    AsyncImage(
-                        model = url,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+
+                ImagePreviewer(
+                    modifier = Modifier.fillMaxSize(),
+                    state = previewerState,
+                    imageLoader = { page ->
+                        val painter = rememberAsyncImagePainter(previewUrl[page])
+                        Pair(painter, painter.intrinsicSize)
+                    },
+                    imageLoading = {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                )
             }
         }
     }
 }
-
