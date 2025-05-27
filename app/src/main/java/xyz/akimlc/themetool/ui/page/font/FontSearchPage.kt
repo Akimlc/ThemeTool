@@ -90,7 +90,7 @@ fun FontSearchPage(
                         .padding(top = 6.dp)
                         .padding(bottom = 8.dp),
                     colors = ButtonDefaults.textButtonColorsPrimary(),
-                    text = "搜素",
+                    text = "搜索",
                     onClick = {
                         if (keywordState.isBlank()) {
                             Toast.makeText(context, "请输入字体关键字", Toast.LENGTH_SHORT).show()
