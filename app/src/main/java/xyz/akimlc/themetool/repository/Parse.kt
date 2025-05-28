@@ -44,7 +44,7 @@ class Parse {
     }
 
     suspend fun parseFont(uuid: String): FontDetail? = withContext(Dispatchers.IO) {
-        val ua = StringUtils().generalRandomUA()
+        //val ua = StringUtils().generalRandomUA()
 
         val fontUrl =
             "https://api.zhuti.intl.xiaomi.com/app/v9/uipages/font/$uuid?isGlobal=true&language=zh_CN&devicePixel=1080&device=apollo&region=MC"
@@ -52,9 +52,8 @@ class Parse {
         val request = Request.Builder().url(fontUrl)
             .addHeader(
                 "User-Agent",
-                ua
+                "okhttp/3.12.2"
             ).build()
-        Log.d(TAG, "parseFont: 生成的UA：$ua")
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string()
         //解析数据
