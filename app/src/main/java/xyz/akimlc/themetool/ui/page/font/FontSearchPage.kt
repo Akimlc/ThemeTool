@@ -1,8 +1,9 @@
 package xyz.akimlc.themetool.ui.page.font
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +14,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,20 +27,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import top.yukonga.miuix.kmp.extra.CheckboxLocation
+import top.yukonga.miuix.kmp.extra.SuperCheckbox
+import top.yukonga.miuix.kmp.extra.SuperDropdown
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
-import xyz.akimlc.themetool.ui.compoent.WarningNotice
-import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
+
+
+enum class Region {
+    DOMESTIC, INTERNATIONAL
+}
 
 @Composable
 fun FontSearchPage(
@@ -43,82 +54,117 @@ fun FontSearchPage(
     navController: NavController,
 ) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val keywordState by viewModel.currentKeyword.collectAsState()
-    val productList by viewModel.productList.collectAsState()
-    val isSearching by viewModel.isSearching.collectAsState()
+    val context = LocalContext.current
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    val options = listOf("V9", "V10", "V11", "V12", "V130", "V140", "V150")
+    var selectedRegion by remember { mutableStateOf(Region.DOMESTIC) }
+    var page by remember { mutableStateOf(0) }
 
+    val isSearching by viewModel.isSearching.collectAsState()
+    val currentKeyword by viewModel.currentKeyword.collectAsState()
+    val productList by viewModel.productList.collectAsState()
+
+    var keyword by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "搜索字体",
+                title = "字体搜索",
                 scrollBehavior = scrollBehavior,
                 navController = navController
             )
         }
-    ) { paddingValue ->
-
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = paddingValue
+            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding())
         ) {
             item {
-                WarningNotice(text = "当前只支持国际版字体哟~")
-
+                //搜索和选择区域
                 TextField(
-                    value = keywordState,
+                    value = keyword,
                     onValueChange = {
-                        viewModel.setKeyword(it)
+                        keyword = it
                     },
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp),
-                    label = "搜索的字体名称",
-                    singleLine = true
+                    label = "搜索关键字",
+                    modifier = Modifier.padding(12.dp)
                 )
-            }
-
-            item {
-                TextButton(
+                //选择区域
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
-                        .padding(top = 6.dp)
-                        .padding(bottom = 8.dp),
-                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                        .padding(bottom = 6.dp)
+                ) {
+                    SuperCheckbox(
+                        checkboxLocation = CheckboxLocation.Right,
+                        title = "国内",
+                        checked = selectedRegion==Region.DOMESTIC,
+                        onCheckedChange = {
+                            if (it) selectedRegion = Region.DOMESTIC
+                        },
+                    )
+
+                    AnimatedVisibility(
+                        visible = selectedRegion==Region.DOMESTIC,
+                    ) {
+                        SuperDropdown(
+                            title = "主题版本选择",
+                            items = options,
+                            selectedIndex = selectedIndex,
+                            onSelectedIndexChange = { selectedIndex = it }
+                        )
+                    }
+                    SuperCheckbox(
+                        checkboxLocation = CheckboxLocation.Right,
+                        title = "国际",
+                        checked = selectedRegion==Region.INTERNATIONAL,
+                        onCheckedChange = {
+                            if (it) selectedRegion = Region.INTERNATIONAL
+                        },
+                    )
+                }
+                TextButton(
                     text = "搜索",
                     onClick = {
-                        if (keywordState.isBlank()) {
-                            Toast.makeText(context, "请输入字体关键字", Toast.LENGTH_SHORT).show()
+                        if (keyword.isEmpty()) {
+                            Toast.makeText(context, "请输入关键字", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
-                        coroutineScope.launch {
-                            viewModel.searchFont(keywordState) {
-                                Toast.makeText(context, "未找到相关字体", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
+                        val version = options.getOrNull(selectedIndex) ?: ""
+                        viewModel.searchFont(selectedRegion, keyword, version, page)
+                    },
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 6.dp)
                 )
             }
 
+            item {
+                SmallTitle("结果")
+            }
             itemsIndexed(productList) { index, product ->
-                if (index==productList.lastIndex) {
-                    // 最后一个，触发加载更多
-                    viewModel.loadMoreFont()
+                if (index==productList.lastIndex && !isSearching) {
+                    viewModel.loadMore()
                 }
 
+                val modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .then(
+                        if (index==productList.lastIndex) Modifier.padding(bottom = 12.dp)
+                        else Modifier
+                    )
+                    .height(70.dp)
+                    .fillMaxWidth()
+
                 Card(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                        .height(70.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            navController.navigate("FontDetailPage/${product.uuid}")
-                        },
+                    modifier = modifier,
                     color = Color(0xFFBEBCBC)
                 ) {
                     Box(
@@ -133,16 +179,15 @@ fun FontSearchPage(
                     }
                 }
             }
-
-            if (isSearching) {
+            if (isSearching && productList.isNotEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
+                            .padding(12.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                        CircularProgressIndicator()
                     }
                 }
             }

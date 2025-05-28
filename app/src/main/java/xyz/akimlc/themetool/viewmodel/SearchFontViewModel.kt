@@ -6,24 +6,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import xyz.akimlc.themetool.data.model.Info.FontInfo
 import xyz.akimlc.themetool.repository.font.SearchFontRepository
+import xyz.akimlc.themetool.ui.page.font.Region
 
 class SearchFontViewModel : ViewModel() {
-    private val _productList = MutableStateFlow<List<ProductData>>(emptyList())
-    val productList: StateFlow<List<ProductData>> get() = _productList
-
     private val _isSearching = MutableStateFlow(false)
     val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
 
-    private val _hasMore = MutableStateFlow(true) // 标记是否还有更多数据
-
-    val fontInfoState = MutableStateFlow<FontInfo?>(null)
-    val isFontLoading = MutableStateFlow(false) // 添加加载状态
+    private val _productList = MutableStateFlow<List<ProductData>>(emptyList())
+    val productList: StateFlow<List<ProductData>> = _productList.asStateFlow()
 
     private val _currentKeyword = MutableStateFlow("")
-    val currentKeyword: StateFlow<String> get() = _currentKeyword
+    val currentKeyword: StateFlow<String> = _currentKeyword.asStateFlow()
+
+    private val _hasMore = MutableStateFlow(true)
+
     private var currentPage = 0
+    private var currentKeywords = ""
+    private var currentVersion = ""
+    private var currentRegion = Region.DOMESTIC
 
     data class ProductData(
         val name: String,
@@ -31,48 +32,44 @@ class SearchFontViewModel : ViewModel() {
         val uuid: String
     )
 
-    // 搜索字体，初次搜索时重置页码
-    fun searchFont(keyword: String, onEmpty: () -> Unit = {}) {
-        _currentKeyword.value = keyword
-        currentPage = 0 // 每次新搜索时重置页数
-        loadFonts(keyword, onEmpty)
-    }
+    fun searchFont(
+        region: Region,
+        keywords: String,
+        version: String,
+        page: Int
+    ) {
+        if (keywords.isEmpty()) return
 
-    // 加载字体数据
-    fun loadFonts(keyword: String, onEmpty: () -> Unit = {}) {
-        if (_isSearching.value) return // 如果正在加载，避免重复请求
+        currentPage = page
+        currentKeywords = keywords
+        currentRegion = region
+        currentVersion = version
 
-        _isSearching.value = true
+        _currentKeyword.value = keywords
+
         viewModelScope.launch {
+            _isSearching.value = true
             try {
-                val result = SearchFontRepository().searchFont(keyword, currentPage)
-                // 如果是第一页数据，直接替换列表，否则追加到现有数据
-                if (currentPage==0) {
+                val result = SearchFontRepository().searchFont(region, keywords, version, page)
+
+                _hasMore.value = result.isNotEmpty()
+                if (page==0) {
                     _productList.value = result
                 } else {
-                    _productList.value += result
+                    _productList.value = _productList.value + result
                 }
-
-                // 判断是否有更多数据
-                _hasMore.value = result.isNotEmpty()
-
-                if (result.isEmpty()) onEmpty()
-
             } catch (e: Exception) {
                 e.printStackTrace()
+                _hasMore.value = false
             } finally {
                 _isSearching.value = false
             }
         }
     }
 
-    // 加载更多数据
-    fun loadMoreFont() {
-        if (_isSearching.value || !_hasMore.value) return // 如果正在加载或没有更多数据，直接返回
+    fun loadMore() {
+        if (_isSearching.value || !_hasMore.value || currentRegion==Region.DOMESTIC) return
         currentPage++
-        loadFonts(_currentKeyword.value)
-    }
-    fun setKeyword(newKeyword: String) {
-        _currentKeyword.value = newKeyword
+        searchFont(currentRegion, currentKeywords, currentVersion, currentPage)
     }
 }
