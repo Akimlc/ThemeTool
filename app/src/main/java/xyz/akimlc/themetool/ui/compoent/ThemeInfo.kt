@@ -152,7 +152,6 @@ fun GlobalThemeInfoDialog(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
             )
             Spacer(Modifier.height(12.dp))
             TextButton(
