@@ -26,7 +26,7 @@ class SearchFontRepository {
         return withContext(Dispatchers.IO) {
             val baseUrl = when (region) {
                 Region.DOMESTIC ->  //国内
-                    "https://api.zhuti.xiaomi.com/app/v9/uipages/search/FONT/index?keywords=${keyword}&miuiUIVersion=$version"
+                    "https://api.zhuti.xiaomi.com/app/v9/uipages/search/FONT/index?keywords=${keyword}&miuiUIVersion=$version&cardStart=$page"
 
                 Region.INTERNATIONAL -> //  国际
                     "https://thm.market.intl.xiaomi.com/thm/search/v2/npage?keywords=$keyword&category=Font&page=$page&language=zh_CN&device=fuxi&region=MC&isGlobal=true"
