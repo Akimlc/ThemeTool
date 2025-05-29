@@ -2,6 +2,7 @@ package xyz.akimlc.themetool.ui.page.font
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +42,7 @@ import top.yukonga.miuix.kmp.extra.SuperCheckbox
 import top.yukonga.miuix.kmp.extra.SuperDropdown
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
 
@@ -64,8 +66,10 @@ fun FontSearchPage(
     val isSearching by viewModel.isSearching.collectAsState()
     val currentKeyword by viewModel.currentKeyword.collectAsState()
     val productList by viewModel.productList.collectAsState()
-
     var keyword by remember { mutableStateOf("") }
+
+    val isShowFontDialog = remember { mutableStateOf(false) }
+    val selectProduct = remember { mutableStateOf<SearchFontViewModel.ProductData?>(null) }
     Scaffold(
         topBar = {
             BackTopAppBar(
@@ -176,7 +180,18 @@ fun FontSearchPage(
                     )
                     .height(70.dp)
                     .fillMaxWidth()
+                    .clickable {
+                        when (selectedRegion) {
+                            Region.DOMESTIC -> {
+                                isShowFontDialog.value = true
+                                selectProduct.value = product
+                            }
 
+                            Region.INTERNATIONAL -> {
+                                navController.navigate("FontDetailPage/${product.uuid}")
+                            }
+                        }
+                    }
                 Card(
                     modifier = modifier,
                     color = Color(0xFFBEBCBC)
@@ -193,7 +208,12 @@ fun FontSearchPage(
                     }
                 }
             }
-
         }
     }
+    if (isShowFontDialog.value) {
+        selectProduct.value?.let { data ->
+            DomesticFontInfoDialog(isShowFontDialog, data)
+        }
+    }
+
 }

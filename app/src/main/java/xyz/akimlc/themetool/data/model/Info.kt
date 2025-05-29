@@ -18,4 +18,8 @@ class Info {
         val fileSize: String,
         val downloadUrl: String
     )
+
+    data class DomesticFontInfo(
+        val downloadUrl : String
+    )
 }

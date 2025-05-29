@@ -8,6 +8,7 @@ import okhttp3.Request
 import org.json.JSONObject
 import xyz.akimlc.themetool.data.model.FontDetail
 import xyz.akimlc.themetool.data.model.Info
+import xyz.akimlc.themetool.utils.NetworkUtils
 import xyz.akimlc.themetool.utils.StringUtils
 
 class Parse {
@@ -74,8 +75,8 @@ class Parse {
 
                 //获取作者名字和头像
                 val designerCard = cards.getJSONObject(2)
-                val authorName = designerCard.optString("designerName"," ")
-                val authorIcon = designerCard.optString("designerIcon"," ")
+                val authorName = designerCard.optString("designerName", " ")
+                val authorIcon = designerCard.optString("designerIcon", " ")
 
                 //获取预览图
                 val overviewCard = cards.getJSONObject(0)
@@ -139,5 +140,32 @@ class Parse {
 
         return@withContext null
     }
+
+
+    suspend fun parseDomesticFont(uuid: String,name: String): Info.DomesticFontInfo? =
+        withContext(Dispatchers.IO) {
+            val url = "https://thm.market.xiaomi.com/thm/download/v2/$uuid"
+            val request = Request.Builder().url(url).build()
+
+            val response = NetworkUtils.HttpClient.client.newCall(request).execute()
+            val body = response.body?.string()
+
+            Log.d(TAG, "parseDomesticFont: $body")
+            if (body!=null) {
+                try {
+                    val jsonObject = JSONObject(body)
+                    val apiData = jsonObject.getJSONObject("apiData")
+                    val downloadUrl = apiData.getString("downloadUrl")
+
+                    return@withContext Info.DomesticFontInfo(
+                        downloadUrl = downloadUrl,
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            return@withContext null
+        }
+
 
 }
