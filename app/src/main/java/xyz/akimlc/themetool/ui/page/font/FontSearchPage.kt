@@ -135,6 +135,8 @@ fun FontSearchPage(
                             Toast.makeText(context, "请输入关键字", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
+                        Toast.makeText(context, "正在搜索...", Toast.LENGTH_SHORT).show()
+                        viewModel.clearSearchResults()  //清除结果
                         val version = options.getOrNull(selectedIndex) ?: ""
                         viewModel.searchFont(selectedRegion, keyword, version, page)
                     },
@@ -148,6 +150,18 @@ fun FontSearchPage(
 
             item {
                 SmallTitle("结果")
+            }
+            if (isSearching) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
             itemsIndexed(productList) { index, product ->
                 if (index==productList.lastIndex && !isSearching) {
@@ -179,18 +193,7 @@ fun FontSearchPage(
                     }
                 }
             }
-            if (isSearching && productList.isNotEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
+
         }
     }
 }

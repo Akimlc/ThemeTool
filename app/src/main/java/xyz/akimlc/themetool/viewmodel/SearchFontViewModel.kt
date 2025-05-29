@@ -49,9 +49,9 @@ class SearchFontViewModel : ViewModel() {
 
         viewModelScope.launch {
             _isSearching.value = true
+
             try {
                 val result = SearchFontRepository().searchFont(region, keywords, version, page)
-
                 _hasMore.value = result.isNotEmpty()
                 if (page==0) {
                     _productList.value = result
@@ -68,8 +68,13 @@ class SearchFontViewModel : ViewModel() {
     }
 
     fun loadMore() {
-        if (_isSearching.value || !_hasMore.value || currentRegion==Region.DOMESTIC) return
+        if (_isSearching.value || !_hasMore.value) return
         currentPage++
         searchFont(currentRegion, currentKeywords, currentVersion, currentPage)
+    }
+
+    fun clearSearchResults(){
+        _productList.value = emptyList()
+        currentPage = 0
     }
 }
