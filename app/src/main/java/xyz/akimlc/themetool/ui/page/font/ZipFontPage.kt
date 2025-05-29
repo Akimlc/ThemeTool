@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
@@ -41,10 +40,10 @@ import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import xyz.akimlc.themetool.utils.font.TTF2ZIP.Companion.convert
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ErrorNotice
 import xyz.akimlc.themetool.utils.FileUtils
+import xyz.akimlc.themetool.utils.font.TTF2ZIP.Companion.convert
 
 @Composable
 fun ZipFontPage(navController: NavController) {
@@ -78,7 +77,6 @@ fun ZipFontPage(navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
-        delay(500)  //延迟5ms
         isShow.value = true
     }
     Scaffold(
@@ -98,7 +96,7 @@ fun ZipFontPage(navController: NavController) {
             contentPadding = padding
         ) {
             item {
-                ShowWaringDialog(isShow)
+                ShowWaringDialog(isShow, navController)
                 ErrorNotice(
                     text = "实验性功能，不保证生成的模块能正常使用！！！"
                 )
@@ -204,10 +202,16 @@ private fun ZipProgressDialog(
 
 
 @Composable
-private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
+private fun ShowWaringDialog(
+    isShow: MutableState<Boolean>,
+    navController: NavController
+) {
     SuperDialog(
         title = "警告",
         show = isShow,
+        onDismissRequest = {
+            isShow.value = true
+        },
         content = {
             Text(
                 "该功能仅在基于Android15的HyperOS2上通过测试",
@@ -239,6 +243,7 @@ private fun ShowWaringDialog(isShow: MutableState<Boolean>) {
                     text = "取消",
                     onClick = {
                         isShow.value = false
+                        navController.popBackStack()
                     },
                     modifier = Modifier.weight(1f)
                 )
