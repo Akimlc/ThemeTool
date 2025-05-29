@@ -19,6 +19,9 @@ class SearchFontViewModel : ViewModel() {
     private val _currentKeyword = MutableStateFlow("")
     val currentKeyword: StateFlow<String> = _currentKeyword.asStateFlow()
 
+    private val _selectedRegion = MutableStateFlow(Region.DOMESTIC)
+    val selectedRegion: StateFlow<Region> = _selectedRegion.asStateFlow()
+
     private val _hasMore = MutableStateFlow(true)
 
     private var currentPage = 0
@@ -73,8 +76,12 @@ class SearchFontViewModel : ViewModel() {
         searchFont(currentRegion, currentKeywords, currentVersion, currentPage)
     }
 
-    fun clearSearchResults(){
+    fun clearSearchResults() {
         _productList.value = emptyList()
         currentPage = 0
+    }
+
+    fun setSelectedRegion(region: Region) {
+        _selectedRegion.value = region
     }
 }

@@ -1,5 +1,6 @@
 package xyz.akimlc.themetool.ui.page.font
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -60,7 +61,8 @@ fun FontSearchPage(
     val context = LocalContext.current
     var selectedIndex by remember { mutableIntStateOf(0) }
     val options = listOf("V9", "V10", "V11", "V12", "V130", "V140", "V150")
-    var selectedRegion by remember { mutableStateOf(Region.DOMESTIC) }
+    val selectedRegion by viewModel.selectedRegion.collectAsState()
+
     var page by remember { mutableStateOf(0) }
 
     val isSearching by viewModel.isSearching.collectAsState()
@@ -109,7 +111,7 @@ fun FontSearchPage(
                         title = "国内",
                         checked = selectedRegion==Region.DOMESTIC,
                         onCheckedChange = {
-                            if (it) selectedRegion = Region.DOMESTIC
+                            if (it) viewModel.setSelectedRegion(Region.DOMESTIC)
                         },
                     )
 
@@ -128,7 +130,7 @@ fun FontSearchPage(
                         title = "国际",
                         checked = selectedRegion==Region.INTERNATIONAL,
                         onCheckedChange = {
-                            if (it) selectedRegion = Region.INTERNATIONAL
+                            if (it) viewModel.setSelectedRegion(Region.INTERNATIONAL)
                         },
                     )
                 }
