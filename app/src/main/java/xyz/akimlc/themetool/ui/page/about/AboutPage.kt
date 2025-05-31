@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,13 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
@@ -57,8 +54,7 @@ fun AboutPage(
             modifier = Modifier
                 .fillMaxSize()
                 .overScrollVertical()
-                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-                .padding(horizontal = 12.dp),
+                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
             contentPadding = padding,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -85,7 +81,11 @@ fun AboutPage(
 
             item {
                 SmallTitle("参与人员")
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
                     Column {
                         SuperArrow(
                             title = "Akimlc",
@@ -114,9 +114,14 @@ fun AboutPage(
                 }
             }
 
+            // 交流反馈
             item {
                 SmallTitle("交流 / 反馈")
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
                     Column {
                         SuperArrow(
                             title = "频道",
@@ -131,39 +136,27 @@ fun AboutPage(
             }
 
             item {
-                SmallTitle("引用")
+                SmallTitle("其他")
                 Card(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(bottom = 16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
                 ) {
-                    SuperArrow(
-                        title = "MiuiX",
-                        summary = "https://github.com/miuix-kotlin-multiplatform/miuix/",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/miuix-kotlin-multiplatform/miuix/")
-                        },
-                    )
-                    SuperArrow(
-                        title = "OkHttp",
-                        summary = "https://github.com/square/okhttp",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/square/okhttp")
-                        },
-                    )
-                    SuperArrow(
-                        title = "Coil",
-                        summary = "https://github.com/coil-kt/coil",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/coil-kt/coil")
-                        },
-                    )
-                    SuperArrow(
-                        title = "Gson",
-                        summary = "https://github.com/google/gson",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/google/gson")
-                        },
-                    )
+                    Column {
+                        SuperArrow(
+                            title = "捐赠",
+                            summary = "支持一下开发者~",
+                            onClick = {
+                                navController.navigate("DonationPage")
+                            }
+                        )
+                        SuperArrow(
+                            title = "引用",
+                            onClick = {
+                                navController.navigate("ReferencesPage")
+                            }
+                        )
+                    }
                 }
             }
         }

@@ -18,6 +18,8 @@ import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.ui.page.HomePage
 import xyz.akimlc.themetool.ui.page.MainPage
+import xyz.akimlc.themetool.ui.page.about.DonationPage
+import xyz.akimlc.themetool.ui.page.about.ReferencesPage
 import xyz.akimlc.themetool.ui.page.about.ThanksPage
 import xyz.akimlc.themetool.ui.page.font.FontDetailPage
 import xyz.akimlc.themetool.ui.page.font.FontSearchPage
@@ -100,6 +102,12 @@ fun App() {
                 viewModel = fontDetailViewModel,
                 uuid = uuid
             )
+        }
+        composable("DonationPage") {
+            DonationPage(navController)
+        }
+        composable("ReferencesPage") {
+            ReferencesPage(navController)
         }
     }
 }
