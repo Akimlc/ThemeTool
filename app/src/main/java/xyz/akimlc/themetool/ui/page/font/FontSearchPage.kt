@@ -1,6 +1,5 @@
 package xyz.akimlc.themetool.ui.page.font
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -111,6 +110,7 @@ fun FontSearchPage(
                         title = "国内",
                         checked = selectedRegion==Region.DOMESTIC,
                         onCheckedChange = {
+                            viewModel.clearSearchResults()
                             if (it) viewModel.setSelectedRegion(Region.DOMESTIC)
                         },
                     )
@@ -130,6 +130,7 @@ fun FontSearchPage(
                         title = "国际",
                         checked = selectedRegion==Region.INTERNATIONAL,
                         onCheckedChange = {
+                            viewModel.clearSearchResults()
                             if (it) viewModel.setSelectedRegion(Region.INTERNATIONAL)
                         },
                     )
