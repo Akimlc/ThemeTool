@@ -3,16 +3,21 @@ package xyz.akimlc.themetool.ui.page.font
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -23,26 +28,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
+import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
+import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.CheckboxLocation
 import top.yukonga.miuix.kmp.extra.SuperCheckbox
+import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.extra.SuperDropdown
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.icons.useful.Save
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
+import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
 
@@ -53,6 +66,7 @@ enum class Region {
 @Composable
 fun FontSearchPage(
     viewModel: SearchFontViewModel,
+    fontDetailViewModel: FontDetailViewModel,
     navController: NavController,
 ) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
@@ -71,22 +85,41 @@ fun FontSearchPage(
 
     val isShowFontDialog = remember { mutableStateOf(false) }
     val selectProduct = remember { mutableStateOf<SearchFontViewModel.ProductData?>(null) }
+
+    val hapticFeedback = LocalHapticFeedback.current
+    val showInputUUIDDialog = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
-            BackTopAppBar(
+            TopAppBar(
                 title = "字体搜索",
                 scrollBehavior = scrollBehavior,
-                navController = navController
+                actions = {
+                    IconButton(
+                        modifier = Modifier
+                            .padding(end = 18.dp)
+                            .size(40.dp),
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
+                            showInputUUIDDialog.value = true
+                        }) {
+                        Icon(
+                            MiuixIcons.Useful.Save,
+                            contentDescription = "返回",
+                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black
+
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding())
         ) {
             item {
                 //搜索和选择区域
@@ -218,5 +251,51 @@ fun FontSearchPage(
             DomesticFontInfoDialog(isShowFontDialog, data)
         }
     }
+    InputUUIDDialog(showInputUUIDDialog, fontDetailViewModel, navController)
+}
 
+@Composable
+fun InputUUIDDialog(
+    isShow: MutableState<Boolean>,
+    viewModel: FontDetailViewModel,
+    navController: NavController
+) {
+    val textFieldValue = remember { mutableStateOf("") }
+    SuperDialog(
+        title = "国际版字体解析",
+        show = isShow,
+        onDismissRequest = {
+            isShow.value = false
+        }
+    ) {
+        TextField(
+            modifier = Modifier.padding(bottom = 16.dp),
+            value = textFieldValue.value,
+            label = "请输入字体的UUID",
+            maxLines = 2,
+            onValueChange = { textFieldValue.value = it }
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(
+                text = "取消",
+                onClick = {
+                    isShow.value = false
+                },
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(Modifier.width(20.dp))
+            TextButton(
+                text = "确认",
+                onClick = {
+                    viewModel.loadFontData(textFieldValue.value)
+                    navController.navigate("FontDetailPage/${textFieldValue.value}")
+                    isShow.value = false
+                },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.textButtonColorsPrimary()
+            )
+        }
+    }
 }
