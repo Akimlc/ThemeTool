@@ -91,6 +91,7 @@ fun App() {
         composable("FontSearchPage") {
             FontSearchPage(
                 searchFontViewModel,
+                fontDetailViewModel,
                 navController,
             )
         }
