@@ -271,7 +271,6 @@ fun InputUUIDDialog(
         TextField(
             modifier = Modifier.padding(bottom = 16.dp),
             value = textFieldValue.value,
-            label = "请输入字体的UUID",
             maxLines = 2,
             onValueChange = { textFieldValue.value = it }
         )
