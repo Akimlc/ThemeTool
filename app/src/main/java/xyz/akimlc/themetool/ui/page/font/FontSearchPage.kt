@@ -93,23 +93,6 @@ fun FontSearchPage(
             TopAppBar(
                 title = "字体搜索",
                 scrollBehavior = scrollBehavior,
-                actions = {
-                    IconButton(
-                        modifier = Modifier
-                            .padding(end = 18.dp)
-                            .size(40.dp),
-                        onClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
-                            showInputUUIDDialog.value = true
-                        }) {
-                        Icon(
-                            MiuixIcons.Useful.Save,
-                            contentDescription = "返回",
-                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black
-
-                        )
-                    }
-                }
             )
         }
     ) { paddingValues ->
@@ -249,52 +232,6 @@ fun FontSearchPage(
     if (isShowFontDialog.value) {
         selectProduct.value?.let { data ->
             DomesticFontInfoDialog(isShowFontDialog, data)
-        }
-    }
-    InputUUIDDialog(showInputUUIDDialog, fontDetailViewModel, navController)
-}
-
-@Composable
-fun InputUUIDDialog(
-    isShow: MutableState<Boolean>,
-    viewModel: FontDetailViewModel,
-    navController: NavController
-) {
-    val textFieldValue = remember { mutableStateOf("") }
-    SuperDialog(
-        title = "国际版字体解析",
-        show = isShow,
-        onDismissRequest = {
-            isShow.value = false
-        }
-    ) {
-        TextField(
-            modifier = Modifier.padding(bottom = 16.dp),
-            value = textFieldValue.value,
-            maxLines = 2,
-            onValueChange = { textFieldValue.value = it }
-        )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextButton(
-                text = "取消",
-                onClick = {
-                    isShow.value = false
-                },
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(Modifier.width(20.dp))
-            TextButton(
-                text = "确认",
-                onClick = {
-                    viewModel.loadFontData(textFieldValue.value)
-                    navController.navigate("FontDetailPage/${textFieldValue.value}")
-                    isShow.value = false
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.textButtonColorsPrimary()
-            )
         }
     }
 }
