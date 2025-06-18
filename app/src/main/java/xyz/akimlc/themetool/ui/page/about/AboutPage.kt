@@ -124,11 +124,17 @@ fun AboutPage(
                 ) {
                     Column {
                         SuperArrow(
-                            title = "频道",
+                            title = "QQ群",
+                            onClick = {
+                                uriHandler.openUri("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1017168342&card_type=group&source=qrcode")
+                            }
+                        )
+                        SuperArrow(
+                            title = "Telegram频道",
                             onClick = { uriHandler.openUri("https://t.me/Theme_Tool") }
                         )
                         SuperArrow(
-                            title = "群组",
+                            title = "Telegram群组",
                             onClick = { uriHandler.openUri("https://t.me/ThemeToolChat") }
                         )
                     }
