@@ -1,7 +1,9 @@
 package xyz.akimlc.themetool.ui.page.about
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +34,7 @@ import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.extra.SuperArrow
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
 import xyz.akimlc.themetool.R
@@ -59,28 +63,10 @@ fun AboutPage(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp, bottom = 12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Theme Tool",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "版本号 ${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                }
+                BackgroundArea()
             }
 
             item {
-                SmallTitle("参与人员")
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -169,3 +155,46 @@ fun AboutPage(
     }
 }
 
+@Composable
+fun BackgroundArea() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(215.dp)
+            .padding(top = 8.dp)
+            .padding(horizontal = 12.dp)
+    ) {
+        Image(
+            painter = if (isSystemInDarkTheme())
+                painterResource(R.mipmap.background_about_dark)
+            else
+                painterResource(R.mipmap.background_about_light),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(12.dp)), // 设置12dp圆角,
+            contentScale = ContentScale.Crop
+        )
+
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Theme Tool",
+                fontSize = 28.sp,
+                color = MiuixTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 6.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "版本号 ${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+        }
+    }
+}
