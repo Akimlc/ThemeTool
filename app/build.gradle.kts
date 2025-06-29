@@ -115,6 +115,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     // 图片浏览库
-    implementation(libs.image.viewer)
-    implementation(libs.sampling.decoder)
+//    implementation(libs.image.viewer)
+//    implementation(libs.sampling.decoder)
 }
