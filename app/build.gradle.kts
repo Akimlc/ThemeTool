@@ -113,8 +113,4 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.kotlinx.coroutines.android)
-
-    // 图片浏览库
-//    implementation(libs.image.viewer)
-//    implementation(libs.sampling.decoder)
 }
