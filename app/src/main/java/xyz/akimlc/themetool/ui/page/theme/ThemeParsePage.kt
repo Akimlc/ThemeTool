@@ -151,9 +151,9 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
                     onClick = {
                         // 跳转到浏览器进行下载
                         val intent = Intent(Intent.ACTION_VIEW, themeInfo.themeUrl.toUri())
-                        //context.startActivity(intent)
+                        context.startActivity(intent)
                         //Go to 下载管理界面
-                        downloadViewModel.startDownload(themeInfo)
+                        //downloadViewModel.startDownload(themeInfo)
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier.weight(1f),
