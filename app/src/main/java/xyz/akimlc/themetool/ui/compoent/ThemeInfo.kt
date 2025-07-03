@@ -195,6 +195,7 @@ fun DomesticFontInfoDialog(
         title = "字体信息",
         show = isShow,
         onDismissRequest = {
+            isShow.value = false
         }
     ) {
         Column {
