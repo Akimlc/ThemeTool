@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +25,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -33,14 +38,12 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
-import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import xyz.akimlc.themetool.data.model.Info.ThemeInfo
-import xyz.akimlc.themetool.viewmodel.ParseViewModel
-import androidx.core.net.toUri
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.ParseViewModel
 
 @Composable
 fun ThemeParsePage(
@@ -50,7 +53,7 @@ fun ThemeParsePage(
 ) {
     val context = LocalContext.current
     val scroll = MiuixScrollBehavior(rememberTopAppBarState())
-    var shareLink by remember { mutableStateOf("") }
+    var shareLink by remember { mutableStateOf(TextFieldValue("")) }
     val themeInfo by viewModel.themeInfoState
     val errorMessage by viewModel.errorMessage
 
@@ -70,26 +73,26 @@ fun ThemeParsePage(
             )
         }) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
                 .overScrollVertical()
+                .padding(top = 12.dp)
                 .nestedScroll(scroll.nestedScrollConnection),
             contentPadding = paddingValues
         ) {
             item {
                 TextField(
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp),
                     value = shareLink,
-                    onValueChange = {
-                        shareLink = it
-                    },
-                    label = "输入分享链接",
+                    onValueChange = { shareLink = it },
+                    label = "请输入主题分享链接",
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 12.dp),
                 )
                 TextButton(
                     text = "解析",
                     onClick = {
-                        viewModel.parseTheme(shareLink)
+                        viewModel.parseTheme(shareLink.toString())
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier
