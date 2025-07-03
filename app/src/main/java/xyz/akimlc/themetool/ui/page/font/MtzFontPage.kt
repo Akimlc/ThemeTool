@@ -36,9 +36,10 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import xyz.akimlc.themetool.utils.font.TTF2MTZ.Companion.convert
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.LabeledTextField
 import xyz.akimlc.themetool.utils.FileUtils
+import xyz.akimlc.themetool.utils.font.TTF2MTZ.Companion.convert
 
 @Composable
 fun MtzFontPage(navController: NavController) {
@@ -91,38 +92,22 @@ fun MtzFontPage(navController: NavController) {
             contentPadding = padding
         ) {
             item {
-                TextField(
+                LabeledTextField(
                     label = "字体名称",
                     value = fontName,
-                    enabled = false,
                     onValueChange = { fontName = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
-                TextField(
+                LabeledTextField(
                     label = "字体作者",
                     value = fontAuthor,
-                    enabled = false,
-                    onValueChange = { fontAuthor = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                    onValueChange = {
+                        fontAuthor = it
+                    }
                 )
-                TextField(
+                LabeledTextField(
                     label = "导入的字体",
                     value = importFont,
-                    enabled = false,
                     onValueChange = { importFont = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
                 Row(
                     modifier = Modifier

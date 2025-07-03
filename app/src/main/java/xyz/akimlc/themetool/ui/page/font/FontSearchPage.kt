@@ -112,6 +112,7 @@ fun FontSearchPage(
                         keyword = it
                     },
                     label = "搜索关键字",
+                    singleLine = true,
                     modifier = Modifier.padding(12.dp)
                 )
                 //选择区域

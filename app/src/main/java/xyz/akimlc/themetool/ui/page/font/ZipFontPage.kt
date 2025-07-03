@@ -42,6 +42,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ErrorNotice
+import xyz.akimlc.themetool.ui.compoent.LabeledTextField
 import xyz.akimlc.themetool.utils.FileUtils
 import xyz.akimlc.themetool.utils.font.TTF2ZIP.Companion.convert
 
@@ -100,28 +101,16 @@ fun ZipFontPage(navController: NavController) {
                 ErrorNotice(
                     text = "实验性功能，不保证生成的模块能正常使用！！！"
                 )
-                TextField(
+                LabeledTextField(
                     label = "字体名称",
                     value = zipName,
                     onValueChange = { zipName = it },
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
 
-                TextField(
+                LabeledTextField(
                     label = "导入的字体",
                     value = importFont,
-                    enabled = false,
                     onValueChange = { importFont = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
                 Row(
                     modifier = Modifier
