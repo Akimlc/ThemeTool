@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,6 +27,7 @@ import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.model.DownloadModel
 import xyz.akimlc.themetool.data.model.DownloadStatus
@@ -42,22 +42,21 @@ fun DownloadPage(
     viewModel: DownloadViewModel = viewModel()
 ) {
     val downloadList by viewModel.downloads.collectAsState()
-
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .overScrollVertical()
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
             .padding(top = 12.dp),
         contentPadding = padding
     ) {
 
-        items(
-            items = downloadList,
-            key = { it.id }
-        ) { item ->
-            DownloadItem(item)
-        }
+//        items(
+//            items = downloadList,
+//            key = { it.id }
+//        ) { item ->
+//            DownloadItem(item)
+//        }
     }
 }
 

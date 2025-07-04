@@ -21,6 +21,7 @@ import xyz.akimlc.themetool.ui.page.MainPage
 import xyz.akimlc.themetool.ui.page.about.DonationPage
 import xyz.akimlc.themetool.ui.page.about.ReferencesPage
 import xyz.akimlc.themetool.ui.page.about.ThanksPage
+import xyz.akimlc.themetool.ui.page.download.DownloadPage
 import xyz.akimlc.themetool.ui.page.font.FontDetailPage
 import xyz.akimlc.themetool.ui.page.font.FontSearchPage
 import xyz.akimlc.themetool.ui.page.font.MtzFontPage
@@ -109,6 +110,9 @@ fun App() {
         }
         composable("ReferencesPage") {
             ReferencesPage(navController)
+        }
+        composable("DownloadPage") {
+            DownloadPage(navController,scrollBehavior,paddingValues)
         }
     }
 }

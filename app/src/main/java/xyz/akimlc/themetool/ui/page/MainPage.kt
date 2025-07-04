@@ -27,29 +27,32 @@ import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.page.about.AboutPage
+import xyz.akimlc.themetool.ui.page.download.DownloadPage
 
 @OptIn(FlowPreview::class)
 @Composable
 fun MainPage(navController: NavController) {
     val topAppBarScrollBehavior0 = MiuixScrollBehavior(rememberTopAppBarState())
     val topAppBarScrollBehavior1 = MiuixScrollBehavior(rememberTopAppBarState())
+    val topAppBarScrollBehavior2 = MiuixScrollBehavior(rememberTopAppBarState())
 
     val topAppBarScrollBehaviorList = listOf(
-        topAppBarScrollBehavior0, topAppBarScrollBehavior1
+        topAppBarScrollBehavior0, topAppBarScrollBehavior1,topAppBarScrollBehavior2
     )
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val pagerState = rememberPagerState(pageCount = { 3 })
     var targetPage by remember { mutableIntStateOf(pagerState.currentPage) }
     val coroutineScope = rememberCoroutineScope()
 
     val currentScrollBehavior = when (pagerState.currentPage) {
         0 -> topAppBarScrollBehaviorList[0]
         1 -> topAppBarScrollBehaviorList[1]
+        2 -> topAppBarScrollBehaviorList[2]
         else -> topAppBarScrollBehaviorList[0]
     }
 
     val items = listOf(
         NavigationItem("首页", ImageVector.vectorResource(R.drawable.ic_home)),
-//        NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
+        NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
         NavigationItem("关于", ImageVector.vectorResource(R.drawable.ic_about))
     )
 
@@ -95,18 +98,18 @@ fun MainPage(navController: NavController) {
                         )
                     }
 
-//                    1 -> {
-//                        DownloadPage(
-//                            navController = navController,
-//                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
-//                            padding = padding,
-//                        )
-//                    }
-
                     1 -> {
-                        AboutPage(
+                        DownloadPage(
                             navController = navController,
                             topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
+                            padding = padding,
+                        )
+                    }
+
+                    2 -> {
+                        AboutPage(
+                            navController = navController,
+                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[2],
                             padding = padding,
                         )
                     }
