@@ -113,4 +113,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.kotlinx.coroutines.android)
+
+    //UMeng
+    implementation("com.umeng.umsdk:common:9.4.7")
+    implementation("com.umeng.umsdk:asms:1.4.0")
 }
