@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".ThemeToolApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -32,7 +33,6 @@
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="686a773c79267e0210a1d3db" />
-
         <!-- 渠道 -->
         <meta-data
             android:name="UMENG_CHANNEL"

@@ -1,6 +1,8 @@
 package xyz.akimlc.themetool.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -8,14 +10,20 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.umeng.commonsdk.UMConfigure
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import xyz.akimlc.themetool.ui.compoent.PrivacyDialog
 import xyz.akimlc.themetool.ui.page.HomePage
 import xyz.akimlc.themetool.ui.page.MainPage
 import xyz.akimlc.themetool.ui.page.about.DonationPage
@@ -28,6 +36,7 @@ import xyz.akimlc.themetool.ui.page.font.MtzFontPage
 import xyz.akimlc.themetool.ui.page.font.ZipFontPage
 import xyz.akimlc.themetool.ui.page.theme.ThemeParsePage
 import xyz.akimlc.themetool.ui.page.theme.ThemeSearchPage
+import xyz.akimlc.themetool.utils.PreferenceUtil
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.ParseViewModel
@@ -37,6 +46,37 @@ import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun App() {
+    val context = LocalContext.current
+    val agreed = remember {
+        mutableStateOf(PreferenceUtil.isUserAgreed(context))
+    }
+    val showDialog = remember { mutableStateOf(!agreed.value) }
+    val hasInit = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+        PrivacyDialog(
+            isShow = showDialog,
+            onAgree = {
+                PreferenceUtil.setUserAgreed(context, true)
+                agreed.value = true
+                showDialog.value = false
+            },
+            onCancel = {
+                (context as? Activity)?.finish()
+            }
+        )
+    } else if (!hasInit.value) {
+        LaunchedEffect(Unit) {
+            UMConfigure.init(
+                context,
+                "686a773c79267e0210a1d3db",
+                "official",
+                UMConfigure.DEVICE_TYPE_PHONE,
+                null
+            )
+            hasInit.value = true
+        }
+    }
     val fontDetailViewModel: FontDetailViewModel = viewModel()
     val searchFontViewModel: SearchFontViewModel = viewModel()
     val navController = rememberNavController()
