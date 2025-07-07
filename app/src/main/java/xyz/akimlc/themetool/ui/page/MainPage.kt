@@ -1,7 +1,9 @@
 package xyz.akimlc.themetool.ui.page
 
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.FlowPreview
@@ -23,11 +27,14 @@ import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationItem
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.R
-import xyz.akimlc.themetool.ui.page.about.AboutPage
+import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.page.download.DownloadPage
+import xyz.akimlc.themetool.ui.page.settings.SettingsPage
+import xyz.akimlc.themetool.utils.PreferenceUtil
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -37,7 +44,7 @@ fun MainPage(navController: NavController) {
     val topAppBarScrollBehavior2 = MiuixScrollBehavior(rememberTopAppBarState())
 
     val topAppBarScrollBehaviorList = listOf(
-        topAppBarScrollBehavior0, topAppBarScrollBehavior1,topAppBarScrollBehavior2
+        topAppBarScrollBehavior0, topAppBarScrollBehavior1, topAppBarScrollBehavior2
     )
     val pagerState = rememberPagerState(pageCount = { 3 })
     var targetPage by remember { mutableIntStateOf(pagerState.currentPage) }
@@ -53,11 +60,11 @@ fun MainPage(navController: NavController) {
     val items = listOf(
         NavigationItem("首页", ImageVector.vectorResource(R.drawable.ic_home)),
         NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
-        NavigationItem("关于", ImageVector.vectorResource(R.drawable.ic_about))
+        NavigationItem("设置", ImageVector.vectorResource(R.drawable.ic_about))
     )
-
-
     var pagerTitle by remember { mutableStateOf(items[targetPage].label) }
+
+    val context = LocalContext.current
 
 
     LaunchedEffect(pagerState) {
@@ -86,35 +93,54 @@ fun MainPage(navController: NavController) {
             )
         }
     ) { padding ->
-        HorizontalPager(
-            state = pagerState,
-            pageContent = { page ->
-                when (page) {
-                    0 -> {
-                        HomePage(
-                            navController = navController,
-                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[0],
-                            padding = padding,
-                        )
-                    }
 
-                    1 -> {
-                        DownloadPage(
-                            navController = navController,
-                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
-                            padding = padding,
-                        )
-                    }
+        AppHorizontalPager(
+            navController = navController,
+            pagerState = pagerState,
+            topAppBarScrollBehaviorList = topAppBarScrollBehaviorList,
+            padding = padding,
+        )
 
-                    2 -> {
-                        AboutPage(
-                            navController = navController,
-                            topAppBarScrollBehavior = topAppBarScrollBehaviorList[2],
-                            padding = padding,
-                        )
-                    }
+
+    }
+}
+
+@Composable
+fun AppHorizontalPager(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    topAppBarScrollBehaviorList: List<ScrollBehavior>,
+    padding: PaddingValues,
+) {
+    HorizontalPager(
+        state = pagerState,
+        pageContent = { page ->
+            when (page) {
+                0 -> {
+                    HomePage(
+                        navController = navController,
+                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[0],
+                        padding = padding,
+                    )
+                }
+
+                1 -> {
+                    DownloadPage(
+                        navController = navController,
+                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
+                        padding = padding,
+                    )
+                }
+
+                2 -> {
+                    SettingsPage(
+                        navController = navController,
+                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[2],
+                        padding = padding,
+                    )
                 }
             }
-        )
-    }
+        }
+    )
 }

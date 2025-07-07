@@ -22,4 +22,13 @@ object PreferenceUtil {
     fun isUserAgreed(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_PRIVACY_AGREED, false)
     }
+
+    fun getBoolean(context: Context, key: String, defaultValue: Boolean = false): Boolean {
+        return getPreferences(context).getBoolean(key, defaultValue)
+    }
+
+
+    fun putBoolean(context: Context, key: String, value: Boolean) {
+        getPreferences(context).edit { putBoolean(key, value) }
+    }
 }

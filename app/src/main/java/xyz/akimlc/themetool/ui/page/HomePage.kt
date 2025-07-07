@@ -16,7 +16,6 @@ import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem
-import xyz.akimlc.themetool.ui.compoent.SuperArrowItem1
 
 @Composable
 fun HomePage(
@@ -25,7 +24,8 @@ fun HomePage(
     padding: PaddingValues
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .overScrollVertical()
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         contentPadding = padding

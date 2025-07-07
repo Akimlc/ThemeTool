@@ -1,4 +1,4 @@
-package xyz.akimlc.themetool.ui.page.about
+package xyz.akimlc.themetool.ui.page.settings.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
