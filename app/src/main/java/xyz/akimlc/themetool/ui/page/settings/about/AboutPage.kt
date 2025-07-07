@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
@@ -36,112 +37,123 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 
 @Composable
 fun AboutPage(
     navController: NavController,
     topAppBarScrollBehavior: ScrollBehavior,
-    padding: PaddingValues
 ) {
     val uriHandler = LocalUriHandler.current
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .overScrollVertical()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
-        contentPadding = padding,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            BackgroundArea()
+    Scaffold(
+        topBar = {
+            BackTopAppBar(
+                title = "关于",
+                scrollBehavior = topAppBarScrollBehavior,
+                navController = navController
+            )
         }
+    ){ padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .overScrollVertical()
+                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+            contentPadding = padding,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                BackgroundArea()
+            }
 
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
-                Column {
-                    SuperArrow(
-                        title = "Akimlc",
-                        summary = "Developer",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/Akimlc")
-                        },
-                        leftAction = {
-                            Image(
-                                painter = painterResource(R.mipmap.ic_akimlc),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(48.dp))
-                            )
-                        }
-                    )
-                    SuperArrow(
-                        title = "感谢列表",
-                        onClick = {
-                            navController.navigate("ThanksPage")
-                        }
-                    )
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    Column {
+                        SuperArrow(
+                            title = "Akimlc",
+                            summary = "Developer",
+                            onClick = {
+                                uriHandler.openUri("https://github.com/Akimlc")
+                            },
+                            leftAction = {
+                                Image(
+                                    painter = painterResource(R.mipmap.ic_akimlc),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(end = 12.dp)
+                                        .size(38.dp)
+                                        .clip(RoundedCornerShape(48.dp))
+                                )
+                            }
+                        )
+                        SuperArrow(
+                            title = "感谢列表",
+                            onClick = {
+                                navController.navigate("ThanksPage")
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        // 交流反馈
-        item {
-            SmallTitle("交流 / 反馈")
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
-                Column {
-                    SuperArrow(
-                        title = "QQ群",
-                        onClick = {
-                            uriHandler.openUri("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1017168342&card_type=group&source=qrcode")
-                        }
-                    )
-                    SuperArrow(
-                        title = "Telegram频道",
-                        onClick = { uriHandler.openUri("https://t.me/Theme_Tool") }
-                    )
-                    SuperArrow(
-                        title = "Telegram群组",
-                        onClick = { uriHandler.openUri("https://t.me/ThemeToolChat") }
-                    )
+            // 交流反馈
+            item {
+                SmallTitle("交流 / 反馈")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    Column {
+                        SuperArrow(
+                            title = "QQ群",
+                            onClick = {
+                                uriHandler.openUri("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1017168342&card_type=group&source=qrcode")
+                            }
+                        )
+                        SuperArrow(
+                            title = "Telegram频道",
+                            onClick = { uriHandler.openUri("https://t.me/Theme_Tool") }
+                        )
+                        SuperArrow(
+                            title = "Telegram群组",
+                            onClick = { uriHandler.openUri("https://t.me/ThemeToolChat") }
+                        )
+                    }
                 }
             }
-        }
 
-        item {
-            SmallTitle("其他")
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
-                Column {
-                    SuperArrow(
-                        title = "捐赠",
-                        summary = "支持一下开发者~",
-                        onClick = {
-                            navController.navigate("DonationPage")
-                        }
-                    )
-                    SuperArrow(
-                        title = "引用",
-                        onClick = {
-                            navController.navigate("ReferencesPage")
-                        }
-                    )
+            item {
+                SmallTitle("其他")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    Column {
+                        SuperArrow(
+                            title = "捐赠",
+                            summary = "支持一下开发者~",
+                            onClick = {
+                                navController.navigate("DonationPage")
+                            }
+                        )
+                        SuperArrow(
+                            title = "引用",
+                            onClick = {
+                                navController.navigate("ReferencesPage")
+                            }
+                        )
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable

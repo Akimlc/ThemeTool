@@ -164,7 +164,7 @@ fun App() {
                 DownloadPage(navController, scrollBehavior, paddingValues)
             }
             composable("AboutPage") {
-                AboutPage(navController, scrollBehavior, paddingValues)
+                AboutPage(navController, scrollBehavior)
             }
         }
 
