@@ -23,3 +23,14 @@
 -obfuscationdictionary output_dict.txt
 -classobfuscationdictionary output_dict.txt
 -packageobfuscationdictionary output_dict.txt
+-keep class com.umeng.** {*;}
+-keepclassmembers class * {
+    public <init> (org.json.JSONObject);
+}
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+-keep public class xyz.akimlc.themetool.R$*{
+public static final int *;
+}

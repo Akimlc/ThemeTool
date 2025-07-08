@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.extra.SuperDialog
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.repository.Parse
@@ -52,31 +54,44 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
     }
     SuperDialog(
         show = isShow,
-        title = "主题信息",
+        title = stringResource(R.string.title_theme_info),
         onDismissRequest = {
             isShow.value = false
         }
     ) {
         Column {
-            Text("主题名字：${product.name}")
+            Text(stringResource(R.string.label_theme_name, product.name))
             if (isLoading.value) {
-                Text("正在解析，请稍候...")
+                Text(stringResource(R.string.parsing))
             } else {
-                Text("主题链接：${themeInfoState.value?.themeUrl ?: "解析失败"}")
+                Text(
+                    stringResource(
+                        R.string.label_theme_name,
+                        themeInfoState.value?.themeUrl ?: stringResource(R.string.parse_failed)
+                    )
+                )
             }
             TextButton(
-                "复制",
+                text = stringResource(R.string.copy),
                 onClick = {
                     val themeInfo = themeInfoState.value
                     if (themeInfo==null) {
-                        Toast.makeText(context, "正在解析，请稍候...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.parsing),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@TextButton
                     }
                     val clipboardManager =
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clipData = ClipData.newPlainText("Theme URL", themeInfo.themeUrl)
                     clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_copy_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -84,11 +99,15 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
             )
             Spacer(Modifier.height(12.dp))
             TextButton(
-                "下载",
+                text = stringResource(R.string.download),
                 onClick = {
                     val themeInfo = themeInfoState.value
                     if (themeInfo==null) {
-                        Toast.makeText(context, "正在解析，请稍候...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.parsing),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@TextButton
                     }
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(themeInfo.themeUrl))
@@ -123,43 +142,60 @@ fun GlobalThemeInfoDialog(
     }
     SuperDialog(
         show = isShow,
-        title = "主题信息",
+        title = stringResource(R.string.title_theme_info),
         onDismissRequest = {
             isShow.value = false
         }
     ) {
         Column {
-            Text("主题名字：${product.name}")
+            Text(stringResource(R.string.label_theme_name, product.name))
             if (isLoading.value) {
-                Text("正在解析,请稍后....")
+                Text(stringResource(R.string.parsing))
             } else {
-                Text("主题链接：${themeState.value?.downloadUrl ?: "解析失败..."}")
+                Text(
+                    stringResource(
+                        R.string.label_theme_url,
+                        themeState.value?.downloadUrl ?: stringResource(R.string.parse_failed)
+                    )
+                )
             }
 
             TextButton(
-                "复制",
+                text = stringResource(R.string.copy),
                 onClick = {
                     val themeState = themeState.value
                     if (themeState==null) {
-                        Toast.makeText(context, "复制失败", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.parsing),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@TextButton
                     }
                     val clipboardManager =
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clipData = ClipData.newPlainText("Theme URL", themeState.downloadUrl)
                     clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.copy_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
             )
             Spacer(Modifier.height(12.dp))
             TextButton(
-                "下载",
+                text = stringResource(R.string.download),
                 onClick = {
                     val themeState = themeState.value
                     if (themeState==null) {
-                        Toast.makeText(context, "解析失败...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.parsing),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@TextButton
                     }
                     val intent = Intent(Intent.ACTION_VIEW, themeState.downloadUrl.toUri())
@@ -192,31 +228,45 @@ fun DomesticFontInfoDialog(
         }
     }
     SuperDialog(
-        title = "字体信息",
+        title = stringResource(R.string.title_theme_info),
         show = isShow,
         onDismissRequest = {
+            isShow.value = false
         }
     ) {
         Column {
-            Text("主题名字：${product.name}")
+            Text(stringResource(R.string.label_font_name, product.name))
             if (isLoading.value) {
-                Text("正在解析中...")
+                Text(stringResource(R.string.parsing))
             } else {
-                Text("下载链接：${themeState.value?.downloadUrl ?: "解析失败..."}")
+                Text(
+                    stringResource(
+                        R.string.label_theme_url,
+                        themeState.value?.downloadUrl ?: stringResource(R.string.parse_failed)
+                    )
+                )
             }
             TextButton(
-                "复制",
+                text = stringResource(R.string.copy),
                 onClick = {
                     val themeState = themeState.value
                     if (themeState==null) {
-                        Toast.makeText(context, "复制失败", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.copy_failed),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@TextButton
                     }
                     val clipboardManager =
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clipData = ClipData.newPlainText("Theme URL", themeState.downloadUrl)
                     clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.copy_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 modifier = Modifier
                     .padding(top = 12.dp)
@@ -224,11 +274,15 @@ fun DomesticFontInfoDialog(
             )
             Spacer(Modifier.height(12.dp))
             TextButton(
-                "下载",
+                text = stringResource(R.string.download),
                 onClick = {
                     val themeState = themeState.value
                     if (themeState==null) {
-                        Toast.makeText(context, "解析失败...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.parse_failed),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@TextButton
                     }
                     val intent = Intent(Intent.ACTION_VIEW, themeState.downloadUrl.toUri())

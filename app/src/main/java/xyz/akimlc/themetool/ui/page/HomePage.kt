@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
@@ -16,7 +17,6 @@ import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem
-import xyz.akimlc.themetool.ui.compoent.SuperArrowItem1
 
 @Composable
 fun HomePage(
@@ -25,13 +25,14 @@ fun HomePage(
     padding: PaddingValues
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .overScrollVertical()
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         contentPadding = padding
     ) {
         item {
-            SmallTitle("主题")
+            SmallTitle(stringResource(id = R.string.title_theme))
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -40,14 +41,14 @@ fun HomePage(
                     .padding(top = 6.dp)
             ) {
                 SuperArrowItem(
-                    title = "主题搜索",
+                    title = stringResource(id = R.string.theme_search),
                     icon = R.drawable.ic_search,
                     onClick = {
                         navController.navigate("ThemeSearchPage")
                     }
                 )
                 SuperArrowItem(
-                    title = "主题解析",
+                    title = stringResource(id = R.string.theme_parse),
                     icon = R.drawable.ic_link,
                     onClick = {
                         navController.navigate("ThemeParsePage")
@@ -56,7 +57,7 @@ fun HomePage(
             }
         }
         item {
-            SmallTitle("字体")
+            SmallTitle(stringResource(id = R.string.title_font))
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -64,21 +65,21 @@ fun HomePage(
                     .padding(bottom = 6.dp)
             ) {
                 SuperArrowItem(
-                    title = "字体搜索",
+                    title = stringResource(id = R.string.font_search),
                     icon = R.drawable.ic_font,
                     onClick = {
                         navController.navigate("FontSearchPage")
                     }
                 )
                 SuperArrowItem(
-                    title = "字体转换",
+                    title = stringResource(id = R.string.font_convert),
                     icon = R.drawable.ic_font_change,
                     onClick = {
                         navController.navigate("MtzFontPage")
                     }
                 )
                 SuperArrowItem(
-                    title = "字体模块转换",
+                    title = stringResource(id = R.string.font_module_convert),
                     icon = R.drawable.ic_mask,
                     onClick = {
                         navController.navigate("ZipFontPage")

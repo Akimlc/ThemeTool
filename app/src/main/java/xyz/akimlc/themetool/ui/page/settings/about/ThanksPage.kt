@@ -1,4 +1,4 @@
-package xyz.akimlc.themetool.ui.page.about
+package xyz.akimlc.themetool.ui.page.settings.about
 
 
 import androidx.compose.foundation.Image
@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
@@ -30,7 +31,7 @@ fun ThanksPage(navController: NavController) {
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "感谢列表",
+                title = stringResource(R.string.about_thanks_list),
                 scrollBehavior = scrollBehavior,
                 navController = navController
             )

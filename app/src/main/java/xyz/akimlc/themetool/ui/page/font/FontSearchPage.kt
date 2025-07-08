@@ -4,42 +4,34 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
-import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTitle
@@ -49,11 +41,9 @@ import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.CheckboxLocation
 import top.yukonga.miuix.kmp.extra.SuperCheckbox
-import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.extra.SuperDropdown
-import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.icons.useful.Save
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
@@ -70,16 +60,12 @@ fun FontSearchPage(
     navController: NavController,
 ) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     var selectedIndex by remember { mutableIntStateOf(0) }
     val options = listOf("V9", "V10", "V11", "V12", "V130", "V140", "V150")
     val selectedRegion by viewModel.selectedRegion.collectAsState()
-
     var page by remember { mutableStateOf(0) }
-
     val isSearching by viewModel.isSearching.collectAsState()
-    val currentKeyword by viewModel.currentKeyword.collectAsState()
     val productList by viewModel.productList.collectAsState()
     var keyword by remember { mutableStateOf("") }
 
@@ -87,11 +73,25 @@ fun FontSearchPage(
     val selectProduct = remember { mutableStateOf<SearchFontViewModel.ProductData?>(null) }
 
     val hapticFeedback = LocalHapticFeedback.current
-    val showInputUUIDDialog = remember { mutableStateOf(false) }
+    val backgroundLightColors = listOf(
+        Color(0xFFF4F2F1),
+        Color(0xFFEBEBE7),
+        Color(0xFFF1F2EC),
+        Color(0xFFF5F4E9),
+        Color(0xFFF6F8E4),
+    )
+    val backgroundDarkColors = listOf(
+        Color(0xFF6B6B6A),
+        Color(0xFF858581),
+        Color(0xFF8B8C86),
+        Color(0xFF8F8E83),
+        Color(0xFF90927E),
+    )
+    val isDarkTheme = isSystemInDarkTheme()
     Scaffold(
         topBar = {
             TopAppBar(
-                title = "字体搜索",
+                title = stringResource(R.string.title_font_search),
                 scrollBehavior = scrollBehavior,
             )
         }
@@ -111,7 +111,8 @@ fun FontSearchPage(
                     onValueChange = {
                         keyword = it
                     },
-                    label = "搜索关键字",
+                    label = stringResource(R.string.label_search_keyword),
+                    singleLine = true,
                     modifier = Modifier.padding(12.dp)
                 )
                 //选择区域
@@ -123,7 +124,7 @@ fun FontSearchPage(
                 ) {
                     SuperCheckbox(
                         checkboxLocation = CheckboxLocation.Right,
-                        title = "国内",
+                        title = stringResource(R.string.checkbox_domestic),
                         checked = selectedRegion==Region.DOMESTIC,
                         onCheckedChange = {
                             viewModel.clearSearchResults()
@@ -135,7 +136,7 @@ fun FontSearchPage(
                         visible = selectedRegion==Region.DOMESTIC,
                     ) {
                         SuperDropdown(
-                            title = "主题版本选择",
+                            title = stringResource(R.string.dropdown_theme_version),
                             items = options,
                             selectedIndex = selectedIndex,
                             onSelectedIndexChange = { selectedIndex = it }
@@ -143,7 +144,7 @@ fun FontSearchPage(
                     }
                     SuperCheckbox(
                         checkboxLocation = CheckboxLocation.Right,
-                        title = "国际",
+                        title = stringResource(R.string.checkbox_international),
                         checked = selectedRegion==Region.INTERNATIONAL,
                         onCheckedChange = {
                             viewModel.clearSearchResults()
@@ -152,13 +153,21 @@ fun FontSearchPage(
                     )
                 }
                 TextButton(
-                    text = "搜索",
+                    text = stringResource(R.string.button_search),
                     onClick = {
                         if (keyword.isEmpty()) {
-                            Toast.makeText(context, "请输入关键字", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_enter_keyword),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@TextButton
                         }
-                        Toast.makeText(context, "正在搜索...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_searching),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         viewModel.clearSearchResults()  //清除结果
                         val version = options.getOrNull(selectedIndex) ?: ""
                         viewModel.searchFont(selectedRegion, keyword, version, page)
@@ -172,7 +181,7 @@ fun FontSearchPage(
             }
 
             item {
-                SmallTitle("结果")
+                SmallTitle(stringResource(R.string.title_results))
             }
             if (isSearching) {
                 item {
@@ -190,7 +199,9 @@ fun FontSearchPage(
                 if (index==productList.lastIndex && !isSearching) {
                     viewModel.loadMore()
                 }
-
+                val backgroundColors =
+                    if (isDarkTheme) backgroundDarkColors else backgroundLightColors
+                val cardColor = backgroundColors[index % backgroundColors.size]
                 val modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 4.dp)
                     .then(
@@ -213,7 +224,7 @@ fun FontSearchPage(
                     }
                 Card(
                     modifier = modifier,
-                    color = Color(0xFFBEBCBC)
+                    color = cardColor
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),

@@ -1,18 +1,16 @@
 [versions]
-agp = "8.8.2"
+agp = "8.10.1"
 coilCompose = "3.1.0"
 gson = "2.12.1"
-imageViewer = "1.1.0-alpha.7"
 kotlin = "2.1.10"
 coreKtx = "1.16.0"
-kotlinx-serialization-json = "1.8.0"
+kotlinx-serialization-json = "1.8.1"
 activityCompose = "1.10.1"
-kotlinxCoroutinesAndroid = "1.10.1"
-miuix = "0.4.5"
+kotlinxCoroutinesAndroid = "1.10.2"
+miuix = "0.4.7"
 navigationCompose = "2.9.0"
 okhttp = "4.12.0"
-runtimeLivedata = "1.8.2"
-samplingDecoder = "1.1.0-alpha.7"
+runtimeLivedata = "1.8.3"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -23,12 +21,10 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-image-viewer = { module = "com.jvziyaoyao.scale:image-viewer", version.ref = "imageViewer" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 miuix = { module = "top.yukonga.miuix.kmp:miuix", version.ref = "miuix" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-sampling-decoder = { module = "com.jvziyaoyao.scale:sampling-decoder", version.ref = "samplingDecoder" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

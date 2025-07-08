@@ -1,0 +1,117 @@
+<resources>
+    <string name="app_name">ThemeTool</string>
+    <string name="title_theme">Theme</string>
+    <string name="title_font">Font</string>
+    <string name="theme_search">Theme Search</string>
+    <string name="theme_parse">Theme Parse</string>
+    <string name="font_search">Font Search</string>
+    <string name="font_convert">Font Convert</string>
+    <string name="font_module_convert">Font Module Convert</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_download">Downloads</string>
+    <string name="nav_settings">Settings</string>
+    <string name="title_theme_parse">Theme Parse</string>
+    <string name="label_input_theme_link">Enter theme share link</string>
+    <string name="btn_parse">Parse</string>
+    <string name="label_theme_name">Theme name: %1$s</string>
+    <string name="label_theme_url">Theme URL: %1$s</string>
+    <string name="label_theme_size">Theme size: %1$d MB</string>
+    <string name="btn_copy">Copy</string>
+    <string name="btn_download">Download</string>
+    <string name="toast_copy_success">Copied successfully</string>
+    <string name="title_theme_search">Theme Search</string>
+    <string name="label_search_theme">Search theme name</string>
+    <string name="btn_search">Search</string>
+    <string name="toast_input_keywords">Please enter keywords</string>
+    <string name="toast_no_theme_found">No relevant themes found</string>
+    <string name="toast_only_english_supported">International themes only support English keywords</string>
+    <string name="toast_no_global_theme_found">No relevant global themes found</string>
+    <string name="tab_domestic">Domestic</string>
+    <string name="tab_global">Global</string>
+    <string name="switch_show_fps">Show FPS</string>
+    <string name="setting_about">About</string>
+    <string name="about_title">About</string>
+    <string name="about_thanks_list">Thanks List</string>
+    <string name="title_feedback">Feedback</string>
+    <string name="group_qq">QQ Group</string>
+    <string name="channel_telegram">Telegram Channel</string>
+    <string name="group_telegram">Telegram Group</string>
+    <string name="title_other">Others</string>
+    <string name="donate">Donate</string>
+    <string name="donate_summary">Support the developer~</string>
+    <string name="reference">References</string>
+    <string name="title_donation">Donation</string>
+    <string name="donation_tip">If you find this project helpful, consider buying the developer a cup of milk tea~😊</string>
+    <string name="donate_qr_wechat">WeChat Donation QR</string>
+    <string name="donate_qr_alipay">Alipay Donation QR</string>
+    <string name="title_references">References</string>
+    <string name="unknown_author">Unknown Author</string>
+    <string name="copy">Copy</string>
+    <string name="copy_success">Copied successfully</string>
+    <string name="download">Download</string>
+    <string name="title_font_search">Font Search</string>
+    <string name="label_search_keyword">Search keyword</string>
+    <string name="checkbox_domestic">Domestic</string>
+    <string name="dropdown_theme_version">Theme Version</string>
+    <string name="checkbox_international">International</string>
+    <string name="button_search">Search</string>
+    <string name="title_results">Results</string>
+    <string name="toast_enter_keyword">Please enter keyword</string>
+    <string name="toast_searching">Searching…</string>
+    <string name="title_ttf_to_mtz">TTF to MTZ</string>
+    <string name="label_font_name">Font name</string>
+    <string name="label_font_author">Font author</string>
+    <string name="label_imported_font">Imported font</string>
+    <string name="button_import">Import</string>
+    <string name="button_generate">Generate</string>
+    <string name="toast_please_import_font">Please import font first</string>
+    <string name="toast_please_enter_font_name">Please enter font name</string>
+    <string name="toast_please_enter_font_author">Please enter font author</string>
+    <string name="dialog_title_converting">Converting</string>
+    <string name="error_experimental_feature">Experimental feature, no guarantee the generated module will work properly!!!</string>
+    <string name="progress_title_converting">Converting</string>
+    <string name="warning_title">Warning</string>
+    <string name="warning_line1">This feature has only been tested on HyperOS2 based on Android 15</string>
+    <string name="warning_line2">No guarantee for other versions and systems, use with caution</string>
+    <string name="warning_line3">If you proceed, you assume all risks!!!</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="privacy_dialog_title">Privacy Policy</string>
+    <string name="privacy_dialog_content">
+        Welcome to use this application (hereinafter referred to as "this App"). We highly value your personal information protection. Please read the following privacy policy carefully to understand how we collect, use and protect your information.\n\n
+        【1. Information We Collect】\n
+        - Device information (such as device model, system version, unique device identifier)\n
+        - Log information (such as usage duration, launch times, crash information)\n
+        - Other anonymous data collected through Umeng Analytics SDK\n\n
+        【2. Purpose of Information】\n
+        - To optimize and improve our products and services\n
+        - For data analysis and statistics to enhance user experience\n
+        - To comply with legal requirements\n\n
+        【3. Information Protection】\n
+        We take reasonable technical and administrative measures to protect your personal information security and prevent information leakage, loss or unauthorized access.\n\n
+        【4. Your Rights】\n
+        - You have the right to choose whether to agree to this privacy policy\n
+        - You may stop using this App at any time\n
+        - For any privacy-related questions, please feel free to contact us\n\n
+        【5. Privacy Policy Updates】\n
+        We may update this privacy policy from time to time, and updates will be promptly notified in this App.
+    </string>
+    <string name="privacy_cancel">Cancel</string>
+    <string name="privacy_agree">Agree</string>
+    <string name="title_theme_info">Theme Info</string>
+    <string name="title_font_info">Font Info</string>
+    <string name="label_download_url">Download URL: %1$s</string>
+    <string name="parsing">Parsing, please wait…</string>
+    <string name="parsing_wait">Parsing in progress…</string>
+    <string name="parse_failed">Parse failed…</string>
+    <string name="label_font_url">Font URL: %1$s</string>
+    <string name="label_font_size">Font size: %1$d MB</string>
+    <string name="copy_failed">Copy failed</string>
+    <string name="language">Language</string>
+    <string name="simplified_chinese">Simplified Chinese</string>
+    <string name="english">English</string>
+    <string name="color_mode">Color Mode</string>
+    <string name="color_system">System</string>
+    <string name="color_light">Light</string>
+    <string name="color_dark">Dark</string>
+</resources>

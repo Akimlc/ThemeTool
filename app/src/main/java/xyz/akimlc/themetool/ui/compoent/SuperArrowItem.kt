@@ -1,6 +1,5 @@
 package xyz.akimlc.themetool.ui.compoent
 
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.extra.SuperArrow
+import xyz.akimlc.themetool.state.AppSettingsState
 
 @Composable
 fun SuperArrowItem(
@@ -26,7 +26,8 @@ fun SuperArrowItem(
         onClick = onClick,
         leftAction = {
             Icon(
-                modifier = Modifier.padding(end = 18.dp)
+                modifier = Modifier
+                    .padding(end = 18.dp)
                     .size(24.dp),
                 painter = painterResource(id = icon),
                 contentDescription = null,
@@ -35,6 +36,7 @@ fun SuperArrowItem(
         }
     )
 }
+
 @Composable
 fun SuperArrowItem1(
     title: String,
@@ -58,5 +60,11 @@ fun SuperArrowItem1(
 
 @Composable
 fun getAdaptiveBlackWhite(): Color {
-    return if (isSystemInDarkTheme()) Color.White else Color.Black
+    val colorMode = AppSettingsState.colorMode.intValue
+    val darkTheme = when (colorMode) {
+        1 -> false
+        2 -> true
+        else -> isSystemInDarkTheme()
+    }
+    return if (darkTheme) Color.White else Color.Black
 }

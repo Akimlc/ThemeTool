@@ -23,7 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -32,15 +34,14 @@ import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.basic.TextField
-import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import xyz.akimlc.themetool.data.model.Info.ThemeInfo
-import xyz.akimlc.themetool.viewmodel.ParseViewModel
-import androidx.core.net.toUri
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.LabeledTextField
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.ParseViewModel
 
 @Composable
 fun ThemeParsePage(
@@ -64,32 +65,29 @@ fun ThemeParsePage(
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "主题解析",
+                title = stringResource(id = R.string.title_theme_parse),
                 scrollBehavior = scroll,
                 navController = navController
             )
         }) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
                 .overScrollVertical()
+                .padding(top = 12.dp)
                 .nestedScroll(scroll.nestedScrollConnection),
             contentPadding = paddingValues
         ) {
             item {
-                TextField(
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp),
+                LabeledTextField(
                     value = shareLink,
-                    onValueChange = {
-                        shareLink = it
-                    },
-                    label = "输入分享链接",
+                    onValueChange = { shareLink = it },
+                    label = stringResource(id = R.string.label_input_theme_link),
                 )
                 TextButton(
-                    text = "解析",
+                    text = stringResource(id = R.string.btn_parse),
                     onClick = {
-                        viewModel.parseTheme(shareLink)
+                        viewModel.parseTheme(shareLink.toString())
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier
@@ -116,6 +114,8 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
     if (themeInfo==null) {
         return
     }
+    val copySuccessText = stringResource(R.string.toast_copy_success)
+
     Card(
         modifier = Modifier
             .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -126,10 +126,10 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
                 .padding(12.dp)
                 .fillMaxWidth()
         ) {
-            Text("主题名字:${themeInfo.themeName}")
-            Text("主题链接：${themeInfo.themeUrl}")
+            Text(stringResource(R.string.label_theme_name, themeInfo.themeName))
+            Text(stringResource(R.string.label_theme_url, themeInfo.themeUrl))
             Spacer(modifier = Modifier.height(6.dp))
-            Text("主题大小： ${themeInfo.themeSize / (1024 * 1024)} MB")
+            Text(stringResource(R.string.label_theme_size, themeInfo.themeSize / (1024 * 1024)))
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -141,23 +141,27 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
                             context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clipData = ClipData.newPlainText("Theme URL", themeInfo.themeUrl)
                         clipboardManager.setPrimaryClip(clipData)
-                        Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            copySuccessText,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     },
                     modifier = Modifier.weight(1f),
-                    text = "复制"
+                    text = stringResource(id = R.string.btn_copy)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 TextButton(
                     onClick = {
                         // 跳转到浏览器进行下载
                         val intent = Intent(Intent.ACTION_VIEW, themeInfo.themeUrl.toUri())
-                        //context.startActivity(intent)
+                        context.startActivity(intent)
                         //Go to 下载管理界面
-                        downloadViewModel.startDownload(themeInfo)
+                        //downloadViewModel.startDownload(themeInfo)
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier.weight(1f),
-                    text = "下载"
+                    text = stringResource(id = R.string.btn_download)
                 )
             }
         }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -36,9 +37,11 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import xyz.akimlc.themetool.utils.font.TTF2MTZ.Companion.convert
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.LabeledTextField
 import xyz.akimlc.themetool.utils.FileUtils
+import xyz.akimlc.themetool.utils.font.TTF2MTZ.Companion.convert
 
 @Composable
 fun MtzFontPage(navController: NavController) {
@@ -77,7 +80,7 @@ fun MtzFontPage(navController: NavController) {
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "TTF转MTZ",
+                title = stringResource(R.string.title_ttf_to_mtz),
                 scrollBehavior = scrollBehavior,
                 navController = navController
             )
@@ -91,38 +94,22 @@ fun MtzFontPage(navController: NavController) {
             contentPadding = padding
         ) {
             item {
-                TextField(
-                    label = "字体名称",
+                LabeledTextField(
+                    label = stringResource(R.string.label_font_name),
                     value = fontName,
-                    enabled = false,
                     onValueChange = { fontName = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
-                TextField(
-                    label = "字体作者",
+                LabeledTextField(
+                    label = stringResource(R.string.label_font_author),
                     value = fontAuthor,
-                    enabled = false,
-                    onValueChange = { fontAuthor = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                    onValueChange = {
+                        fontAuthor = it
+                    }
                 )
-                TextField(
-                    label = "导入的字体",
+                LabeledTextField(
+                    label = stringResource(R.string.label_imported_font),
                     value = importFont,
-                    enabled = false,
                     onValueChange = { importFont = it },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp),
-                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
                 Row(
                     modifier = Modifier
@@ -131,7 +118,7 @@ fun MtzFontPage(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(
-                        text = "导入",
+                        text = stringResource(R.string.button_import),
                         onClick = {
                             val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                                 type = "font/ttf"
@@ -142,22 +129,22 @@ fun MtzFontPage(navController: NavController) {
                     )
                     Spacer(Modifier.width(12.dp))
                     TextButton(
-                        text = "生成",
+                        text = stringResource(R.string.button_generate),
                         onClick = {
                             // 校验输入
                             when {
                                 importFont.isEmpty() -> {
-                                    showToast("请先导入字体")
+                                    showToast(context.getString(R.string.toast_please_import_font))
                                     return@TextButton
                                 }
 
                                 fontName.isEmpty() -> {
-                                    showToast("请输入字体名称")
+                                    showToast(context.getString(R.string.toast_please_enter_font_name))
                                     return@TextButton
                                 }
 
                                 fontAuthor.isEmpty() -> {
-                                    showToast("请输入字体作者")
+                                    showToast(context.getString(R.string.toast_please_enter_font_author))
                                     return@TextButton
                                 }
 
@@ -203,7 +190,7 @@ fun ProgressDialog(
 
     SuperDialog(
         show = showDialog,
-        title = "正在转换",
+        title = stringResource(R.string.dialog_title_converting),
         onDismissRequest = {
             showDialog.value = false
         }

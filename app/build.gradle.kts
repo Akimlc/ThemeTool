@@ -18,7 +18,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.3.2"
+        versionName = "1.3.3"
         versionCode = getGitCommitCount()
     }
     val properties = Properties()
@@ -77,11 +77,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     buildFeatures {
         compose = true
@@ -114,7 +114,7 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.kotlinx.coroutines.android)
 
-    // 图片浏览库
-    implementation(libs.image.viewer)
-    implementation(libs.sampling.decoder)
+    //UMeng
+    implementation("com.umeng.umsdk:common:9.4.7")
+    implementation("com.umeng.umsdk:asms:1.4.0")
 }
