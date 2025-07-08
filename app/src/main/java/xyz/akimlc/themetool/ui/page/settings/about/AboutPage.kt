@@ -23,6 +23,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,7 +49,7 @@ fun AboutPage(
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "关于",
+                title = stringResource(R.string.about_title),
                 scrollBehavior = topAppBarScrollBehavior,
                 navController = navController
             )
@@ -91,7 +92,7 @@ fun AboutPage(
                             }
                         )
                         SuperArrow(
-                            title = "感谢列表",
+                            title = stringResource(R.string.about_thanks_list),
                             onClick = {
                                 navController.navigate("ThanksPage")
                             }
@@ -102,7 +103,7 @@ fun AboutPage(
 
             // 交流反馈
             item {
-                SmallTitle("交流 / 反馈")
+                SmallTitle(stringResource(R.string.title_feedback))
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -110,17 +111,17 @@ fun AboutPage(
                 ) {
                     Column {
                         SuperArrow(
-                            title = "QQ群",
+                            title = stringResource(R.string.group_qq),
                             onClick = {
                                 uriHandler.openUri("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1017168342&card_type=group&source=qrcode")
                             }
                         )
                         SuperArrow(
-                            title = "Telegram频道",
+                            title = stringResource(R.string.channel_telegram),
                             onClick = { uriHandler.openUri("https://t.me/Theme_Tool") }
                         )
                         SuperArrow(
-                            title = "Telegram群组",
+                            title = stringResource(R.string.group_telegram),
                             onClick = { uriHandler.openUri("https://t.me/ThemeToolChat") }
                         )
                     }
@@ -128,7 +129,7 @@ fun AboutPage(
             }
 
             item {
-                SmallTitle("其他")
+                SmallTitle(stringResource(R.string.title_other))
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -136,14 +137,14 @@ fun AboutPage(
                 ) {
                     Column {
                         SuperArrow(
-                            title = "捐赠",
-                            summary = "支持一下开发者~",
+                            title = stringResource(R.string.donate),
+                            summary = stringResource(R.string.donate_summary),
                             onClick = {
                                 navController.navigate("DonationPage")
                             }
                         )
                         SuperArrow(
-                            title = "引用",
+                            title = stringResource(R.string.reference),
                             onClick = {
                                 navController.navigate("ReferencesPage")
                             }

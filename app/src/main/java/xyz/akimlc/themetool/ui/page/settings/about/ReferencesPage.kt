@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
@@ -17,6 +18,7 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 
 @Composable
@@ -26,7 +28,7 @@ fun ReferencesPage(navController: NavController) {
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "引用",
+                title = stringResource(R.string.title_references),
                 scrollBehavior = scrollBehavior,
                 navController = navController,
             )

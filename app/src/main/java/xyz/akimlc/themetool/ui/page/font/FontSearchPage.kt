@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -42,6 +43,7 @@ import top.yukonga.miuix.kmp.extra.CheckboxLocation
 import top.yukonga.miuix.kmp.extra.SuperCheckbox
 import top.yukonga.miuix.kmp.extra.SuperDropdown
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
@@ -89,7 +91,7 @@ fun FontSearchPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = "字体搜索",
+                title = stringResource(R.string.title_font_search),
                 scrollBehavior = scrollBehavior,
             )
         }
@@ -109,7 +111,7 @@ fun FontSearchPage(
                     onValueChange = {
                         keyword = it
                     },
-                    label = "搜索关键字",
+                    label = stringResource(R.string.label_search_keyword),
                     singleLine = true,
                     modifier = Modifier.padding(12.dp)
                 )
@@ -122,7 +124,7 @@ fun FontSearchPage(
                 ) {
                     SuperCheckbox(
                         checkboxLocation = CheckboxLocation.Right,
-                        title = "国内",
+                        title = stringResource(R.string.checkbox_domestic),
                         checked = selectedRegion==Region.DOMESTIC,
                         onCheckedChange = {
                             viewModel.clearSearchResults()
@@ -134,7 +136,7 @@ fun FontSearchPage(
                         visible = selectedRegion==Region.DOMESTIC,
                     ) {
                         SuperDropdown(
-                            title = "主题版本选择",
+                            title = stringResource(R.string.dropdown_theme_version),
                             items = options,
                             selectedIndex = selectedIndex,
                             onSelectedIndexChange = { selectedIndex = it }
@@ -142,7 +144,7 @@ fun FontSearchPage(
                     }
                     SuperCheckbox(
                         checkboxLocation = CheckboxLocation.Right,
-                        title = "国际",
+                        title = stringResource(R.string.checkbox_international),
                         checked = selectedRegion==Region.INTERNATIONAL,
                         onCheckedChange = {
                             viewModel.clearSearchResults()
@@ -151,13 +153,21 @@ fun FontSearchPage(
                     )
                 }
                 TextButton(
-                    text = "搜索",
+                    text = stringResource(R.string.button_search),
                     onClick = {
                         if (keyword.isEmpty()) {
-                            Toast.makeText(context, "请输入关键字", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_enter_keyword),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@TextButton
                         }
-                        Toast.makeText(context, "正在搜索...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_searching),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         viewModel.clearSearchResults()  //清除结果
                         val version = options.getOrNull(selectedIndex) ?: ""
                         viewModel.searchFont(selectedRegion, keyword, version, page)
@@ -171,7 +181,7 @@ fun FontSearchPage(
             }
 
             item {
-                SmallTitle("结果")
+                SmallTitle(stringResource(R.string.title_results))
             }
             if (isSearching) {
                 item {

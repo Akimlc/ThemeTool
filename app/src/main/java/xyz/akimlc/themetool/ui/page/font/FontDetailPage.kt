@@ -41,14 +41,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -59,6 +58,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 
@@ -90,7 +90,7 @@ fun FontDetailPage(
         viewModel.loadFontData(uuid)
     }
 
-    if (isLoading || fontData == null) {
+    if (isLoading || fontData==null) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -170,7 +170,7 @@ fun FontDetailPage(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                fontAuthor ?: "未知作者",
+                                fontAuthor ?: stringResource(R.string.unknown_author),
                                 modifier = Modifier.basicMarquee(
                                     iterations = Int.MAX_VALUE,
                                     initialDelayMillis = 1000,
@@ -182,19 +182,24 @@ fun FontDetailPage(
                         Spacer(modifier = Modifier.width(12.dp))
 
                         TextButton(
-                            text = "复制",
+                            text = stringResource(R.string.copy),
                             onClick = {
-                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clipboard =
+                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                 val clip = ClipData.newPlainText("Font URL", fontDownloadUrl)
                                 clipboard.setPrimaryClip(clip)
-                                Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.copy_success),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         )
 
                         Spacer(Modifier.width(8.dp))
 
                         TextButton(
-                            text = "下载",
+                            text = stringResource(R.string.download),
                             onClick = {
                                 val intent = Intent(Intent.ACTION_VIEW, fontDownloadUrl?.toUri())
                                 context.startActivity(intent)
@@ -206,13 +211,16 @@ fun FontDetailPage(
             }
         }
 
-        if (selectedImageIndex.value != null && isPreviewVisible.value) {
+        if (selectedImageIndex.value!=null && isPreviewVisible.value) {
             Dialog(
                 onDismissRequest = {
                     isPreviewVisible.value = false
                     selectedImageIndex.value = null
                 },
-                properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = false
+                )
             ) {
                 AnimatedVisibility(
                     visible = true,

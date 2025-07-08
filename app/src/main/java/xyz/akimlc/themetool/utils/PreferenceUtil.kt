@@ -13,12 +13,10 @@ object PreferenceUtil {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
-    // 设置用户是否同意隐私政策
     fun setUserAgreed(context: Context, agreed: Boolean) {
         getPreferences(context).edit { putBoolean(KEY_PRIVACY_AGREED, agreed) }
     }
 
-    // 获取用户是否同意隐私政策
     fun isUserAgreed(context: Context): Boolean {
         return getPreferences(context).getBoolean(KEY_PRIVACY_AGREED, false)
     }
@@ -30,5 +28,13 @@ object PreferenceUtil {
 
     fun putBoolean(context: Context, key: String, value: Boolean) {
         getPreferences(context).edit { putBoolean(key, value) }
+    }
+
+    fun getInt(context: Context, key: String, defaultValue: Int = 0): Int {
+        return getPreferences(context).getInt(key, defaultValue)
+    }
+
+    fun putInt(context: Context, key: String, value: Int) {
+        getPreferences(context).edit { putInt(key, value) }
     }
 }

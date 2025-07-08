@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +43,7 @@ fun DonationPage(navController: NavController) {
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "赞赏",
+                title = stringResource(R.string.title_donation),
                 scrollBehavior = scrollBehavior,
                 navController = navController,
             )
@@ -69,7 +70,7 @@ fun DonationPage(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "如果你觉得本项目对你有帮助，欢迎请作者喝杯奶茶~\uD83D\uDE0A",
+                            text = stringResource(R.string.donation_tip),
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 8.dp, end = 8.dp),
@@ -98,7 +99,7 @@ fun DonationPage(navController: NavController) {
                 ) {
                     Image(
                         painter = painterResource(R.mipmap.donate_wechat),
-                        contentDescription = "微信赞赏二维码",
+                        contentDescription = stringResource(R.string.donate_qr_wechat),
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .border(
@@ -110,7 +111,7 @@ fun DonationPage(navController: NavController) {
                     Spacer(modifier = Modifier.size(24.dp))
                     Image(
                         painter = painterResource(R.mipmap.donate_alipay),
-                        contentDescription = "微信赞赏二维码",
+                        contentDescription = stringResource(R.string.donate_qr_alipay),
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .border(

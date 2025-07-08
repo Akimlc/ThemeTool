@@ -17,6 +17,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.FlowPreview
@@ -58,9 +59,18 @@ fun MainPage(navController: NavController) {
     }
 
     val items = listOf(
-        NavigationItem("首页", ImageVector.vectorResource(R.drawable.ic_home)),
-        NavigationItem("下载", ImageVector.vectorResource(R.drawable.ic_download)),
-        NavigationItem("设置", ImageVector.vectorResource(R.drawable.ic_about))
+        NavigationItem(
+            stringResource(id = R.string.nav_home),
+            ImageVector.vectorResource(R.drawable.ic_home)
+        ),
+        NavigationItem(
+            stringResource(id = R.string.nav_download),
+            ImageVector.vectorResource(R.drawable.ic_download)
+        ),
+        NavigationItem(
+            stringResource(id = R.string.nav_settings),
+            ImageVector.vectorResource(R.drawable.ic_about)
+        )
     )
     var pagerTitle by remember { mutableStateOf(items[targetPage].label) }
 

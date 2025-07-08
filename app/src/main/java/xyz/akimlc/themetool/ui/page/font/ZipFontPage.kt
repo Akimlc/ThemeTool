@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -40,6 +41,7 @@ import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.ErrorNotice
 import xyz.akimlc.themetool.ui.compoent.LabeledTextField
@@ -83,7 +85,7 @@ fun ZipFontPage(navController: NavController) {
     Scaffold(
         topBar = {
             BackTopAppBar(
-                title = "TTF转ZIP",
+                title = stringResource(R.string.title_ttf_to_mtz),
                 scrollBehavior = scrollBehavior,
                 navController = navController
             )
@@ -99,16 +101,16 @@ fun ZipFontPage(navController: NavController) {
             item {
                 ShowWaringDialog(isShow, navController)
                 ErrorNotice(
-                    text = "实验性功能，不保证生成的模块能正常使用！！！"
+                    text = stringResource(R.string.error_experimental_feature)
                 )
                 LabeledTextField(
-                    label = "字体名称",
+                    label = stringResource(R.string.label_font_name),
                     value = zipName,
                     onValueChange = { zipName = it },
                 )
 
                 LabeledTextField(
-                    label = "导入的字体",
+                    label = stringResource(R.string.label_imported_font),
                     value = importFont,
                     onValueChange = { importFont = it },
                 )
@@ -135,12 +137,12 @@ fun ZipFontPage(navController: NavController) {
                             // 校验输入
                             when {
                                 importFont.isEmpty() -> {
-                                    showToast("请先导入字体")
+                                    showToast(context.getString(R.string.toast_please_import_font))
                                     return@TextButton
                                 }
 
                                 zipName.isEmpty() -> {
-                                    showToast("请输入字体名称") // 修改提示信息
+                                    showToast(context.getString(R.string.toast_please_enter_font_name))
                                     return@TextButton
                                 }
 
@@ -180,7 +182,7 @@ private fun ZipProgressDialog(
 ) {
     SuperDialog(
         show = showDialog,
-        title = "正在转换",
+        title = stringResource(R.string.progress_title_converting),
         onDismissRequest = {
             showDialog.value = false
         }
@@ -203,20 +205,20 @@ private fun ShowWaringDialog(
         },
         content = {
             Text(
-                "该功能仅在基于Android15的HyperOS2上通过测试",
+                text = stringResource(R.string.warning_line1),
                 modifier = Modifier
                     .fillMaxWidth(),
                 style = MiuixTheme.textStyles.main,
             )
             Text(
-                "不保证其他版本及系统的可用性，请谨慎刷入",
+                text = stringResource(R.string.warning_line2),
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .fillMaxWidth(),
                 style = MiuixTheme.textStyles.main,
             )
             Text(
-                "如若刷入，一切风险自行承担！！！",
+                text = stringResource(R.string.warning_line3),
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .fillMaxWidth(),
@@ -229,7 +231,7 @@ private fun ShowWaringDialog(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(
-                    text = "取消",
+                    text = stringResource(R.string.button_cancel),
                     onClick = {
                         isShow.value = false
                         navController.popBackStack()
@@ -238,7 +240,7 @@ private fun ShowWaringDialog(
                 )
                 Spacer(Modifier.width(12.dp))
                 TextButton(
-                    text = "确定",
+                    text = stringResource(R.string.button_confirm),
                     onClick = {
                         isShow.value = false
                     },

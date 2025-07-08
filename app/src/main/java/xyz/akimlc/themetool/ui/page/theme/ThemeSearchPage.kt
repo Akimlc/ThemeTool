@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +52,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.utils.overScrollVertical
+import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
 import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
@@ -66,15 +68,18 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
     val context = LocalContext.current
     val keywords = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
-    val tabs = listOf("国内", "国际")
+    val tabs = listOf(
+        stringResource(R.string.tab_domestic),
+        stringResource(R.string.tab_global)
+    )
     val pagerState = rememberPagerState { tabs.size }
     val selectedTabIndex by remember { derivedStateOf { pagerState.currentPage } }
 
-    val listState  = rememberLazyListState()
+    val listState = rememberLazyListState()
     Scaffold(
         topBar = {
             BackDoubleTopAppBar(
-                title = "主题搜索",
+                title = stringResource(R.string.title_theme_search),
                 scrollBehavior = scrollBehavior,
                 navController = navController,
                 onDoubleTop = {
@@ -103,7 +108,7 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                     modifier = Modifier
                         .padding(top = 12.dp)
                         .padding(horizontal = 12.dp),
-                    label = "搜索的主题名称",
+                    label = stringResource(id = R.string.label_search_theme),
                     singleLine = true
                 )
                 TextButton(
@@ -113,16 +118,24 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                         .padding(top = 6.dp)
                         .padding(bottom = 8.dp),
                     colors = ButtonDefaults.textButtonColorsPrimary(),
-                    text = "搜索",
+                    text = stringResource(id = R.string.theme_search),
                     onClick = {
                         if (keywords.value.isBlank()) {
-                            Toast.makeText(context, "请输入关键词", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_input_keywords),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@TextButton
                         }
                         viewModel.clearSearchResults()
                         viewModel.clearGlobalThemeResults()
                         viewModel.searchTheme(keywords.value) {
-                            Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_no_theme_found),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
                         // 检查是否为纯英文
@@ -131,17 +144,26 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
 
                         if (!isEnglishOnly) {
                             // 不是英文就提示，国际搜索不执行
-                            Toast.makeText(context, "国际主题仅支持英文关键词", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_only_english_supported),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             viewModel.clearGlobalThemeResults()
                         } else {
                             viewModel.searchGlobalTheme(keyword) {
-                                Toast.makeText(context, "未找到相关国际主题", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.toast_no_global_theme_found),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             viewModel.searchTheme(keyword) {
-                                Toast.makeText(context, "未找到相关主题", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.toast_no_global_theme_found),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -205,7 +227,7 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel) {
                     rowProduct.forEach { product ->
                         Column(
                             modifier = Modifier
-                                .weight(1f) // 让每个Item平分宽度
+                                .weight(1f)
                                 .padding(horizontal = 4.dp)
                                 .padding(bottom = 8.dp)
                                 .clickable {
