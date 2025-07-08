@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AppSettingsState.language.intValue = PreferenceUtil.getInt(this, "app_language", 0)
         enableEdgeToEdge()
+        window.isNavigationBarContrastEnforced = false
         setContent {
             AppTheme {
                 App()
