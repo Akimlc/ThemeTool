@@ -18,7 +18,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.3.2"
+        versionName = "1.3.3"
         versionCode = getGitCommitCount()
     }
     val properties = Properties()
