@@ -45,16 +45,15 @@ fun MainPage(navController: NavController) {
     val topAppBarScrollBehavior2 = MiuixScrollBehavior(rememberTopAppBarState())
 
     val topAppBarScrollBehaviorList = listOf(
-        topAppBarScrollBehavior0, topAppBarScrollBehavior1, topAppBarScrollBehavior2
+        topAppBarScrollBehavior0, topAppBarScrollBehavior1
     )
-    val pagerState = rememberPagerState(pageCount = { 3 })
+    val pagerState = rememberPagerState(pageCount = { 2 })
     var targetPage by remember { mutableIntStateOf(pagerState.currentPage) }
     val coroutineScope = rememberCoroutineScope()
 
     val currentScrollBehavior = when (pagerState.currentPage) {
         0 -> topAppBarScrollBehaviorList[0]
         1 -> topAppBarScrollBehaviorList[1]
-        2 -> topAppBarScrollBehaviorList[2]
         else -> topAppBarScrollBehaviorList[0]
     }
 
@@ -63,19 +62,16 @@ fun MainPage(navController: NavController) {
             stringResource(id = R.string.nav_home),
             ImageVector.vectorResource(R.drawable.ic_home)
         ),
-        NavigationItem(
-            stringResource(id = R.string.nav_download),
-            ImageVector.vectorResource(R.drawable.ic_download)
-        ),
+//        NavigationItem(
+//            stringResource(id = R.string.nav_download),
+//            ImageVector.vectorResource(R.drawable.ic_download)
+//        ),
         NavigationItem(
             stringResource(id = R.string.nav_settings),
-            ImageVector.vectorResource(R.drawable.ic_about)
+            ImageVector.vectorResource(R.drawable.ic_settings)
         )
     )
     var pagerTitle by remember { mutableStateOf(items[targetPage].label) }
-
-    val context = LocalContext.current
-
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.debounce(150).collectLatest {
@@ -135,18 +131,18 @@ fun AppHorizontalPager(
                     )
                 }
 
-                1 -> {
-                    DownloadPage(
-                        navController = navController,
-                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
-                        padding = padding,
-                    )
-                }
+//                1 -> {
+//                    DownloadPage(
+//                        navController = navController,
+//                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
+//                        padding = padding,
+//                    )
+//                }
 
-                2 -> {
+                1 -> {
                     SettingsPage(
                         navController = navController,
-                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[2],
+                        topAppBarScrollBehavior = topAppBarScrollBehaviorList[1],
                         padding = padding,
                     )
                 }
