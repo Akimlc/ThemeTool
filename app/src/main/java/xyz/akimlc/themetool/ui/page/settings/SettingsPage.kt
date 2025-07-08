@@ -21,6 +21,7 @@ import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem
 import xyz.akimlc.themetool.utils.LanguageHelper
+import xyz.akimlc.themetool.utils.LanguageHelper.Companion.setLocale
 import xyz.akimlc.themetool.utils.PreferenceUtil
 
 @Composable
@@ -63,7 +64,7 @@ fun SettingsPage(
                     onSelectedIndexChange = { index ->
                         language.intValue = index
                         PreferenceUtil.putInt(context, "app_language", index)
-                        LanguageHelper.setIndexLanguage(activity, index)
+                        activity.setLocale(index) // ✅ 调用扩展函数或 BaseActivity 中的方法
                     }
                 )
                 SuperDropdown(
@@ -75,7 +76,7 @@ fun SettingsPage(
                     ),
                     selectedIndex = colorMode.intValue,
                     onSelectedIndexChange = { index ->
-                       colorMode.intValue = index
+                        colorMode.intValue = index
                         PreferenceUtil.putInt(context, "color_mode", index)
                     }
                 )
