@@ -74,7 +74,7 @@ fun ErrorNotice(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .padding(vertical = 12.dp)
             .padding(horizontal = 12.dp),
         insideMargin = PaddingValues(vertical = 12.dp),
         color = backgroundColor
