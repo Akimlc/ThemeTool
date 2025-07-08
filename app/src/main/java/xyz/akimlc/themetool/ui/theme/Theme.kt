@@ -5,15 +5,17 @@ import androidx.compose.runtime.Composable
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.darkColorScheme
 import top.yukonga.miuix.kmp.theme.lightColorScheme
+import xyz.akimlc.themetool.state.AppSettingsState
 
 
 @Composable
 fun AppTheme(
-    colorMode: Int = 0,
     content: @Composable () -> Unit
 ) {
+    val colorMode = AppSettingsState.colorMode.intValue
     val darkTheme = isSystemInDarkTheme()
-    return MiuixTheme(
+
+    MiuixTheme(
         colors = when (colorMode) {
             1 -> lightColorScheme()
             2 -> darkColorScheme()

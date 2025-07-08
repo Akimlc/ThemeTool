@@ -33,6 +33,7 @@ fun SettingsPage(
     val activity = context as Activity
     val showFPSMonitor = AppSettingsState.showFPSMonitor
     val language = AppSettingsState.language
+    val colorMode = AppSettingsState.colorMode
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -63,6 +64,19 @@ fun SettingsPage(
                         language.intValue = index
                         PreferenceUtil.putInt(context, "app_language", index)
                         LanguageHelper.setIndexLanguage(activity, index)
+                    }
+                )
+                SuperDropdown(
+                    title = stringResource(R.string.color_mode),
+                    items = listOf(
+                        stringResource(R.string.color_system),
+                        stringResource(R.string.color_light),
+                        stringResource(R.string.color_dark)
+                    ),
+                    selectedIndex = colorMode.intValue,
+                    onSelectedIndexChange = { index ->
+                       colorMode.intValue = index
+                        PreferenceUtil.putInt(context, "color_mode", index)
                     }
                 )
             }

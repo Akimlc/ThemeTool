@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.umeng.analytics.MobclickAgent
-import com.umeng.commonsdk.UMConfigure
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.App
 import xyz.akimlc.themetool.ui.theme.AppTheme
@@ -18,6 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppSettingsState.language.intValue = PreferenceUtil.getInt(this, "app_language", 0)
+        AppSettingsState.colorMode.intValue = PreferenceUtil.getInt(this, "color_mode", 0)
         enableEdgeToEdge()
         window.isNavigationBarContrastEnforced = false
         setContent {
