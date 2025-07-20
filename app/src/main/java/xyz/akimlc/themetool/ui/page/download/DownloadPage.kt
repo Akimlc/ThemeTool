@@ -2,6 +2,7 @@ package xyz.akimlc.themetool.ui.page.download
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -16,26 +17,37 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
+import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.TextButton
+import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Info
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -43,6 +55,7 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.DownloadEntity
 import xyz.akimlc.themetool.data.model.DownloadStatus
+import xyz.akimlc.themetool.ui.compoent.getAdaptiveBlackWhite
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 
 @Composable
@@ -52,55 +65,122 @@ fun DownloadPage(
     padding: PaddingValues,
     viewModel: DownloadViewModel
 ) {
-
+    val showDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Log.d("DownloadViewModelCheck", "DownloadPage ViewModel: $viewModel")
     val TAG = "DownloadPage"
     val downloadList by viewModel.downloads.collectAsState()
     //Log.d("DownloadPage", "下载任务数=${downloadList.size}")
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-    ) {
-        if (downloadList.isEmpty()) {
-            //没有下载列表的时候
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .overScrollVertical()
-                    .padding(top = 12.dp),
-                contentPadding = padding,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                item {
-                    Icon(
-                        imageVector = MiuixIcons.Useful.Info,
-                        contentDescription = "No downloads",
-                        modifier = Modifier.size(48.dp),
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "暂无下载任务",
-                        color = Color.Gray,
-                        fontSize = 16.sp
-                    )
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = stringResource(R.string.download),
+                scrollBehavior = topAppBarScrollBehavior,
+                actions = {
+                    IconButton(
+                        modifier = Modifier
+                            .padding(end = 18.dp)
+                            .size(40.dp),
+                        onClick = {
+                            //清除下载任务
+                            showDialog.value = true
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_clear),
+                            contentDescription = null,
+                            tint = getAdaptiveBlackWhite()
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+        ) {
+            if (downloadList.isEmpty()) {
+                //没有下载列表的时候
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .overScrollVertical()
+                        .padding(top = 12.dp),
+                    contentPadding = paddingValues,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    item {
+                        Icon(
+                            imageVector = MiuixIcons.Useful.Info,
+                            contentDescription = "No downloads",
+                            modifier = Modifier.size(48.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.no_downloads),
+                            color = Color.Gray,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            } else {
+                // 下载列表
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .overScrollVertical()
+                        .padding(top = 12.dp),
+                    contentPadding = paddingValues
+                ) {
+                    items(downloadList, key = { it.id }) { item ->
+                        DownloadItem(item)
+                    }
                 }
             }
-        } else {
-            // 下载列表
-            LazyColumn(
+        }
+    }
+    if (showDialog.value) {
+        SuperDialog(
+            show = showDialog,
+            title = stringResource(R.string.clear_confirm_title),
+            onDismissRequest = { showDialog.value = false },
+        ) {
+            Text(
+                stringResource(R.string.clear_confirm_message),
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .overScrollVertical()
                     .padding(top = 12.dp),
-                contentPadding = padding
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                items(downloadList, key = { it.id }) { item ->
-                    Log.d(TAG, "DownloadPage: 下载项：${item.name}, 大小：${item.size}MB")
-                    DownloadItem(item)
-                }
+                TextButton(
+                    text = stringResource(R.string.button_cancel),
+                    onClick = {
+                        showDialog.value = false
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(12.dp))
+                TextButton(
+                    text = stringResource(R.string.button_confirm),
+                    onClick = {
+                        viewModel.clearDownloads()
+                        showDialog.value = false
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.clear_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
     }

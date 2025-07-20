@@ -38,8 +38,6 @@ class DownloadViewModel(
 
     var state by mutableStateOf(DownloadStatus.READY)
 
-
-
     fun fetchDownloadInfo(url: String, context: Context) {
         Log.d(TAG, "fetchDownloadInfo: 启动！！！！")
         viewModelScope.launch {
@@ -114,60 +112,11 @@ class DownloadViewModel(
         }
     }
 
-//    private fun simulateFakeDownloads() {
-//        val items = listOf(
-//            DownloadModel("1", "主题A.mtz", "https://example.com/1", 10f, 0f, DownloadStatus.READY),
-//            DownloadModel("2", "主题B.mtz", "https://example.com/2", 12.5f, 0f, DownloadStatus.READY),
-//            DownloadModel("3", "主题C.mtz", "https://example.com/3", 8.2f, 0f, DownloadStatus.READY),
-//        )
-//        _downloads.value = items
-//
-//        // 每个 item 模拟进度增加
-//        items.forEach { model ->
-//            viewModelScope.launch {
-//                updateStatus(model.id, DownloadStatus.DOWNLOADING)
-//                repeat(100) {
-//                    delay(50) // 每50ms增加1%
-//                    updateProgress(model.id, (it + 1) / 100f)
-//                }
-//                updateStatus(model.id, DownloadStatus.FINISHED)
-//            }
-//        }
-//    }
-//
-//    private fun updateProgress(id: String, progress: Float) {
-//        _downloads.update { list ->
-//            list.map {
-//                if (it.id == id) it.copy(progress = progress) else it
-//            }
-//        }
-//    }
-//
-//    private fun updateStatus(id: String, status: DownloadStatus) {
-//
-//        _downloads.update { list ->
-//            list.map {
-//                if (it.id == id) it.copy(status = status) else it
-//            }
-//        }
-//    }
-//    private fun updateDownloadProgress(
-//        url: String,
-//        progress: Float?,
-//        status: DownloadStatus? = null
-//    ) {
-//        dao.update()
-//        _downloads.update { list ->
-//            list.map {
-//                if (it.url==url) {
-//                    it.copy(
-//                        progress = progress ?: it.progress,
-//                        status = status ?: it.status
-//                    )
-//                } else it
-//            }
-//        }
-//    }
+    fun clearDownloads() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.clearDownloads()
+        }
+    }
 
     private suspend fun getFileNameFromUrl(url: String): String {
         return withContext(Dispatchers.IO) {

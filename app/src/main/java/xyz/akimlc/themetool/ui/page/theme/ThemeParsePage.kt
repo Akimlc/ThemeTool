@@ -152,7 +152,7 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
                     onClick = {
                         //Go to 下载管理界面
                         downloadViewModel.fetchDownloadInfo(themeInfo.themeUrl,context)
-                        Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier.weight(1f),

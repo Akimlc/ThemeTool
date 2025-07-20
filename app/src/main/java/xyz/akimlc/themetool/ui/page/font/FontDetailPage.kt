@@ -203,7 +203,7 @@ fun FontDetailPage(
                             onClick = {
                                 fontDownloadUrl?.let {
                                     downloadViewModel.fetchDownloadInfo(it, context)
-                                    Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
                                 }
                             },
                             colors = ButtonDefaults.textButtonColorsPrimary()

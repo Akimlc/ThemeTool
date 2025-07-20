@@ -76,7 +76,7 @@
     <string name="warning_line3">如若刷入，一切风险自行承担！！！</string>
     <string name="button_cancel">取消</string>
     <string name="button_confirm">确定</string>
-    <string name="privacy_dialog_title">隐私政策</string>
+    <string name="privacy_title">隐私政策</string>
     <string name="privacy_content">
         欢迎使用本应用（以下简称“本App”）。我们非常重视您的个人信息保护，请您仔细阅读以下隐私政策内容，了解我们如何收集、使用和保护您的信息。\n\n
         【1. 我们收集的信息】\n
@@ -114,5 +114,10 @@
     <string name="color_system">跟随系统</string>
     <string name="color_light">浅色模式</string>
     <string name="color_dark">深色模式</string>
-
+    <string name="no_downloads">暂无下载任务</string>
+    <string name="clear_confirm_title">注意</string>
+    <string name="clear_confirm_message">确认清除下载任务列表</string>
+    <string name="clear_success">清除成功</string>
+    <string name="added_to_download_list">已添加到下载任务列表…</string>
+    <string name="font_convert_failed">字体转换失败: %1$s</string>
 </resources>

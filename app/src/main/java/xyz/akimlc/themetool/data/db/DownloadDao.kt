@@ -23,7 +23,7 @@ interface DownloadDao {
     @Delete
     suspend fun delete(download: DownloadEntity)
 
-    @Query("DELETE FROM downloads WHERE status = 'FINISHED'")
-    suspend fun clearFinishedDownloads()
+    @Query("DELETE FROM downloads")
+    suspend fun clearDownloads()
 }
 
