@@ -28,9 +28,9 @@ import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.state.AppSettingsState
-import xyz.akimlc.themetool.ui.compoent.PrivacyDialog
 import xyz.akimlc.themetool.ui.page.HomePage
 import xyz.akimlc.themetool.ui.page.MainPage
+import xyz.akimlc.themetool.ui.page.PrivacyPage
 import xyz.akimlc.themetool.ui.page.download.DownloadPage
 import xyz.akimlc.themetool.ui.page.font.FontDetailPage
 import xyz.akimlc.themetool.ui.page.font.FontSearchPage
@@ -55,7 +55,7 @@ import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 @Composable
 fun App() {
 
-    val context = LocalContext.current.applicationContext
+    val context = LocalContext.current
     val db = remember {
         Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
     }
@@ -64,29 +64,26 @@ fun App() {
         factory = DownloadViewModelFactory(dao)
     )
 
-    val agreed = remember {
-        mutableStateOf(PreferenceUtil.isUserAgreed(context))
-    }
+    val showDialog = remember { mutableStateOf(!PreferenceUtil.isUserAgreed(context)) }
+    val hasInit = remember { mutableStateOf(false) }
     val searchThemeViewModel: SearchThemeViewModel = viewModel()
     val parseViewModel: ParseViewModel = viewModel()
-    val showDialog = remember { mutableStateOf(!agreed.value) }
-    val hasInit = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         AppSettingsState.showFPSMonitor.value =
             PreferenceUtil.getBoolean(context, "show_FPS_Monitor", false)
     }
     if (showDialog.value) {
-        PrivacyDialog(
+        PrivacyPage(
             isShow = showDialog,
             onAgree = {
                 PreferenceUtil.setUserAgreed(context, true)
-                agreed.value = true
                 showDialog.value = false
             },
             onCancel = {
                 (context as? Activity)?.finish()
             }
         )
+        return
     } else if (!hasInit.value) {
         LaunchedEffect(Unit) {
             UMConfigure.init(

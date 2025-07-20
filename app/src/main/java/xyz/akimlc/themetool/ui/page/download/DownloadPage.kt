@@ -45,34 +45,6 @@ import xyz.akimlc.themetool.data.db.DownloadEntity
 import xyz.akimlc.themetool.data.model.DownloadStatus
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 
-
-//val downloadItems = listOf(
-//    DownloadModel(
-//        id = "1",
-//        name = "测试",
-//        url = "www.www",
-//        size = 1f,
-//        progress = 0f,
-//        status = DownloadStatus.FAILED
-//    ),
-//    DownloadModel(
-//        id = "2",
-//        name = "测试",
-//        url = "www.www",
-//        size = 1f,
-//        progress = 0f,
-//        status = DownloadStatus.FAILED
-//    ),
-//    DownloadModel(
-//        id = "3",
-//        name = "测试",
-//        url = "www.www",
-//        size = 1f,
-//        progress = 0f,
-//        status = DownloadStatus.FAILED
-//    ),
-//)
-
 @Composable
 fun DownloadPage(
     navController: NavController,
