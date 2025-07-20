@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,9 +22,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.umeng.commonsdk.UMConfigure
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.compoent.PrivacyDialog
 import xyz.akimlc.themetool.ui.page.HomePage
@@ -44,6 +45,7 @@ import xyz.akimlc.themetool.ui.page.theme.ThemeParsePage
 import xyz.akimlc.themetool.ui.page.theme.ThemeSearchPage
 import xyz.akimlc.themetool.utils.PreferenceUtil
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.ParseViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
@@ -52,10 +54,21 @@ import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun App() {
-    val context = LocalContext.current
+
+    val context = LocalContext.current.applicationContext
+    val db = remember {
+        Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
+    }
+    val dao = remember { db.downloadDao() }
+    val downloadViewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
+
     val agreed = remember {
         mutableStateOf(PreferenceUtil.isUserAgreed(context))
     }
+    val searchThemeViewModel: SearchThemeViewModel = viewModel()
+    val parseViewModel: ParseViewModel = viewModel()
     val showDialog = remember { mutableStateOf(!agreed.value) }
     val hasInit = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -123,14 +136,14 @@ fun App() {
                 )
             }
         ) {
-            composable("MainPage") { MainPage(navController) }
+            composable("MainPage") { MainPage(navController, downloadViewModel) }
             composable("HomePage") { HomePage(navController, scrollBehavior, paddingValues) }
-            composable("ThemeSearchPage") { ThemeSearchPage(navController, SearchThemeViewModel()) }
+            composable("ThemeSearchPage") { ThemeSearchPage(navController, searchThemeViewModel,downloadViewModel) }
             composable("ThemeParsePage") {
                 ThemeParsePage(
                     navController,
-                    ParseViewModel(),
-                    DownloadViewModel()
+                    parseViewModel,
+                    downloadViewModel
                 )
             }
             composable("ThanksPage") {
@@ -144,6 +157,7 @@ fun App() {
                     searchFontViewModel,
                     fontDetailViewModel,
                     navController,
+                    downloadViewModel
                 )
             }
             composable("MtzFontPage") { MtzFontPage(navController) }
@@ -152,7 +166,8 @@ fun App() {
                 FontDetailPage(
                     navController = navController,
                     viewModel = fontDetailViewModel,
-                    uuid = uuid
+                    uuid = uuid,
+                    downloadViewModel = downloadViewModel
                 )
             }
             composable("DonationPage") {
@@ -162,7 +177,12 @@ fun App() {
                 ReferencesPage(navController)
             }
             composable("DownloadPage") {
-                DownloadPage(navController, scrollBehavior, paddingValues)
+                DownloadPage(
+                    navController,
+                    scrollBehavior,
+                    paddingValues,
+                    viewModel = downloadViewModel
+                )
             }
             composable("AboutPage") {
                 AboutPage(navController, scrollBehavior)

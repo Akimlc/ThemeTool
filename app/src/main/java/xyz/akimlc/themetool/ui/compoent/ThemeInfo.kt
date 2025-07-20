@@ -3,8 +3,6 @@ package xyz.akimlc.themetool.ui.compoent
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Text
@@ -31,12 +28,18 @@ import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.model.Info
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.repository.Parse
+import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.GlobalProductData
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 
 @Composable
-fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeInfo: ThemeInfo?) {
+fun ThemeInfoDialog(
+    isShow: MutableState<Boolean>,
+    product: ProductData,
+    themeInfo: ThemeInfo?,
+    downloadViewModel: DownloadViewModel
+) {
     val context = LocalContext.current
     val themeInfoState = remember { mutableStateOf<ThemeInfo?>(null) }
     val isLoading = remember { mutableStateOf(true) }
@@ -110,8 +113,8 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
                         ).show()
                         return@TextButton
                     }
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(themeInfo.themeUrl))
-                    context.startActivity(intent)
+                    downloadViewModel.fetchDownloadInfo(themeInfo.themeUrl, context) // 启动下载任务
+                    Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 modifier = Modifier.fillMaxWidth()
@@ -124,6 +127,7 @@ fun ThemeInfoDialog(isShow: MutableState<Boolean>, product: ProductData, themeIn
 fun GlobalThemeInfoDialog(
     isShow: MutableState<Boolean>,
     product: GlobalProductData,
+    downloadViewModel: DownloadViewModel
 ) {
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(true) }
@@ -198,8 +202,8 @@ fun GlobalThemeInfoDialog(
                         ).show()
                         return@TextButton
                     }
-                    val intent = Intent(Intent.ACTION_VIEW, themeState.downloadUrl.toUri())
-                    context.startActivity(intent)
+                    downloadViewModel.fetchDownloadInfo(themeState.downloadUrl, context)
+                    Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 modifier = Modifier.fillMaxWidth()
@@ -211,7 +215,8 @@ fun GlobalThemeInfoDialog(
 @Composable
 fun DomesticFontInfoDialog(
     isShow: MutableState<Boolean>,
-    product: SearchFontViewModel.ProductData
+    product: SearchFontViewModel.ProductData,
+    downloadViewModel: DownloadViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -285,8 +290,8 @@ fun DomesticFontInfoDialog(
                         ).show()
                         return@TextButton
                     }
-                    val intent = Intent(Intent.ACTION_VIEW, themeState.downloadUrl.toUri())
-                    context.startActivity(intent)
+                    downloadViewModel.fetchDownloadInfo(themeState.downloadUrl, context)
+                    Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 modifier = Modifier.fillMaxWidth()

@@ -3,7 +3,6 @@ package xyz.akimlc.themetool.ui.page.theme
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +24,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -46,7 +43,7 @@ import xyz.akimlc.themetool.viewmodel.ParseViewModel
 @Composable
 fun ThemeParsePage(
     navController: NavController,
-    viewModel: ParseViewModel = viewModel(),
+    viewModel: ParseViewModel,
     downloadViewmodel: DownloadViewModel
 ) {
     val context = LocalContext.current
@@ -153,11 +150,9 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
                 Spacer(modifier = Modifier.width(8.dp))
                 TextButton(
                     onClick = {
-                        // 跳转到浏览器进行下载
-                        val intent = Intent(Intent.ACTION_VIEW, themeInfo.themeUrl.toUri())
-                        context.startActivity(intent)
                         //Go to 下载管理界面
-                        //downloadViewModel.startDownload(themeInfo)
+                        downloadViewModel.fetchDownloadInfo(themeInfo.themeUrl,context)
+                        Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier.weight(1f),

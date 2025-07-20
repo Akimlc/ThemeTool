@@ -3,7 +3,6 @@ package xyz.akimlc.themetool.ui.page.font
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -45,7 +44,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
@@ -60,6 +58,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 
 
@@ -67,7 +66,8 @@ import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 fun FontDetailPage(
     navController: NavController,
     viewModel: FontDetailViewModel,
-    uuid: String
+    uuid: String,
+    downloadViewModel: DownloadViewModel
 ) {
     val backgroundColor = MiuixTheme.colorScheme.background
     val scrollBehavior = MiuixScrollBehavior()
@@ -201,8 +201,10 @@ fun FontDetailPage(
                         TextButton(
                             text = stringResource(R.string.download),
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, fontDownloadUrl?.toUri())
-                                context.startActivity(intent)
+                                fontDownloadUrl?.let {
+                                    downloadViewModel.fetchDownloadInfo(it, context)
+                                    Toast.makeText(context, "已添加到下载任务列表...", Toast.LENGTH_SHORT).show()
+                                }
                             },
                             colors = ButtonDefaults.textButtonColorsPrimary()
                         )

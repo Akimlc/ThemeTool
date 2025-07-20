@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -117,4 +118,8 @@ dependencies {
     //UMeng
     implementation("com.umeng.umsdk:common:9.4.7")
     implementation("com.umeng.umsdk:asms:1.4.0")
+
+    implementation("androidx.room:room-runtime:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
+    ksp("androidx.room:room-compiler:2.7.2")
 }
