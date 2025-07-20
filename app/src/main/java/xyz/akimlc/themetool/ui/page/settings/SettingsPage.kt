@@ -68,7 +68,8 @@ fun SettingsPage(
                         title = stringResource(R.string.language),
                         items = listOf(
                             stringResource(R.string.simplified_chinese),
-                            stringResource(R.string.english)
+                            stringResource(R.string.english),
+                            stringResource(R.string.turkish)
                         ),
                         selectedIndex = language.intValue,
                         onSelectedIndexChange = { index ->

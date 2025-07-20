@@ -1,0 +1,124 @@
+<resources>
+    <string name="app_name">ThemeTool</string>
+    <string name="title_theme">Tema</string>
+    <string name="title_font">Yazı tipi</string>
+    <string name="theme_search">Tema Arama</string>
+    <string name="theme_parse">Tema Ayrıştırma</string>
+    <string name="font_search">Yazı Tipi Arama</string>
+    <string name="font_convert">Yazı Tipi Dönüştürme</string>
+    <string name="font_module_convert">Yazı Tipi Modülü Dönüştürme</string>
+    <string name="nav_home">Ev</string>
+    <string name="nav_download">Indirme</string>
+    <string name="nav_settings">Ayarlar</string>
+    <string name="title_theme_parse">Tema Ayrıştırma</string>
+    <string name="label_input_theme_link">Tema paylaşım bağlantısını girin</string>
+    <string name="btn_parse">Ayrıştırmak</string>
+    <string name="label_theme_name">Tema adı: %1$s</string>
+    <string name="label_theme_url">Tema URL\'si: %1$s</string>
+    <string name="label_theme_size">Tema boyutu: %1$d MB</string>
+    <string name="btn_copy">Kopya etmek</string>
+    <string name="btn_download">İndirmek</string>
+    <string name="toast_copy_success">Başarıyla kopyalandı</string>
+    <string name="title_theme_search">Tema Arama</string>
+    <string name="label_search_theme">Arama teması</string>
+    <string name="btn_search">Aramak</string>
+    <string name="toast_input_keywords">Lütfen anahtar kelimeleri girin</string>
+    <string name="toast_no_theme_found">İlgili tema bulunamadı</string>
+    <string name="toast_only_english_supported">Uluslararası temalar yalnızca İngilizce anahtar kelimeleri destekler</string>
+    <string name="toast_no_global_theme_found">İlgili global tema bulunamadı</string>
+    <string name="tab_domestic">Evcil</string>
+    <string name="tab_global">Küresel</string>
+    <string name="switch_show_fps">FPS\'yi Göster</string>
+    <string name="setting_about">Hakkında</string>
+    <string name="about_title">Hakkında</string>
+    <string name="about_thanks_list">Teşekkür Listesi</string>
+    <string name="title_feedback">Geri besleme</string>
+    <string name="group_qq">QQ Grubu</string>
+    <string name="channel_telegram">Telgraf Kanalı</string>
+    <string name="group_telegram">Telgraf Grubu</string>
+    <string name="title_other">Diğer</string>
+    <string name="donate">Bağışlamak</string>
+    <string name="donate_summary">Geliştiriciyi destekleyin ~</string>
+    <string name="reference">Başvuru</string>
+    <string name="title_donation">Bağış</string>
+    <string name="donation_tip">Bu projeyi faydalı bulursanız, geliştiriciye bir fincan sütlü çay almayı düşünün~ 😊</string>
+    <string name="donate_qr_wechat">WeChat Bağış QR</string>
+    <string name="donate_qr_alipay">Alipay Bağış QR</string>
+    <string name="title_references">Başvuru</string>
+    <string name="unknown_author">Bilinmeyen Yazar</string>
+    <string name="copy">Kopya etmek</string>
+    <string name="copy_success">Başarıyla kopyalandı</string>
+    <string name="download">İndirmek</string>
+    <string name="title_font_search">Yazı Tipi Arama</string>
+    <string name="label_search_keyword">Anahtar kelime ara</string>
+    <string name="checkbox_domestic">Evcil</string>
+    <string name="dropdown_theme_version">Tema Sürümü</string>
+    <string name="checkbox_international">Uluslararası</string>
+    <string name="button_search">Aramak</string>
+    <string name="title_results">Sonuç -ları</string>
+    <string name="toast_enter_keyword">Lütfen anahtar kelime giriniz</string>
+    <string name="toast_searching">Araştırıcı...</string>
+    <string name="title_ttf_to_mtz">TTF\'den MTZ\'ye çevirme</string>
+    <string name="label_font_name">Yazı tipi adı</string>
+    <string name="label_font_author">Yazı tipi yazarı</string>
+    <string name="label_imported_font">İçe aktarılan yazı tipi</string>
+    <string name="button_import">Ithalat</string>
+    <string name="button_generate">Oluşturmak</string>
+    <string name="toast_please_import_font">Lütfen önce yazı tipini içe aktarın</string>
+    <string name="toast_please_enter_font_name">Lütfen yazı tipi adını girin</string>
+    <string name="toast_please_enter_font_author">Lütfen yazı tipi yazarını girin</string>
+    <string name="dialog_title_converting">Dönüştürme</string>
+    <string name="error_experimental_feature">Deneysel özellik, oluşturulan modülün düzgün çalışacağının garantisi yoktur!!</string>
+    <string name="progress_title_converting">Dönüştürme</string>
+    <string name="warning_title">Uyarı</string>
+    <string name="warning_line1">Bu özellik yalnızca Android 15 tabanlı HyperOS2\'de test edilmiştir</string>
+    <string name="warning_line2">Diğer sürümler ve sistemler için garanti yoktur, dikkatli kullanın</string>
+    <string name="warning_line3">Devam ederseniz, tüm riskleri üstlenirsiniz!!</string>
+    <string name="button_cancel">İptal</string>
+    <string name="button_confirm">Onaylamak</string>
+    <string name="privacy_title">Gizlilik Politikası</string>
+    <string name="privacy_content">
+Bu uygulamayı kullanmaya hoş geldiniz (bundan böyle "bu Uygulama" olarak anılacaktır). Kişisel bilgilerinizin korunmasına çok değer veriyoruz. Bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu anlamak için lütfen aşağıdaki gizlilik politikasını dikkatlice okuyun.\n\n
+        【1. Topladığımız Bilgiler】\n
+        - Cihaz bilgileri (cihaz modeli, sistem sürümü, benzersiz cihaz tanımlayıcısı gibi)\n
+        - Günlük bilgileri (kullanım süresi, başlatma süreleri, kilitlenme bilgileri gibi)\n
+        - Umeng Analytics SDK aracılığıyla toplanan diğer anonim veriler\n\n
+        【2. Bilginin Amacı】\n
+        - Ürünlerimizi ve hizmetlerimizi optimize etmek ve geliştirmek için\n
+        - Kullanıcı deneyimini geliştirmek için veri analizi ve istatistikler için\n
+        - Yasal gerekliliklere uymak\n\n
+        【3. Bilgi Koruması】\n
+        Kişisel bilgi güvenliğinizi korumak ve bilgi sızıntısını, kaybını veya yetkisiz erişimi önlemek için makul teknik ve idari tedbirleri alıyoruz.\n\n
+        【4. Haklarınız】\n
+        - Bu gizlilik politikasını kabul edip etmemeyi seçme hakkına sahipsiniz\n
+        - Bu Uygulamayı kullanmayı istediğiniz zaman bırakabilirsiniz\n
+        - Gizlilikle ilgili herhangi bir sorunuz için lütfen bizimle iletişime geçmekten çekinmeyin\n\n
+        【5. Gizlilik Politikası Güncellemeleri】\n
+        Bu gizlilik politikasını zaman zaman güncelleyebiliriz ve güncellemeler bu Uygulamada derhal bildirilecektir.
+    </string>
+    <string name="privacy_cancel">İptal</string>
+    <string name="privacy_agree">Anlaşmak</string>
+    <string name="title_theme_info">Tema Bilgisi</string>
+    <string name="title_font_info">Yazı Tipi Bilgisi</string>
+    <string name="label_download_url">İndirme URL\'si: %1$s</string>
+    <string name="parsing">Ayrıştırma, lütfen bekleyin...</string>
+    <string name="parsing_wait">Ayrıştırma devam ediyor...</string>
+    <string name="parse_failed">Ayrıştırma başarısız oldu...</string>
+    <string name="label_font_url">Yazı Tipi URL\'si: %1$s</string>
+    <string name="label_font_size">Yazı tipi boyutu: %1$d MB</string>
+    <string name="copy_failed">Kopyalama başarısız oldu</string>
+    <string name="language">Dil</string>
+    <string name="simplified_chinese">Basitleştirilmiş Çince</string>
+    <string name="english">İngilizce</string>
+    <string name="turkish">Türkçe</string>
+    <string name="color_mode">Renk Modu</string>
+    <string name="color_system">Sistem</string>
+    <string name="color_light">Işık</string>
+    <string name="color_dark">Koyu</string>
+    <string name="no_downloads">İndirme görevi yok</string>
+    <string name="clear_confirm_title">Farkına varmak</string>
+    <string name="clear_confirm_message">İndirme görev listesini temizlemek istediğinizden emin misiniz?</string>
+    <string name="clear_success">Başarıyla temizlendi</string>
+    <string name="added_to_download_list">Görev listesini indirmek için eklendi...</string>
+    <string name="font_convert_failed">Yazı tipi dönüştürme başarısız oldu: %1$s</string>
+</resources>

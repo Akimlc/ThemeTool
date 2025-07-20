@@ -110,6 +110,7 @@
     <string name="language">Language</string>
     <string name="simplified_chinese">Simplified Chinese</string>
     <string name="english">English</string>
+    <string name="turkish">Turkish</string>
     <string name="color_mode">Color Mode</string>
     <string name="color_system">System</string>
     <string name="color_light">Light</string>
