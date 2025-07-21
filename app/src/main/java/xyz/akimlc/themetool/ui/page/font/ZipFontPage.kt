@@ -117,7 +117,7 @@ fun ZipFontPage(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(
-                        text = "导入",
+                        text = stringResource(R.string.import_font),
                         onClick = {
                             val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                                 type = "font/ttf"
@@ -128,7 +128,7 @@ fun ZipFontPage(navController: NavController) {
                     )
                     Spacer(Modifier.width(12.dp))
                     TextButton(
-                        text = "生成",
+                        text = stringResource(R.string.generate_font),
                         onClick = {
                             // 校验输入
                             when {
@@ -194,7 +194,7 @@ private fun ShowWaringDialog(
     navController: NavController
 ) {
     SuperDialog(
-        title = "警告",
+        title = stringResource(R.string.warning_title),
         show = isShow,
         onDismissRequest = {
             isShow.value = true

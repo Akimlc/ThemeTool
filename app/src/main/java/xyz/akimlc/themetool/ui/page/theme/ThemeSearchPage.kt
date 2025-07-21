@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -56,14 +55,19 @@ import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
 import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
-import xyz.akimlc.themetool.ui.compoent.WarningNotice
+import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.GlobalProductData
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 
 
 @Composable
-fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewModel) {
+fun ThemeSearchPage(
+    navController: NavController,
+    viewModel: SearchThemeViewModel,
+    downloadViewModel: DownloadViewModel
+) {
+
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val keywords = remember { mutableStateOf("") }
@@ -185,8 +189,8 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
                     state = pagerState,
                 ) { page ->
                     when (page) {
-                        0 -> DomesticThemeResultView(viewModel)
-                        1 -> GlobalThemeResultView(viewModel)
+                        0 -> DomesticThemeResultView(viewModel, downloadViewModel)
+                        1 -> GlobalThemeResultView(viewModel, downloadViewModel)
                     }
                 }
             }
@@ -195,7 +199,7 @@ fun ThemeSearchPage(navController: NavController, viewModel: SearchThemeViewMode
 }
 
 @Composable
-fun DomesticThemeResultView(viewModel: SearchThemeViewModel) {
+fun DomesticThemeResultView(viewModel: SearchThemeViewModel, downloadViewModel: DownloadViewModel) {
     val isShow = remember { mutableStateOf(false) } // 初始状态为 false
     val selectedProduct = remember { mutableStateOf<ProductData?>(null) } // 记录选中的产品
     val productListState = viewModel.productList.collectAsState(initial = emptyList())
@@ -262,7 +266,7 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel) {
             }
             if (isShow.value) {
                 selectedProduct.value?.let { product ->
-                    ThemeInfoDialog(isShow, product, themeInfoState.value)
+                    ThemeInfoDialog(isShow, product, themeInfoState.value, downloadViewModel)
                 }
             }
         }
@@ -271,7 +275,7 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel) {
 }
 
 @Composable
-fun GlobalThemeResultView(viewModel: SearchThemeViewModel) {
+fun GlobalThemeResultView(viewModel: SearchThemeViewModel, downloadViewModel: DownloadViewModel) {
     val isShow = remember { mutableStateOf(false) }
     val selectedProduct = remember { mutableStateOf<GlobalProductData?>(null) }
     val globalThemeProductListState =
@@ -334,7 +338,7 @@ fun GlobalThemeResultView(viewModel: SearchThemeViewModel) {
             }
             if (isShow.value) {
                 selectedProduct.value?.let { product ->
-                    GlobalThemeInfoDialog(isShow, product)
+                    GlobalThemeInfoDialog(isShow, product, downloadViewModel)
                 }
             }
         }

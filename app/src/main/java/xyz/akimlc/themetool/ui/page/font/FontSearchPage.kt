@@ -45,6 +45,7 @@ import top.yukonga.miuix.kmp.extra.SuperDropdown
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
+import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
@@ -58,6 +59,7 @@ fun FontSearchPage(
     viewModel: SearchFontViewModel,
     fontDetailViewModel: FontDetailViewModel,
     navController: NavController,
+    downloadViewModel: DownloadViewModel
 ) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
@@ -242,7 +244,8 @@ fun FontSearchPage(
     }
     if (isShowFontDialog.value) {
         selectProduct.value?.let { data ->
-            DomesticFontInfoDialog(isShowFontDialog, data)
+            DomesticFontInfoDialog(isShowFontDialog, data,downloadViewModel)
+
         }
     }
 }

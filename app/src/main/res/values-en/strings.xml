@@ -76,8 +76,8 @@
     <string name="warning_line3">If you proceed, you assume all risks!!!</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_confirm">Confirm</string>
-    <string name="privacy_dialog_title">Privacy Policy</string>
-    <string name="privacy_dialog_content">
+    <string name="privacy_title">Privacy Policy</string>
+    <string name="privacy_content">
         Welcome to use this application (hereinafter referred to as "this App"). We highly value your personal information protection. Please read the following privacy policy carefully to understand how we collect, use and protect your information.\n\n
         【1. Information We Collect】\n
         - Device information (such as device model, system version, unique device identifier)\n
@@ -110,8 +110,19 @@
     <string name="language">Language</string>
     <string name="simplified_chinese">Simplified Chinese</string>
     <string name="english">English</string>
+    <string name="turkish">Turkish</string>
     <string name="color_mode">Color Mode</string>
     <string name="color_system">System</string>
     <string name="color_light">Light</string>
     <string name="color_dark">Dark</string>
+    <string name="no_downloads">No download tasks</string>
+    <string name="clear_confirm_title">Notice</string>
+    <string name="clear_confirm_message">Are you sure you want to clear the download task list?</string>
+    <string name="clear_success">Cleared successfully</string>
+    <string name="added_to_download_list">Added to download task list…</string>
+    <string name="font_convert_failed">Font conversion failed: %1$s</string>
+    <string name="import_font">Import</string>
+    <string name="generate_font">Generate</string>
+    <string name="translator_section_title">Çevirmen</string>
+    <string name="translator_summary">Türkçe çeviri</string>
 </resources>

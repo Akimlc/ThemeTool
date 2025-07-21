@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Configuration
-import android.content.res.Resources
 import java.util.Locale
 
 class LanguageHelper {
@@ -14,6 +13,7 @@ class LanguageHelper {
             return when (index) {
                 0 -> Locale("zh", "CN") // 简体中文
                 1 -> Locale("en")       // 英文
+                2 -> Locale("Tr")   //土耳其
                 else -> Locale("zh", "CN")
             }
         }

@@ -104,3 +104,46 @@ fun ErrorNotice(
     }
 }
 
+@Composable
+fun InfoNotice(
+    text: String
+){
+    val isDark = isSystemInDarkTheme()
+
+    val backgroundColor = if (isDark) Color(0xFF0F274B) else Color(0xFFE1EBF7)
+
+    val textColor = Color(0xFF0D84ff)
+
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+            .padding(horizontal = 12.dp),
+        insideMargin = PaddingValues(vertical = 12.dp),
+        color = backgroundColor
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp, end = 8.dp),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = textColor
+            )
+            Image(
+                modifier = Modifier
+                    .padding(end = 24.dp)
+                    .size(10.dp, 14.dp),
+                imageVector = MiuixIcons.Useful.Cancel,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(colorScheme.onSurfaceVariantActions)
+            )
+        }
+    }
+}
