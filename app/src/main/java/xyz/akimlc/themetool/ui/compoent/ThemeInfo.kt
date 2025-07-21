@@ -114,7 +114,12 @@ fun ThemeInfoDialog(
                         return@TextButton
                     }
                     downloadViewModel.fetchDownloadInfo(themeInfo.themeUrl, context) // 启动下载任务
-                    Toast.makeText(context, context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.added_to_download_list),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    isShow.value = false
                 },
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 modifier = Modifier.fillMaxWidth()
@@ -203,7 +208,12 @@ fun GlobalThemeInfoDialog(
                         return@TextButton
                     }
                     downloadViewModel.fetchDownloadInfo(themeState.downloadUrl, context)
-                    Toast.makeText(context,context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.added_to_download_list),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    isShow.value = false
                 },
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 modifier = Modifier.fillMaxWidth()
@@ -291,7 +301,12 @@ fun DomesticFontInfoDialog(
                         return@TextButton
                     }
                     downloadViewModel.fetchDownloadInfo(themeState.downloadUrl, context)
-                    Toast.makeText(context, context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.added_to_download_list),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    isShow.value = false
                 },
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 modifier = Modifier.fillMaxWidth()
