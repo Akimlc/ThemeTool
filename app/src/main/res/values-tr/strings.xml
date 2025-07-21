@@ -121,4 +121,6 @@ Bu uygulamayı kullanmaya hoş geldiniz (bundan böyle "bu Uygulama" olarak anı
     <string name="clear_success">Başarıyla temizlendi</string>
     <string name="added_to_download_list">Görev listesini indirmek için eklendi...</string>
     <string name="font_convert_failed">Yazı tipi dönüştürme başarısız oldu: %1$s</string>
+    <string name="import_font">İçeri aktarma</string>
+    <string name="generate_font">oluşturma</string>
 </resources>

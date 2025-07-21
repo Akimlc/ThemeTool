@@ -121,4 +121,6 @@
     <string name="clear_success">清除成功</string>
     <string name="added_to_download_list">已添加到下载任务列表…</string>
     <string name="font_convert_failed">字体转换失败: %1$s</string>
+    <string name="import_font">导入</string>
+    <string name="generate_font">生成</string>
 </resources>

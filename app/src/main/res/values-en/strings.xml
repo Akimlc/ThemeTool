@@ -121,4 +121,6 @@
     <string name="clear_success">Cleared successfully</string>
     <string name="added_to_download_list">Added to download task list…</string>
     <string name="font_convert_failed">Font conversion failed: %1$s</string>
+    <string name="import_font">Import</string>
+    <string name="generate_font">Generate</string>
 </resources>
