@@ -123,4 +123,6 @@ Bu uygulamayı kullanmaya hoş geldiniz (bundan böyle "bu Uygulama" olarak anı
     <string name="font_convert_failed">Yazı tipi dönüştürme başarısız oldu: %1$s</string>
     <string name="import_font">İçeri aktarma</string>
     <string name="generate_font">oluşturma</string>
+    <string name="translator_section_title">Translator</string>
+    <string name="translator_summary">Turkish Translation</string>
 </resources>

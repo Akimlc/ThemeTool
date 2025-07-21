@@ -123,4 +123,6 @@
     <string name="font_convert_failed">字体转换失败: %1$s</string>
     <string name="import_font">导入</string>
     <string name="generate_font">生成</string>
+    <string name="translator_section_title">翻译人员</string>
+    <string name="translator_summary">土耳其翻译</string>
 </resources>

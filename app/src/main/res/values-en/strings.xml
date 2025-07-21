@@ -123,4 +123,6 @@
     <string name="font_convert_failed">Font conversion failed: %1$s</string>
     <string name="import_font">Import</string>
     <string name="generate_font">Generate</string>
+    <string name="translator_section_title">Çevirmen</string>
+    <string name="translator_summary">Türkçe çeviri</string>
 </resources>

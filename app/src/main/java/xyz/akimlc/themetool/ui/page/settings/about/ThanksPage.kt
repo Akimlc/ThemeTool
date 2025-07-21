@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -19,6 +20,7 @@ import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.utils.overScrollVertical
@@ -28,6 +30,7 @@ import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 @Composable
 fun ThanksPage(navController: NavController) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
+    val uriHandler = LocalUriHandler.current
     Scaffold(
         topBar = {
             BackTopAppBar(
@@ -102,6 +105,23 @@ fun ThanksPage(navController: NavController) {
                                     .size(38.dp)
                                     .clip(RoundedCornerShape(48.dp))
                             )
+                        }
+                    )
+                }
+            }
+            item {
+                SmallTitle(stringResource(R.string.translator_section_title))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 12.dp)
+                ){
+                    SuperArrow(
+                        title = "AdemOyuklu",
+                        summary = stringResource(R.string.translator_summary),
+                        onClick = {
+                            uriHandler.openUri("https://t.me/AdemOyuklu")
                         }
                     )
                 }
