@@ -30,7 +30,7 @@ fun HomePage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = "首页",
+                title = stringResource(R.string.nav_home),
                 scrollBehavior = topAppBarScrollBehavior
             )
         }

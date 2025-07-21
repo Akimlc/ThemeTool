@@ -40,7 +40,7 @@ fun SettingsPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = "关于",
+                title = stringResource(R.string.nav_settings),
                 scrollBehavior = topAppBarScrollBehavior
             )
         }
