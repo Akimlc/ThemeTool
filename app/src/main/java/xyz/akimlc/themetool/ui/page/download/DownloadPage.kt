@@ -3,15 +3,12 @@ package xyz.akimlc.themetool.ui.page.download
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +29,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -55,6 +50,7 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.DownloadEntity
 import xyz.akimlc.themetool.data.model.DownloadStatus
+import xyz.akimlc.themetool.ui.compoent.InfoNotice
 import xyz.akimlc.themetool.ui.compoent.getAdaptiveBlackWhite
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 
@@ -122,6 +118,11 @@ fun DownloadPage(
                     Spacer(modifier = Modifier.height(48.dp)) // 可选：占点空间使得可滚动
                 }
             } else {
+                item{
+                    InfoNotice(
+                        text = "下载的路径为：Download/ThemeTool"
+                    )
+                }
                 items(downloadList, key = { it.id }) { item ->
                     DownloadItem(item)
                 }
@@ -177,7 +178,8 @@ fun DownloadItem(item: DownloadEntity) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 12.dp)
+            .padding(bottom = 6.dp)
     ) {
         Row(
             modifier = Modifier
@@ -226,25 +228,25 @@ fun DownloadItem(item: DownloadEntity) {
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            Box(
-                modifier = Modifier
-                    .height(32.dp)
-                    .defaultMinSize(minWidth = 64.dp)
-                    .background(Color(0x1A0D84FF), shape = RoundedCornerShape(200.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (item.status==DownloadStatus.DOWNLOADING) {
-                        "暂停"
-                    } else {
-                        "开始"
-                    },
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0D84FF),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
+//            Box(
+//                modifier = Modifier
+//                    .height(32.dp)
+//                    .defaultMinSize(minWidth = 64.dp)
+//                    .background(Color(0x1A0D84FF), shape = RoundedCornerShape(200.dp)),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = if (item.status==DownloadStatus.DOWNLOADING) {
+//                        "暂停"
+//                    } else {
+//                        "开始"
+//                    },
+//                    fontSize = 14.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    color = Color(0xFF0D84FF),
+//                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+//                )
+//            }
         }
     }
 }
