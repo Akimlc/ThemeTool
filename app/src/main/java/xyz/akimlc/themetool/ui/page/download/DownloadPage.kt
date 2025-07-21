@@ -83,7 +83,6 @@ fun DownloadPage(
                             .padding(end = 18.dp)
                             .size(40.dp),
                         onClick = {
-                            //清除下载任务
                             showDialog.value = true
                         }
                     ) {
@@ -97,53 +96,39 @@ fun DownloadPage(
             )
         }
     ) { paddingValues ->
-        Box(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                .overScrollVertical()
+                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+            contentPadding = paddingValues,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (downloadList.isEmpty()) {
-                //没有下载列表的时候
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .overScrollVertical()
-                        .padding(top = 12.dp),
-                    contentPadding = paddingValues,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    item {
-                        Icon(
-                            imageVector = MiuixIcons.Useful.Info,
-                            contentDescription = "No downloads",
-                            modifier = Modifier.size(48.dp),
-                            tint = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = stringResource(R.string.no_downloads),
-                            color = Color.Gray,
-                            fontSize = 16.sp
-                        )
-                    }
+                item {
+                    Spacer(modifier = Modifier.height(48.dp))
+                    Icon(
+                        imageVector = MiuixIcons.Useful.Info,
+                        contentDescription = "No downloads",
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.no_downloads),
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(48.dp)) // 可选：占点空间使得可滚动
                 }
             } else {
-                // 下载列表
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .overScrollVertical()
-                        .padding(top = 12.dp),
-                    contentPadding = paddingValues
-                ) {
-                    items(downloadList, key = { it.id }) { item ->
-                        DownloadItem(item)
-                    }
+                items(downloadList, key = { it.id }) { item ->
+                    DownloadItem(item)
                 }
             }
         }
     }
+
     if (showDialog.value) {
         SuperDialog(
             show = showDialog,
@@ -237,7 +222,6 @@ fun DownloadItem(item: DownloadEntity) {
                     )
                 }
                 LinearProgressIndicator(
-//                    progress = if (item.status==DownloadStatus.READY) 1f else item.progress,
                     progress = item.progress,
                     modifier = Modifier.fillMaxWidth()
                 )

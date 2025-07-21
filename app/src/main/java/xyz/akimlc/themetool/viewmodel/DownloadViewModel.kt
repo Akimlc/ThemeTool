@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Environment
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -32,11 +29,6 @@ class DownloadViewModel(
     private val TAG = "DownloadViewModel"
 
     val downloads = dao.getAllDownloads().stateIn(viewModelScope, SharingStarted.Lazily,emptyList())
-    //存放下载列表
-//    private val _downloads = MutableStateFlow<List<DownloadModel>>(emptyList())
-//    val downloads: StateFlow<List<DownloadModel>> = _downloads
-
-    var state by mutableStateOf(DownloadStatus.READY)
 
     fun fetchDownloadInfo(url: String, context: Context) {
         Log.d(TAG, "fetchDownloadInfo: 启动！！！！")
@@ -74,8 +66,14 @@ class DownloadViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val client = HttpClient.client
             val request = Request.Builder().url(model.url).build()
-            dao.update(model.copy(status = DownloadStatus.DOWNLOADING))
-
+            val latestModel = dao.getById(model.id)
+            if (latestModel == null) {
+                Log.e(TAG, "startDownload: 数据库中找不到id=${model.id}对应的数据")
+                return@launch
+            }
+            val updating = latestModel.copy(status = DownloadStatus.DOWNLOADING)
+            val updatedRows = dao.update(updating)
+            Log.d(TAG, "startDownload: 状态更新为 DOWNLOADING，影响行数：$updatedRows")
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
@@ -95,7 +93,9 @@ class DownloadViewModel(
                         downloadedBytes += read
 
                         val progress = downloadedBytes.toFloat() / totalBytes
-                        dao.update(model.copy(progress = progress))
+                        val currentModel = dao.getById(model.id) ?: break
+                        val progressUpdated = currentModel.copy(progress = progress)
+                        dao.update(progressUpdated)
                     }
 
                     output.flush()
@@ -103,7 +103,11 @@ class DownloadViewModel(
                     input.close()
 
                     // 下载完成状态
-                    dao.update(model.copy(progress = 1f, status = DownloadStatus.FINISHED))
+                    val finishedModel = dao.getById(model.id)
+                        ?.copy(progress = 1f, status = DownloadStatus.FINISHED)
+                    if (finishedModel != null) {
+                        dao.update(finishedModel)
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "下载失败: ${e.message}")
