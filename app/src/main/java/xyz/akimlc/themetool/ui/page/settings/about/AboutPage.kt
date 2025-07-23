@@ -5,7 +5,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,10 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
@@ -43,14 +43,14 @@ import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 @Composable
 fun AboutPage(
     navController: NavController,
-    topAppBarScrollBehavior: ScrollBehavior,
 ) {
     val uriHandler = LocalUriHandler.current
+    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     Scaffold(
         topBar = {
             BackTopAppBar(
                 title = stringResource(R.string.about_title),
-                scrollBehavior = topAppBarScrollBehavior,
+                scrollBehavior = scrollBehavior,
                 navController = navController
             )
         }
@@ -59,7 +59,7 @@ fun AboutPage(
             modifier = Modifier
                 .fillMaxSize()
                 .overScrollVertical()
-                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = padding,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {

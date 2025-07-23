@@ -21,7 +21,7 @@ class LanguageHelper {
         fun wrap(context: Context): ContextWrapper {
             val resources = context.resources
             val config = Configuration(resources.configuration)
-            val index = PreferenceUtil.getInt(context, "app_language")
+            val index = PreferenceUtil.getInt("app_language")
             val locale = getIndexLanguage(index)
 
             config.setLocale(locale)
@@ -31,7 +31,7 @@ class LanguageHelper {
             return ContextWrapper(newContext)
         }
 
-        fun Activity.setLocale(index: Int = PreferenceUtil.getInt(this, "app_language", 0)) {
+        fun Activity.setLocale(index: Int = PreferenceUtil.getInt("app_language", 0)) {
             val res = this.resources
             val metrics = res.displayMetrics
             val configuration = res.configuration.apply {

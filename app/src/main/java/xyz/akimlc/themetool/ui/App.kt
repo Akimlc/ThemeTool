@@ -1,48 +1,53 @@
 package xyz.akimlc.themetool.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import com.umeng.commonsdk.UMConfigure
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
+import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
+import top.yukonga.miuix.kmp.utils.getWindowSize
 import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.page.HomePage
 import xyz.akimlc.themetool.ui.page.MainPage
-import xyz.akimlc.themetool.ui.page.PrivacyPage
 import xyz.akimlc.themetool.ui.page.download.DownloadPage
 import xyz.akimlc.themetool.ui.page.font.FontDetailPage
 import xyz.akimlc.themetool.ui.page.font.FontSearchPage
 import xyz.akimlc.themetool.ui.page.font.MtzFontPage
 import xyz.akimlc.themetool.ui.page.font.ZipFontPage
 import xyz.akimlc.themetool.ui.page.settings.FPSMonitor
+import xyz.akimlc.themetool.ui.page.settings.SettingsPage
 import xyz.akimlc.themetool.ui.page.settings.about.AboutPage
-import xyz.akimlc.themetool.ui.page.settings.about.DonationPage
-import xyz.akimlc.themetool.ui.page.settings.about.ReferencesPage
-import xyz.akimlc.themetool.ui.page.settings.about.ThanksPage
 import xyz.akimlc.themetool.ui.page.theme.ThemeParsePage
 import xyz.akimlc.themetool.ui.page.theme.ThemeSearchPage
+import xyz.akimlc.themetool.ui.page.welcome.WelcomePage
 import xyz.akimlc.themetool.utils.PreferenceUtil
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
@@ -51,10 +56,175 @@ import xyz.akimlc.themetool.viewmodel.ParseViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 
-@SuppressLint("ViewModelConstructorInComposable")
+@SuppressLint("ViewModelConstructorInComposable", "UnusedBoxWithConstraintsScope")
 @Composable
 fun App() {
+    val context = LocalContext.current
+    var firstLaunch = remember { mutableStateOf(true) }
+    val welcomeState = rememberPagerState(initialPage = 0, pageCount = { 4 })
+    val db = remember {
+        Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
+    }
+    val dao = remember { db.downloadDao() }
+    val downloadViewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
+    val hasInit = remember { mutableStateOf(false) }
+    val searchThemeViewModel: SearchThemeViewModel = viewModel()
+    val parseViewModel: ParseViewModel = viewModel()
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        Log.d("App", "App: 第一次启动: ${firstLaunch.value}")
+        AppSettingsState.showFPSMonitor.value =
+            PreferenceUtil.getBoolean("show_FPS_Monitor", false)
+    }
+    firstLaunch.value = !PreferenceUtil.getBoolean("first_launch", false)
+    val parentRoute = remember { mutableStateOf("MainPage") }
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
+    val fontDetailViewModel: FontDetailViewModel = viewModel()
+    val searchFontViewModel: SearchFontViewModel = viewModel()
+    val navController = rememberNavController()
+    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
+    val easing = FastOutSlowInEasing
+    val paddingValues = PaddingValues(12.dp)
+    Scaffold { paddingValues ->
+        when (firstLaunch.value) {
+            true -> {
+                WelcomePage(
+                    firstLaunch,
+                    pagerState = welcomeState
+                )
+            }
 
+            false -> {
+                MainLayout(navController, pagerState, parentRoute)
+            }
+        }
+        AnimatedVisibility(
+            AppSettingsState.showFPSMonitor.value
+        ) {
+            FPSMonitor(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(horizontal = 28.dp)
+            )
+
+        }
+
+//                Box(modifier = Modifier.fillMaxSize()) {
+//                    NavHost(
+//                        modifier = Modifier.fillMaxSize(),
+//                        navController = navController,
+//                        startDestination = "MainPage",
+//                        enterTransition = {
+//                            slideInHorizontally(
+//                                initialOffsetX = { it },
+//                                animationSpec = tween(durationMillis = 500, easing = easing)
+//                            )
+//                        },
+//                        exitTransition = {
+//
+//                            slideOutHorizontally(
+//                                targetOffsetX = { -it / 5 },
+//                                animationSpec = tween(durationMillis = 500, easing = easing)
+//                            )
+//                        },
+//                        popEnterTransition = {
+//                            slideInHorizontally(
+//                                initialOffsetX = { -it / 5 },
+//                                animationSpec = tween(durationMillis = 500, easing = easing)
+//                            )
+//                        },
+//                        popExitTransition = {
+//                            slideOutHorizontally(
+//                                targetOffsetX = { it },
+//                                animationSpec = tween(durationMillis = 500, easing = easing)
+//                            )
+//                        }
+//                    ) {
+//                        composable("MainPage") { MainPage(navController, downloadViewModel) }
+//                        composable("HomePage") { HomePage(navController, scrollBehavior, paddingValues) }
+//                        composable("ThemeSearchPage") {
+//                            ThemeSearchPage(
+//                                navController,
+//                                searchThemeViewModel,
+//                                downloadViewModel
+//                            )
+//                        }
+//                        composable("ThemeParsePage") {
+//                            ThemeParsePage(
+//                                navController,
+//                                parseViewModel,
+//                                downloadViewModel
+//                            )
+//                        }
+//                        composable("ThanksPage") {
+//                            ThanksPage(navController)
+//                        }
+//                        composable("ZipFontPage") {
+//                            ZipFontPage(navController)
+//                        }
+//                        composable("FontSearchPage") {
+//                            FontSearchPage(
+//                                searchFontViewModel,
+//                                fontDetailViewModel,
+//                                navController,
+//                                downloadViewModel
+//                            )
+//                        }
+//                        composable("MtzFontPage") { MtzFontPage(navController) }
+//                        composable("FontDetailPage/{uuid}") { backStackEntry ->
+//                            val uuid = backStackEntry.arguments?.getString("uuid") ?: return@composable
+//                            FontDetailPage(
+//                                navController = navController,
+//                                viewModel = fontDetailViewModel,
+//                                uuid = uuid,
+//                                downloadViewModel = downloadViewModel
+//                            )
+//                        }
+//                        composable("DonationPage") {
+//                            DonationPage(navController)
+//                        }
+//                        composable("ReferencesPage") {
+//                            ReferencesPage(navController)
+//                        }
+//                        composable("DownloadPage") {
+//                            DownloadPage(
+//                                navController,
+//                                scrollBehavior,
+//                                paddingValues,
+//                                viewModel = downloadViewModel
+//                            )
+//                        }
+//                        composable("AboutPage") {
+//                            AboutPage(navController, scrollBehavior)
+//                        }
+//                    }
+//
+//                    if (AppSettingsState.showFPSMonitor.value) {
+//                        FPSMonitor(
+//                            modifier = Modifier
+//                                .statusBarsPadding()
+//                                .padding(horizontal = 28.dp)
+//                        )
+//                    }
+//                }
+//            }
+    }
+}
+
+
+/**
+ * 小屏模式
+ */
+@Composable
+fun MainLayout(
+    navController: NavHostController,
+    pagerState: PagerState,
+    parentRoute: MutableState<String>
+) {
+    val easing = FastOutSlowInEasing
+    val windowWidth = getWindowSize().width
     val context = LocalContext.current
     val db = remember {
         Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
@@ -63,139 +233,88 @@ fun App() {
     val downloadViewModel: DownloadViewModel = viewModel(
         factory = DownloadViewModelFactory(dao)
     )
-
-    val showDialog = remember { mutableStateOf(!PreferenceUtil.isUserAgreed(context)) }
-    val hasInit = remember { mutableStateOf(false) }
-    val searchThemeViewModel: SearchThemeViewModel = viewModel()
-    val parseViewModel: ParseViewModel = viewModel()
-    LaunchedEffect(Unit) {
-        AppSettingsState.showFPSMonitor.value =
-            PreferenceUtil.getBoolean(context, "show_FPS_Monitor", false)
-    }
-    if (showDialog.value) {
-        PrivacyPage(
-            isShow = showDialog,
-            onAgree = {
-                PreferenceUtil.setUserAgreed(context, true)
-                showDialog.value = false
-            },
-            onCancel = {
-                (context as? Activity)?.finish()
-            }
-        )
-        return
-    } else if (!hasInit.value) {
-        LaunchedEffect(Unit) {
-            UMConfigure.init(
-                context,
-                "686a773c79267e0210a1d3db",
-                "official",
-                UMConfigure.DEVICE_TYPE_PHONE,
-                null
+    NavHost(
+        navController = navController,
+        modifier = Modifier.fillMaxSize(),
+        startDestination = Route.MAIN,
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { windowWidth },
+                animationSpec = tween(durationMillis = 500, easing = easing)
             )
-            hasInit.value = true
-        }
-    }
-    val fontDetailViewModel: FontDetailViewModel = viewModel()
-    val searchFontViewModel: SearchFontViewModel = viewModel()
-    val navController = rememberNavController()
-    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val easing = FastOutSlowInEasing
-    val paddingValues = PaddingValues(12.dp)
-    Box(modifier = Modifier.fillMaxSize()) {
-        NavHost(
-            modifier = Modifier.fillMaxSize(),
-            navController = navController,
-            startDestination = "MainPage",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(durationMillis = 500, easing = easing)
-                )
-            },
-            exitTransition = {
-
-                slideOutHorizontally(
-                    targetOffsetX = { -it / 5 },
-                    animationSpec = tween(durationMillis = 500, easing = easing)
-                )
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it / 5 },
-                    animationSpec = tween(durationMillis = 500, easing = easing)
-                )
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(durationMillis = 500, easing = easing)
-                )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { -windowWidth / 5 },
+                animationSpec = tween(durationMillis = 500, easing = easing)
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { -windowWidth / 5 },
+                animationSpec = tween(durationMillis = 500, easing = easing)
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { windowWidth },
+                animationSpec = tween(durationMillis = 500, easing = easing)
+            )
+        },
+        builder = {
+            composable(
+                Route.MAIN
+            ) {
+                MainPage(navController, downloadViewModel)
             }
-        ) {
-            composable("MainPage") { MainPage(navController, downloadViewModel) }
-            composable("HomePage") { HomePage(navController, scrollBehavior, paddingValues) }
-            composable("ThemeSearchPage") { ThemeSearchPage(navController, searchThemeViewModel,downloadViewModel) }
-            composable("ThemeParsePage") {
-                ThemeParsePage(
-                    navController,
-                    parseViewModel,
-                    downloadViewModel
-                )
-            }
-            composable("ThanksPage") {
-                ThanksPage(navController)
-            }
-            composable("ZipFontPage") {
-                ZipFontPage(navController)
-            }
-            composable("FontSearchPage") {
-                FontSearchPage(
-                    searchFontViewModel,
-                    fontDetailViewModel,
-                    navController,
-                    downloadViewModel
-                )
-            }
-            composable("MtzFontPage") { MtzFontPage(navController) }
-            composable("FontDetailPage/{uuid}") { backStackEntry ->
-                val uuid = backStackEntry.arguments?.getString("uuid") ?: return@composable
-                FontDetailPage(
-                    navController = navController,
-                    viewModel = fontDetailViewModel,
-                    uuid = uuid,
-                    downloadViewModel = downloadViewModel
-                )
-            }
-            composable("DonationPage") {
-                DonationPage(navController)
-            }
-            composable("ReferencesPage") {
-                ReferencesPage(navController)
-            }
-            composable("DownloadPage") {
-                DownloadPage(
-                    navController,
-                    scrollBehavior,
-                    paddingValues,
-                    viewModel = downloadViewModel
-                )
-            }
-            composable("AboutPage") {
-                AboutPage(navController, scrollBehavior)
-            }
-        }
-
-        if (AppSettingsState.showFPSMonitor.value) {
-            FPSMonitor(
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(horizontal = 28.dp)
+            pagerContent(
+                navController,
+                parentRoute
             )
         }
-    }
+    )
+
 }
 
+fun NavGraphBuilder.pagerContent(
+    navController: NavHostController,
+    parentRoute: MutableState<String>
+) {
+    composable(Route.HOME) {
+        HomePage(navController)
+    }
+    composable(Route.SETTINGS) {
+        SettingsPage(navController)
+    }
+    composable(Route.ABOUT) {
+        AboutPage(navController)
+    }
+    composable(Route.DOWNLOAD) {
+        DownloadPage(navController)
+    }
+    composable(FontPageList.SEARCH) {
+        FontSearchPage(navController)
+    }
+    composable(FontPageList.DETAIL) { backStackEntry ->
+        val uuid = backStackEntry.arguments?.getString("uuid") ?: return@composable
+        FontDetailPage(
+            navController = navController,
+            uuid = uuid
+        )
+    }
+    composable(FontPageList.MTZ) {
+        MtzFontPage(navController)
+    }
+    composable(FontPageList.ZIP) {
+        ZipFontPage(navController)
+    }
+    composable(ThemePageList.SEARCH) {
+        ThemeSearchPage(navController)
+    }
+    composable(ThemePageList.PARSE) {
+        ThemeParsePage(navController)
+    }
+}
 
 
 

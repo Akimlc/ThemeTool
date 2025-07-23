@@ -27,7 +27,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.room.Room
 import coil3.compose.AsyncImage
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -44,8 +46,11 @@ import top.yukonga.miuix.kmp.extra.SuperCheckbox
 import top.yukonga.miuix.kmp.extra.SuperDropdown
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.data.db.AppDatabase
+import xyz.akimlc.themetool.ui.FontPageList
 import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
@@ -56,11 +61,10 @@ enum class Region {
 
 @Composable
 fun FontSearchPage(
-    viewModel: SearchFontViewModel,
-    fontDetailViewModel: FontDetailViewModel,
     navController: NavController,
-    downloadViewModel: DownloadViewModel
 ) {
+    val viewModel: SearchFontViewModel = viewModel()
+    val fontDetailViewModel: FontDetailViewModel = viewModel()
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -73,8 +77,15 @@ fun FontSearchPage(
 
     val isShowFontDialog = remember { mutableStateOf(false) }
     val selectProduct = remember { mutableStateOf<SearchFontViewModel.ProductData?>(null) }
-
     val hapticFeedback = LocalHapticFeedback.current
+    val db = remember {
+        Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
+    }
+    val dao = remember { db.downloadDao() }
+
+    val downloadViewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
     val backgroundLightColors = listOf(
         Color(0xFFF4F2F1),
         Color(0xFFEBEBE7),
@@ -220,7 +231,7 @@ fun FontSearchPage(
                             }
 
                             Region.INTERNATIONAL -> {
-                                navController.navigate("FontDetailPage/${product.uuid}")
+                                navController.navigate(FontPageList.detail(product.uuid))
                             }
                         }
                     }
@@ -244,7 +255,7 @@ fun FontSearchPage(
     }
     if (isShowFontDialog.value) {
         selectProduct.value?.let { data ->
-            DomesticFontInfoDialog(isShowFontDialog, data,downloadViewModel)
+            DomesticFontInfoDialog(isShowFontDialog, data, downloadViewModel)
 
         }
     }

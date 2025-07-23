@@ -44,7 +44,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.room.Room
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -57,24 +59,30 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
 
 
 @Composable
 fun FontDetailPage(
     navController: NavController,
-    viewModel: FontDetailViewModel,
     uuid: String,
-    downloadViewModel: DownloadViewModel
 ) {
+    val viewModel: FontDetailViewModel = viewModel()
+    val context = LocalContext.current
+
+    val db = remember {
+        Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
+    }
+    val dao = remember { db.downloadDao() }
+    val downloadViewModel: DownloadViewModel = viewModel(factory = DownloadViewModelFactory(dao))
     val backgroundColor = MiuixTheme.colorScheme.background
     val scrollBehavior = MiuixScrollBehavior()
     val fontData by viewModel.fontDetail.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val context = LocalContext.current
-
     val fontName = fontData?.fontName
     val fontAuthor = fontData?.fontAuthor
     val fontAuthorIcon = fontData?.fontAuthorIcon

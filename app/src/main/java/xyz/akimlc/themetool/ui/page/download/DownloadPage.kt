@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,17 +30,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Info
@@ -53,20 +54,32 @@ import xyz.akimlc.themetool.data.model.DownloadStatus
 import xyz.akimlc.themetool.ui.compoent.InfoNotice
 import xyz.akimlc.themetool.ui.compoent.getAdaptiveBlackWhite
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 
 @Composable
 fun DownloadPage(
     navController: NavController,
-    topAppBarScrollBehavior: ScrollBehavior,
-    padding: PaddingValues,
-    viewModel: DownloadViewModel
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    Log.d("DownloadViewModelCheck", "DownloadPage ViewModel: $viewModel")
     val TAG = "DownloadPage"
-    val downloadList by viewModel.downloads.collectAsState()
+    val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     //Log.d("DownloadPage", "下载任务数=${downloadList.size}")
+    val db = remember {
+        androidx.room.Room.databaseBuilder(
+            context,
+            xyz.akimlc.themetool.data.db.AppDatabase::class.java,
+            "download.db"
+        ).build()
+    }
+    val dao = remember { db.downloadDao() }
+
+    val viewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
+    val downloads by viewModel.downloads.collectAsState()
+    val downloadList by viewModel.downloads.collectAsState()
+    Log.d("DownloadViewModelCheck", "DownloadPage ViewModel: $viewModel")
 
     Scaffold(
         topBar = {
