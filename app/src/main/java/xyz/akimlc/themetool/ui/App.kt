@@ -7,7 +7,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -18,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -29,9 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.utils.getWindowSize
 import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.state.AppSettingsState
@@ -51,10 +47,6 @@ import xyz.akimlc.themetool.ui.page.welcome.WelcomePage
 import xyz.akimlc.themetool.utils.PreferenceUtil
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
-import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
-import xyz.akimlc.themetool.viewmodel.ParseViewModel
-import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
-import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 
 @SuppressLint("ViewModelConstructorInComposable", "UnusedBoxWithConstraintsScope")
 @Composable
@@ -69,10 +61,6 @@ fun App() {
     val downloadViewModel: DownloadViewModel = viewModel(
         factory = DownloadViewModelFactory(dao)
     )
-    val hasInit = remember { mutableStateOf(false) }
-    val searchThemeViewModel: SearchThemeViewModel = viewModel()
-    val parseViewModel: ParseViewModel = viewModel()
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         Log.d("App", "App: 第一次启动: ${firstLaunch.value}")
         AppSettingsState.showFPSMonitor.value =
@@ -81,12 +69,7 @@ fun App() {
     firstLaunch.value = !PreferenceUtil.getBoolean("first_launch", false)
     val parentRoute = remember { mutableStateOf("MainPage") }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
-    val fontDetailViewModel: FontDetailViewModel = viewModel()
-    val searchFontViewModel: SearchFontViewModel = viewModel()
     val navController = rememberNavController()
-    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val easing = FastOutSlowInEasing
-    val paddingValues = PaddingValues(12.dp)
     Scaffold { paddingValues ->
         when (firstLaunch.value) {
             true -> {
@@ -110,109 +93,8 @@ fun App() {
             )
 
         }
-
-//                Box(modifier = Modifier.fillMaxSize()) {
-//                    NavHost(
-//                        modifier = Modifier.fillMaxSize(),
-//                        navController = navController,
-//                        startDestination = "MainPage",
-//                        enterTransition = {
-//                            slideInHorizontally(
-//                                initialOffsetX = { it },
-//                                animationSpec = tween(durationMillis = 500, easing = easing)
-//                            )
-//                        },
-//                        exitTransition = {
-//
-//                            slideOutHorizontally(
-//                                targetOffsetX = { -it / 5 },
-//                                animationSpec = tween(durationMillis = 500, easing = easing)
-//                            )
-//                        },
-//                        popEnterTransition = {
-//                            slideInHorizontally(
-//                                initialOffsetX = { -it / 5 },
-//                                animationSpec = tween(durationMillis = 500, easing = easing)
-//                            )
-//                        },
-//                        popExitTransition = {
-//                            slideOutHorizontally(
-//                                targetOffsetX = { it },
-//                                animationSpec = tween(durationMillis = 500, easing = easing)
-//                            )
-//                        }
-//                    ) {
-//                        composable("MainPage") { MainPage(navController, downloadViewModel) }
-//                        composable("HomePage") { HomePage(navController, scrollBehavior, paddingValues) }
-//                        composable("ThemeSearchPage") {
-//                            ThemeSearchPage(
-//                                navController,
-//                                searchThemeViewModel,
-//                                downloadViewModel
-//                            )
-//                        }
-//                        composable("ThemeParsePage") {
-//                            ThemeParsePage(
-//                                navController,
-//                                parseViewModel,
-//                                downloadViewModel
-//                            )
-//                        }
-//                        composable("ThanksPage") {
-//                            ThanksPage(navController)
-//                        }
-//                        composable("ZipFontPage") {
-//                            ZipFontPage(navController)
-//                        }
-//                        composable("FontSearchPage") {
-//                            FontSearchPage(
-//                                searchFontViewModel,
-//                                fontDetailViewModel,
-//                                navController,
-//                                downloadViewModel
-//                            )
-//                        }
-//                        composable("MtzFontPage") { MtzFontPage(navController) }
-//                        composable("FontDetailPage/{uuid}") { backStackEntry ->
-//                            val uuid = backStackEntry.arguments?.getString("uuid") ?: return@composable
-//                            FontDetailPage(
-//                                navController = navController,
-//                                viewModel = fontDetailViewModel,
-//                                uuid = uuid,
-//                                downloadViewModel = downloadViewModel
-//                            )
-//                        }
-//                        composable("DonationPage") {
-//                            DonationPage(navController)
-//                        }
-//                        composable("ReferencesPage") {
-//                            ReferencesPage(navController)
-//                        }
-//                        composable("DownloadPage") {
-//                            DownloadPage(
-//                                navController,
-//                                scrollBehavior,
-//                                paddingValues,
-//                                viewModel = downloadViewModel
-//                            )
-//                        }
-//                        composable("AboutPage") {
-//                            AboutPage(navController, scrollBehavior)
-//                        }
-//                    }
-//
-//                    if (AppSettingsState.showFPSMonitor.value) {
-//                        FPSMonitor(
-//                            modifier = Modifier
-//                                .statusBarsPadding()
-//                                .padding(horizontal = 28.dp)
-//                        )
-//                    }
-//                }
-//            }
     }
 }
-
 
 /**
  * 小屏模式
@@ -265,7 +147,7 @@ fun MainLayout(
             composable(
                 Route.MAIN
             ) {
-                MainPage(navController, downloadViewModel)
+                MainPage(navController,pagerState)
             }
             pagerContent(
                 navController,
