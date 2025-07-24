@@ -27,10 +27,24 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 
+data class ThanksItem(
+    val name: String,
+    val avatarResId: Int,
+    val description: String? = null,
+    val url: String? = null
+)
+
 @Composable
 fun ThanksPage(navController: NavController) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val uriHandler = LocalUriHandler.current
+
+    val thanksList = listOf(
+        ThanksItem(name = "258a", avatarResId = R.mipmap.ic_258a),
+        ThanksItem(name = "白逸泽", avatarResId = R.mipmap.ic_aze),
+        ThanksItem(name = "一苒", avatarResId = R.mipmap.ic_yiran),
+        ThanksItem(name = "YunZiA", avatarResId = R.mipmap.ic_yunzia),
+    )
     Scaffold(
         topBar = {
             BackTopAppBar(
@@ -48,57 +62,16 @@ fun ThanksPage(navController: NavController) {
             contentPadding = padding,
         ) {
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = 12.dp)
-                        .padding(top = 12.dp)
-                ) {
+                thanksList.forEach { item ->
                     SuperArrow(
-                        title = "258a",
+                        title = item.name,
+                        summary = item.description ?: "",
+                        onClick = {
+                            item.url?.let { uriHandler.openUri(it) }
+                        },
                         leftAction = {
                             Image(
-                                painter = painterResource(R.mipmap.ic_258a),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(48.dp))
-                            )
-                        }
-                    )
-                    SuperArrow(
-                        title = "白逸泽",
-                        leftAction = {
-                            Image(
-                                painter = painterResource(R.mipmap.ic_yiran),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(48.dp))
-                            )
-                        }
-                    )
-                    SuperArrow(
-                        title = "一苒",
-                        leftAction = {
-                            Image(
-                                painter = painterResource(R.mipmap.ic_aze),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(48.dp))
-                            )
-                        }
-                    )
-                    SuperArrow(
-                        title = "YunZiA",
-                        leftAction = {
-                            Image(
-                                painter = painterResource(R.mipmap.ic_yunzia),
+                                painter = painterResource(id = item.avatarResId),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .padding(end = 12.dp)
@@ -116,7 +89,7 @@ fun ThanksPage(navController: NavController) {
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
                         .padding(bottom = 12.dp)
-                ){
+                ) {
                     SuperArrow(
                         title = "AdemOyuklu",
                         summary = stringResource(R.string.translator_summary),
@@ -130,5 +103,3 @@ fun ThanksPage(navController: NavController) {
 
     }
 }
-
-

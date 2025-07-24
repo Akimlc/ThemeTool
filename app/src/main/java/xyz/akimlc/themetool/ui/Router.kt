@@ -26,18 +26,28 @@ object ThemePageList {
 }
 
 object FontPageList {
-
-
     // 字体搜索页
     const val SEARCH = "font/search"
 
     // 字体详情页（带 uuid 参数）
     const val DETAIL = "font/detail/{uuid}"
+
     fun detail(uuid: String) = "font/detail/$uuid"
+
     // MTZ 字体打包页
     const val MTZ = "font/mtz"
 
     // ZIP 字体打包页
     const val ZIP = "font/zip"
+}
 
+object AboutPageList{
+    //引用页面
+    const val REFERENCES = "about/references"
+
+    //感谢页面
+    const val THANKS = "about/thanks"
+
+    //捐赠页面
+    const val DONATION = "about/donation"
 }

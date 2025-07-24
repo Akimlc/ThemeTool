@@ -40,6 +40,9 @@ import xyz.akimlc.themetool.ui.page.font.MtzFontPage
 import xyz.akimlc.themetool.ui.page.settings.FPSMonitor
 import xyz.akimlc.themetool.ui.page.settings.SettingsPage
 import xyz.akimlc.themetool.ui.page.settings.about.AboutPage
+import xyz.akimlc.themetool.ui.page.settings.about.DonationPage
+import xyz.akimlc.themetool.ui.page.settings.about.ReferencesPage
+import xyz.akimlc.themetool.ui.page.settings.about.ThanksPage
 import xyz.akimlc.themetool.ui.page.theme.ThemeParsePage
 import xyz.akimlc.themetool.ui.page.theme.ThemeSearchPage
 import xyz.akimlc.themetool.ui.page.welcome.WelcomePage
@@ -191,6 +194,15 @@ fun NavGraphBuilder.pagerContent(
     }
     composable(ThemePageList.PARSE) {
         ThemeParsePage(navController)
+    }
+    composable(AboutPageList.THANKS) {
+        ThanksPage(navController)
+    }
+    composable(AboutPageList.REFERENCES) {
+        ReferencesPage(navController)
+    }
+    composable(AboutPageList.DONATION) {
+        DonationPage(navController)
     }
 }
 

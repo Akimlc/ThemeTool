@@ -21,10 +21,16 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 
+data class ReferenceItem(val name: String, val url: String)
 @Composable
 fun ReferencesPage(navController: NavController) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val uriHandler = LocalUriHandler.current
+    val references = listOf(
+        ReferenceItem("MiuiX", "https://github.com/miuix-kotlin-multiplatform/miuix/"),
+        ReferenceItem("OkHttp", "https://github.com/square/okhttp"),
+        ReferenceItem("Coil", "https://github.com/coil-kt/coil"),
+        ReferenceItem("Gson", "https://github.com/google/gson"),
+    )
     Scaffold(
         topBar = {
             BackTopAppBar(
@@ -32,54 +38,41 @@ fun ReferencesPage(navController: NavController) {
                 scrollBehavior = scrollBehavior,
                 navController = navController,
             )
-        },
+        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxHeight()
                 .overScrollVertical()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 6.dp)
-                        .padding(bottom = 16.dp)
-                ) {
-                    SuperArrow(
-                        title = "MiuiX",
-                        summary = "https://github.com/miuix-kotlin-multiplatform/miuix/",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/miuix-kotlin-multiplatform/miuix/")
-                        },
-                    )
-                    SuperArrow(
-                        title = "OkHttp",
-                        summary = "https://github.com/square/okhttp",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/square/okhttp")
-                        },
-                    )
-                    SuperArrow(
-                        title = "Coil",
-                        summary = "https://github.com/coil-kt/coil",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/coil-kt/coil")
-                        },
-                    )
-                    SuperArrow(
-                        title = "Gson",
-                        summary = "https://github.com/google/gson",
-                        onClick = {
-                            uriHandler.openUri("https://github.com/google/gson")
-                        },
-                    )
-                }
+                ReferenceCard(references = references)
             }
         }
     }
 }
 
+
+@Composable
+fun ReferenceCard(references: List<ReferenceItem>) {
+    val uriHandler = LocalUriHandler.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .padding(top = 6.dp, bottom = 16.dp)
+    ) {
+        references.forEach { item ->
+            SuperArrow(
+                title = item.name,
+                summary = item.url,
+                onClick = {
+                    uriHandler.openUri(item.url)
+                }
+            )
+        }
+    }
+}

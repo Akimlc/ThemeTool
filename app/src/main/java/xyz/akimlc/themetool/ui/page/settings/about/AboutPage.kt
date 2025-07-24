@@ -38,6 +38,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.ui.AboutPageList
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 
 @Composable
@@ -94,7 +95,7 @@ fun AboutPage(
                         SuperArrow(
                             title = stringResource(R.string.about_thanks_list),
                             onClick = {
-                                navController.navigate("ThanksPage")
+                                navController.navigate(AboutPageList.THANKS)
                             }
                         )
                     }
@@ -140,13 +141,13 @@ fun AboutPage(
                             title = stringResource(R.string.donate),
                             summary = stringResource(R.string.donate_summary),
                             onClick = {
-                                navController.navigate("DonationPage")
+                                navController.navigate(AboutPageList.DONATION)
                             }
                         )
                         SuperArrow(
                             title = stringResource(R.string.reference),
                             onClick = {
-                                navController.navigate("ReferencesPage")
+                                navController.navigate(AboutPageList.REFERENCES)
                             }
                         )
                     }
