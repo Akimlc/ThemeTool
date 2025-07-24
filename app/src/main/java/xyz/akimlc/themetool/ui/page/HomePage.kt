@@ -95,11 +95,6 @@ fun FontSection(navController: NavController) {
                 iconRes = R.drawable.ic_font_change,
                 route = FontPageList.MTZ
             ),
-            MenuItem(
-                titleRes = R.string.font_module_convert,
-                iconRes = R.drawable.ic_font_change,
-                route = FontPageList.MTZ
-            )
         )
     }
     Section(titleRes = R.string.title_font, menuItems = fontItem, navController)

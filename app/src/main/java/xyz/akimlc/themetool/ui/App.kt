@@ -37,7 +37,6 @@ import xyz.akimlc.themetool.ui.page.download.DownloadPage
 import xyz.akimlc.themetool.ui.page.font.FontDetailPage
 import xyz.akimlc.themetool.ui.page.font.FontSearchPage
 import xyz.akimlc.themetool.ui.page.font.MtzFontPage
-import xyz.akimlc.themetool.ui.page.font.ZipFontPage
 import xyz.akimlc.themetool.ui.page.settings.FPSMonitor
 import xyz.akimlc.themetool.ui.page.settings.SettingsPage
 import xyz.akimlc.themetool.ui.page.settings.about.AboutPage
@@ -186,9 +185,6 @@ fun NavGraphBuilder.pagerContent(
     }
     composable(FontPageList.MTZ) {
         MtzFontPage(navController)
-    }
-    composable(FontPageList.ZIP) {
-        ZipFontPage(navController)
     }
     composable(ThemePageList.SEARCH) {
         ThemeSearchPage(navController)
