@@ -56,7 +56,7 @@ import xyz.akimlc.themetool.viewmodel.SearchFontViewModel
 
 
 enum class Region {
-    DOMESTIC, INTERNATIONAL
+    DOMESTIC, GLOBAL
 }
 
 @Composable
@@ -158,10 +158,10 @@ fun FontSearchPage(
                     SuperCheckbox(
                         checkboxLocation = CheckboxLocation.Right,
                         title = stringResource(R.string.checkbox_international),
-                        checked = selectedRegion==Region.INTERNATIONAL,
+                        checked = selectedRegion==Region.GLOBAL,
                         onCheckedChange = {
                             viewModel.clearSearchResults()
-                            if (it) viewModel.setSelectedRegion(Region.INTERNATIONAL)
+                            if (it) viewModel.setSelectedRegion(Region.GLOBAL)
                         },
                     )
                 }
@@ -230,7 +230,7 @@ fun FontSearchPage(
                                 selectProduct.value = product
                             }
 
-                            Region.INTERNATIONAL -> {
+                            Region.GLOBAL -> {
                                 navController.navigate(FontPageList.detail(product.uuid))
                             }
                         }

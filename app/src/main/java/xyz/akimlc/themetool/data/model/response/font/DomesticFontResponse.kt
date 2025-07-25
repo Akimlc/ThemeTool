@@ -3,7 +3,7 @@ package xyz.akimlc.themetool.data.model.response.font
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DomesticFontModel(
+data class DomesticFontResponse(
     val apiCode: Int,
     val apiMessage: String,
     val apiData: DomesticApiData
