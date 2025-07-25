@@ -78,7 +78,7 @@ class SearchThemeViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoadingMore.value = true
             try {
-                val result = SearchThemeRepository.searchTheme(currentKeyword, currentPage)
+                val result = SearchThemeRepository.searchDomesticTheme(currentKeyword, currentPage)
                 if (result.isNotEmpty()) {
                     _productList.value = _productList.value + result
                     currentPage++
@@ -123,7 +123,8 @@ class SearchThemeViewModel : ViewModel() {
         _isSearching.value = true
         viewModelScope.launch {
             try {
-                val result = SearchThemeRepository.searchTheme(keywords, 0)
+
+                val result = SearchThemeRepository.searchDomesticTheme(keywords, 0)
                 _productList.value = result
                 if (result.isEmpty()) onEmpty()
                 else currentPage++

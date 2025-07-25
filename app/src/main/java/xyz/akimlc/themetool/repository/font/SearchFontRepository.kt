@@ -5,9 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.Request
-import xyz.akimlc.themetool.data.model.Response
-import xyz.akimlc.themetool.data.model.font.DomesticFontModel
-import xyz.akimlc.themetool.data.model.font.InternationFontModel
+import xyz.akimlc.themetool.data.model.response.font.DomesticFontModel
+import xyz.akimlc.themetool.data.model.response.font.InternationFontModel
 import xyz.akimlc.themetool.ui.page.font.Region
 import xyz.akimlc.themetool.utils.NetworkUtils
 import xyz.akimlc.themetool.viewmodel.SearchFontViewModel

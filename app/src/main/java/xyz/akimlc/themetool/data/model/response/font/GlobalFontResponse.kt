@@ -1,4 +1,4 @@
-package xyz.akimlc.themetool.data.model.font
+package xyz.akimlc.themetool.data.model.response.font
 
 import kotlinx.serialization.Serializable
 

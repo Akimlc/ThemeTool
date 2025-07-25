@@ -1,19 +1,15 @@
-package xyz.akimlc.themetool.utils
+package xyz.akimlc.themetool.data.api
 
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import xyz.akimlc.themetool.data.api.NetworkApi
 import java.util.concurrent.TimeUnit
 
-class NetworkUtils {
+object ApiService {
 
-    object HttpClient {
-        val client = OkHttpClient()
-    }
-
+    private const val BASE_URL = "https://api.zhuti.xiaomi.com/"
     val json = Json { ignoreUnknownKeys = true }
     val contentType = "application/json".toMediaType()
 
@@ -32,28 +28,15 @@ class NetworkUtils {
     }
 
 
-    private val domesticRetrofit by lazy {
+    private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("https://api.zhuti.xiaomi.com/")
+            .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
     }
 
-    private val globalRetrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl("https://thm.market.intl.xiaomi.com")
-            .client(client)
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-    }
-
-
-    val domesticApi: NetworkApi by lazy {
-        domesticRetrofit.create(NetworkApi::class.java)
-    }
-
-    val globalApi: NetworkApi by lazy {
-        globalRetrofit.create(NetworkApi::class.java)
+    val themeApi: NetworkApi by lazy {
+        retrofit.create(NetworkApi::class.java)
     }
 }

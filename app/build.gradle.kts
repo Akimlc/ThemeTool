@@ -117,10 +117,14 @@ dependencies {
     implementation("com.umeng.umsdk:common:9.4.7")
     implementation("com.umeng.umsdk:asms:1.4.0")
 
+    //ROOM
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     ksp("androidx.room:room-compiler:2.7.2")
 
     //MMKV
     implementation("com.tencent:mmkv:2.2.2")
+
+    implementation("com.squareup.retrofit2:retrofit:2.12.0")
+    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.12.0")
 }
