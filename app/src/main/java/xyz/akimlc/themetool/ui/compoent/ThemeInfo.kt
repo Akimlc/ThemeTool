@@ -256,7 +256,7 @@ fun DomesticFontInfoDialog(
             } else {
                 Text(
                     stringResource(
-                        R.string.label_theme_url,
+                        R.string.label_font_url,
                         themeState.value?.downloadUrl ?: stringResource(R.string.parse_failed)
                     )
                 )
