@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
 
     <application
         android:name=".ThemeToolApplication"
@@ -22,7 +24,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,10 +31,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".service.DownloadService"
+            android:foregroundServiceType="dataSync" />
+
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="686a773c79267e0210a1d3db" />
-        <!-- 渠道 -->
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="official" />

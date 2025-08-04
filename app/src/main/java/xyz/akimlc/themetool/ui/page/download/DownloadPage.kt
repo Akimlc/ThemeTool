@@ -1,7 +1,7 @@
 package xyz.akimlc.themetool.ui.page.download
 
+
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +49,7 @@ import top.yukonga.miuix.kmp.icon.icons.useful.Info
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.ThemeToolApplication
 import xyz.akimlc.themetool.data.db.DownloadEntity
 import xyz.akimlc.themetool.data.model.DownloadStatus
 import xyz.akimlc.themetool.ui.compoent.InfoNotice
@@ -60,26 +61,16 @@ import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 fun DownloadPage(
     navController: NavController,
 ) {
-    val showDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val TAG = "DownloadPage"
-    val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    //Log.d("DownloadPage", "下载任务数=${downloadList.size}")
-    val db = remember {
-        androidx.room.Room.databaseBuilder(
-            context,
-            xyz.akimlc.themetool.data.db.AppDatabase::class.java,
-            "download.db"
-        ).build()
-    }
-    val dao = remember { db.downloadDao() }
-
+    val dao = ThemeToolApplication.database.downloadDao()
     val viewModel: DownloadViewModel = viewModel(
         factory = DownloadViewModelFactory(dao)
     )
-    val downloads by viewModel.downloads.collectAsState()
-    val downloadList by viewModel.downloads.collectAsState()
-    Log.d("DownloadViewModelCheck", "DownloadPage ViewModel: $viewModel")
+    // Collect Flow from room, initial empty list
+    val downloadList by viewModel.downloads.collectAsState(initial = emptyList())
+
+    val showDialog = remember { mutableStateOf(false) }
+    val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         topBar = {
@@ -131,7 +122,7 @@ fun DownloadPage(
                     Spacer(modifier = Modifier.height(48.dp)) // 可选：占点空间使得可滚动
                 }
             } else {
-                item{
+                item {
                     InfoNotice(
                         text = "下载的路径为：Download/ThemeTool"
                     )

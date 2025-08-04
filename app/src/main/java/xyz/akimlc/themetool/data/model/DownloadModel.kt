@@ -1,5 +1,8 @@
 package xyz.akimlc.themetool.data.model
 
+import xyz.akimlc.themetool.data.db.DownloadEntity
+import java.io.File
+
 data class DownloadModel(
     val id: String,       // 下载ID
     val name: String,     // 下载名字
@@ -19,5 +22,8 @@ enum class DownloadStatus {
 }
 
 
-
+data class DownloadTask(
+    val model: DownloadEntity,
+    val outputFile: File
+)
 

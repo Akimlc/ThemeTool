@@ -1,7 +1,15 @@
 package xyz.akimlc.themetool.ui.page.welcome
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 import android.view.HapticFeedbackConstants
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -34,6 +44,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Info
+import xyz.akimlc.themetool.MainActivity
 import xyz.akimlc.themetool.R
 
 @Composable
@@ -82,7 +93,10 @@ fun PermissionPage(
         PermissionItem(
             icon = MiuixIcons.Useful.Info,
             title = "文件管理权限",
-            description = "用于保存资源文件"
+            description = "用于保存资源文件",
+            onClick = {
+                requestStoragePermission(context)
+            }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -116,9 +130,17 @@ fun PermissionPage(
 }
 
 @Composable
-fun PermissionItem(icon: ImageVector, title: String, description: String) {
+fun PermissionItem(
+    icon: ImageVector, title: String,
+    description: String,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = onClick
+            ),
     ) {
         Row(
             modifier = Modifier
@@ -142,4 +164,38 @@ fun PermissionItem(icon: ImageVector, title: String, description: String) {
             }
         }
     }
+}
+
+
+//授权的逻辑
+fun requestStoragePermission(context: Context) {
+    val activity = context as? MainActivity ?: return
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (!Environment.isExternalStorageManager()) {
+            try {
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                intent.data = "package:${context.packageName}".toUri()
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                context.startActivity(intent)
+            }
+        }
+    } else {
+        if (ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )!=PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                101
+            )
+        }
+    }
+
 }
