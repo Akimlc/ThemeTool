@@ -276,7 +276,7 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel, downloadViewModel: 
             }
             if (isShow.value) {
                 selectedProduct.value?.let { product ->
-                    ThemeInfoDialog(isShow, product, themeInfoState.value, downloadViewModel)
+                    ThemeInfoDialog(isShow, product, downloadViewModel)
                 }
             }
         }

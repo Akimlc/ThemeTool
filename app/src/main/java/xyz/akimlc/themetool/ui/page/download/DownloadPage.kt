@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -245,13 +246,13 @@ fun DownloadItem(item: DownloadEntity) {
                     .defaultMinSize(minWidth = 64.dp)
                     .background(Color(0x1A0D84FF), shape = RoundedCornerShape(200.dp))
                     .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
                         onClick = {
                             if (item.status == DownloadStatus.DOWNLOADING) {
-                                // 正在下载 → 点击暂停
                                 DownloadService.pauseDownload(context, item)
                                 Toast.makeText(context, "已暂停下载", Toast.LENGTH_SHORT).show()
                             } else {
-                                // READY / STOP / FAILED → 点击开始或继续
                                 DownloadService.startDownload(context, item)
                                 Toast.makeText(context, "已开始下载", Toast.LENGTH_SHORT).show()
                             }
