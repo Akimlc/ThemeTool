@@ -1,7 +1,6 @@
 package xyz.akimlc.themetool.ui.page.settings.about
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,13 +37,16 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.AboutPageList
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.theme.isDarkTheme
 
 @Composable
 fun AboutPage(
     navController: NavController,
 ) {
+    val colorMode = AppSettingsState.colorMode
     val uriHandler = LocalUriHandler.current
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     Scaffold(
@@ -65,7 +67,7 @@ fun AboutPage(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                BackgroundArea()
+                BackgroundArea(colorMode = colorMode.intValue)
             }
 
             item {
@@ -159,7 +161,14 @@ fun AboutPage(
 }
 
 @Composable
-fun BackgroundArea() {
+fun BackgroundArea(colorMode: Int) {
+    val isDark = isDarkTheme(colorMode)
+
+    val backgroundPainter = if (isDark) {
+        painterResource(R.mipmap.background_about_dark)
+    } else {
+        painterResource(R.mipmap.background_about_light)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,10 +177,7 @@ fun BackgroundArea() {
             .padding(horizontal = 12.dp)
     ) {
         Image(
-            painter = if (isSystemInDarkTheme())
-                painterResource(R.mipmap.background_about_dark)
-            else
-                painterResource(R.mipmap.background_about_light),
+            painter = backgroundPainter,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
