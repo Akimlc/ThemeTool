@@ -60,7 +60,7 @@ class DownloadService : Service() {
         val name = intent.getStringExtra("name") ?: return START_NOT_STICKY
         val outputDir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "ThemeTool"
+            "ThemeTool/Download"
         )
         if (!outputDir.exists()) outputDir.mkdirs()
         val outputFile = File(outputDir, name)
