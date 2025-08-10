@@ -2,10 +2,13 @@ package xyz.akimlc.themetool.ui.page.settings.about
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -30,7 +33,6 @@ import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 data class ThanksItem(
     val name: String,
     val avatarResId: Int,
-    val description: String? = null,
     val url: String? = null
 )
 
@@ -62,25 +64,32 @@ fun ThanksPage(navController: NavController) {
             contentPadding = padding,
         ) {
             item {
-                thanksList.forEach { item ->
-                    SuperArrow(
-                        title = item.name,
-                        summary = item.description ?: "",
-                        onClick = {
-                            item.url?.let { uriHandler.openUri(it) }
-                        },
-                        leftAction = {
-                            Image(
-                                painter = painterResource(id = item.avatarResId),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(48.dp))
-                            )
-                        }
-                    )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(vertical = 6.dp)
+                ) {
+                    thanksList.forEach { item ->
+                        SuperArrow(
+                            title = item.name,
+                            onClick = { item.url?.let { uriHandler.openUri(it) } },
+                            leftAction = {
+                                Image(
+                                    painter = painterResource(id = item.avatarResId),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(RoundedCornerShape(48.dp))
+                                )
+                                Spacer(Modifier.width(16.dp))
+                            },
+                            insideMargin = PaddingValues(24.dp, 16.dp),
+                        )
+
+                    }
                 }
+
             }
             item {
                 SmallTitle(stringResource(R.string.translator_section_title))
