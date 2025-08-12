@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import com.umeng.analytics.MobclickAgent
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.App
@@ -16,8 +15,8 @@ import xyz.akimlc.themetool.utils.PreferenceUtil
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppSettingsState.language.intValue = PreferenceUtil.getInt(this, "app_language", 0)
-        AppSettingsState.colorMode.intValue = PreferenceUtil.getInt(this, "color_mode", 0)
+        AppSettingsState.language.intValue = PreferenceUtil.getInt("app_language", 0)
+        AppSettingsState.colorMode.intValue = PreferenceUtil.getInt("color_mode", 0)
         setContent {
             AppTheme {
                 App()

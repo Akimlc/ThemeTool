@@ -2,6 +2,7 @@ package xyz.akimlc.themetool.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import xyz.akimlc.themetool.data.model.DownloadModel
 import xyz.akimlc.themetool.data.model.DownloadStatus
 
 @Entity(tableName = "downloads")
@@ -14,3 +15,14 @@ data class DownloadEntity(
     val status: DownloadStatus = DownloadStatus.READY,
     val timestamp: Long = System.currentTimeMillis()
 )
+
+fun DownloadEntity.toModel(): DownloadModel {
+    return DownloadModel(
+        id = id,
+        name = name,
+        url = url,
+        size = size,
+        progress = progress,
+        status = status
+    )
+}

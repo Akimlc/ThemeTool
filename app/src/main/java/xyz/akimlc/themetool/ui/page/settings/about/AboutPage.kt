@@ -1,11 +1,9 @@
 package xyz.akimlc.themetool.ui.page.settings.about
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,28 +27,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.state.AppSettingsState
+import xyz.akimlc.themetool.ui.AboutPageList
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.theme.isDarkTheme
 
 @Composable
 fun AboutPage(
     navController: NavController,
-    topAppBarScrollBehavior: ScrollBehavior,
 ) {
+    val colorMode = AppSettingsState.colorMode
     val uriHandler = LocalUriHandler.current
+    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     Scaffold(
         topBar = {
             BackTopAppBar(
                 title = stringResource(R.string.about_title),
-                scrollBehavior = topAppBarScrollBehavior,
+                scrollBehavior = scrollBehavior,
                 navController = navController
             )
         }
@@ -59,12 +62,12 @@ fun AboutPage(
             modifier = Modifier
                 .fillMaxSize()
                 .overScrollVertical()
-                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = padding,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                BackgroundArea()
+                BackgroundArea(colorMode = colorMode.intValue)
             }
 
             item {
@@ -94,7 +97,7 @@ fun AboutPage(
                         SuperArrow(
                             title = stringResource(R.string.about_thanks_list),
                             onClick = {
-                                navController.navigate("ThanksPage")
+                                navController.navigate(AboutPageList.THANKS)
                             }
                         )
                     }
@@ -140,13 +143,13 @@ fun AboutPage(
                             title = stringResource(R.string.donate),
                             summary = stringResource(R.string.donate_summary),
                             onClick = {
-                                navController.navigate("DonationPage")
+                                navController.navigate(AboutPageList.DONATION)
                             }
                         )
                         SuperArrow(
                             title = stringResource(R.string.reference),
                             onClick = {
-                                navController.navigate("ReferencesPage")
+                                navController.navigate(AboutPageList.REFERENCES)
                             }
                         )
                     }
@@ -158,7 +161,14 @@ fun AboutPage(
 }
 
 @Composable
-fun BackgroundArea() {
+fun BackgroundArea(colorMode: Int) {
+    val isDark = isDarkTheme(colorMode)
+
+    val backgroundPainter = if (isDark) {
+        painterResource(R.mipmap.background_about_dark)
+    } else {
+        painterResource(R.mipmap.background_about_light)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,10 +177,7 @@ fun BackgroundArea() {
             .padding(horizontal = 12.dp)
     ) {
         Image(
-            painter = if (isSystemInDarkTheme())
-                painterResource(R.mipmap.background_about_dark)
-            else
-                painterResource(R.mipmap.background_about_light),
+            painter = backgroundPainter,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()

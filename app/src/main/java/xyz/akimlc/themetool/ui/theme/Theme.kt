@@ -26,8 +26,7 @@ fun AppTheme(
     val language = AppSettingsState.language
     val colorMode = AppSettingsState.colorMode
 
-    val isSystemDark = isSystemInDarkTheme()
-    val isDarkMode = colorMode.intValue==2 || (isSystemDark && colorMode.intValue==0)
+    val isSystemDark = isDarkTheme(colorMode.intValue)
     val context = LocalContext.current
     val newContext =
         context.createConfigurationContext(Configuration(context.resources.configuration).apply {
@@ -36,13 +35,20 @@ fun AppTheme(
 
     val activity = LocalContext.current as? ComponentActivity
 
+    val colors = when (colorMode.intValue) {
+        0 -> if (isSystemDark) darkColorScheme() else lightColorScheme()
+        1 -> lightColorScheme()
+        2 -> darkColorScheme()
+        else -> lightColorScheme()
+    }
+
     // 沉浸式状态栏
-    LaunchedEffect(isDarkMode) {
+    LaunchedEffect(isSystemDark) {
         activity?.enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
                 Color.TRANSPARENT,
                 Color.TRANSPARENT
-            ) { isDarkMode },
+            ) { isSystemDark },
             navigationBarStyle = SystemBarStyle.auto(
                 Color.TRANSPARENT,
                 Color.TRANSPARENT
@@ -55,12 +61,19 @@ fun AppTheme(
         LocalConfiguration provides newContext.resources.configuration
     ) {
         MiuixTheme(
-            colors = when (colorMode.intValue) {
-                1 -> lightColorScheme()
-                2 -> darkColorScheme()
-                else -> if (isSystemDark) darkColorScheme() else lightColorScheme()
-            },
+            colors = colors,
             content = content
         )
+    }
+}
+
+@Composable
+fun isDarkTheme(colorMode: Int): Boolean {
+    val isSystemDark = isSystemInDarkTheme()
+    return when (colorMode) {
+        0 -> isSystemDark  // 跟随系统
+        1 -> false        // 强制浅色
+        2 -> true         // 强制深色
+        else -> isSystemDark
     }
 }

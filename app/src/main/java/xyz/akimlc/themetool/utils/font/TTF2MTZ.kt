@@ -108,7 +108,7 @@ class TTF2MTZ {
 
                     val downloadDir = File(
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        "ThemeTool"
+                        "ThemeTool/MTZ"
                     )
                     if (!downloadDir.exists()) downloadDir.mkdirs()
                     val destinationFile = File(downloadDir, "$fontName.mtz")
@@ -120,7 +120,7 @@ class TTF2MTZ {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
-                                "字体文件已保存到 Download/ThemeTool",
+                                "字体文件已保存到 Download/ThemeTool/MTZ",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

@@ -2,17 +2,20 @@ package xyz.akimlc.themetool.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import xyz.akimlc.themetool.repository.Parse
 import xyz.akimlc.themetool.repository.font.SearchFontRepository
 import xyz.akimlc.themetool.ui.page.font.Region
-
 class SearchFontViewModel : ViewModel() {
-    private val _isSearching = MutableStateFlow(false)
+    private val _isSearching = MutableStateFlow(false) // 初次/刷新搜索（page==0）
     val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
+
+    private val _isLoadingMore = MutableStateFlow(false) // 分页加载中（page>0）
+    val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
     private val _productList = MutableStateFlow<List<ProductData>>(emptyList())
     val productList: StateFlow<List<ProductData>> = _productList.asStateFlow()
@@ -23,7 +26,11 @@ class SearchFontViewModel : ViewModel() {
     private val _selectedRegion = MutableStateFlow(Region.DOMESTIC)
     val selectedRegion: StateFlow<Region> = _selectedRegion.asStateFlow()
 
+    private val _toastEvent = MutableSharedFlow<String>()
+    val toastEvent = _toastEvent.asSharedFlow()
+
     private val _hasMore = MutableStateFlow(true)
+    val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
 
     private var currentPage = 0
     private var currentKeywords = ""
@@ -42,22 +49,31 @@ class SearchFontViewModel : ViewModel() {
         version: String,
         page: Int
     ) {
-        if (keywords.isEmpty()) return
+        if (keywords.isEmpty()) {
+            viewModelScope.launch {
+                _toastEvent.emit("请输入关键字")
+            }
+            return
+        }
 
         currentPage = page
         currentKeywords = keywords
         currentRegion = region
         currentVersion = version
-
         _currentKeyword.value = keywords
 
         viewModelScope.launch {
-            _isSearching.value = true
+            // 根据 page 设置不同的 loading flag
+            if (page == 0) {
+                _isSearching.value = true
+            } else {
+                _isLoadingMore.value = true
+            }
 
             try {
                 val result = SearchFontRepository().searchFont(region, keywords, version, page)
                 _hasMore.value = result.isNotEmpty()
-                if (page==0) {
+                if (page == 0) {
                     _productList.value = result
                 } else {
                     _productList.value = _productList.value + result
@@ -66,13 +82,17 @@ class SearchFontViewModel : ViewModel() {
                 e.printStackTrace()
                 _hasMore.value = false
             } finally {
-                _isSearching.value = false
+                if (page == 0) {
+                    _isSearching.value = false
+                } else {
+                    _isLoadingMore.value = false
+                }
             }
         }
     }
 
     fun loadMore() {
-        if (_isSearching.value || !_hasMore.value) return
+        if (_isSearching.value || _isLoadingMore.value || !_hasMore.value) return
         currentPage++
         searchFont(currentRegion, currentKeywords, currentVersion, currentPage)
     }
@@ -80,6 +100,7 @@ class SearchFontViewModel : ViewModel() {
     fun clearSearchResults() {
         _productList.value = emptyList()
         currentPage = 0
+        _hasMore.value = true
     }
 
     fun setSelectedRegion(region: Region) {

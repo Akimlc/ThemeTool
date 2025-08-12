@@ -46,7 +46,6 @@ class Parse {
 
     suspend fun parseFont(uuid: String): FontDetail? = withContext(Dispatchers.IO) {
         //val ua = StringUtils().generalRandomUA()
-
         val fontUrl =
             "https://api.zhuti.intl.xiaomi.com/app/v9/uipages/font/$uuid?isGlobal=true&language=zh_CN&devicePixel=1080&device=apollo&region=MC"
         val okHttpClient = OkHttpClient()

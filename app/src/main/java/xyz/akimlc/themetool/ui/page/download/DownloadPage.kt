@@ -1,14 +1,19 @@
 package xyz.akimlc.themetool.ui.page.download
 
+
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,44 +35,50 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
+import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Info
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.ThemeToolApplication
 import xyz.akimlc.themetool.data.db.DownloadEntity
 import xyz.akimlc.themetool.data.model.DownloadStatus
+import xyz.akimlc.themetool.service.DownloadService
 import xyz.akimlc.themetool.ui.compoent.InfoNotice
 import xyz.akimlc.themetool.ui.compoent.getAdaptiveBlackWhite
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 
 @Composable
 fun DownloadPage(
     navController: NavController,
-    topAppBarScrollBehavior: ScrollBehavior,
-    padding: PaddingValues,
-    viewModel: DownloadViewModel
 ) {
-    val showDialog = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    Log.d("DownloadViewModelCheck", "DownloadPage ViewModel: $viewModel")
-    val TAG = "DownloadPage"
-    val downloadList by viewModel.downloads.collectAsState()
-    //Log.d("DownloadPage", "下载任务数=${downloadList.size}")
+    val dao = ThemeToolApplication.database.downloadDao()
+    val viewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
+    val downloadList by viewModel.downloads.collectAsState(initial = emptyList())
+
+    val showDialog = remember { mutableStateOf(false) }
+    val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         topBar = {
@@ -115,10 +127,10 @@ fun DownloadPage(
                         color = Color.Gray,
                         fontSize = 16.sp
                     )
-                    Spacer(modifier = Modifier.height(48.dp)) // 可选：占点空间使得可滚动
+                    Spacer(modifier = Modifier.height(48.dp))
                 }
             } else {
-                item{
+                item {
                     InfoNotice(
                         text = "下载的路径为：Download/ThemeTool"
                     )
@@ -175,6 +187,7 @@ fun DownloadPage(
 @SuppressLint("DefaultLocale", "InvalidColorHexValue")
 @Composable
 fun DownloadItem(item: DownloadEntity) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,10 +201,10 @@ fun DownloadItem(item: DownloadEntity) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
+            Image(
                 painter = painterResource(R.drawable.ic_download_icon),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -228,25 +241,35 @@ fun DownloadItem(item: DownloadEntity) {
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-//            Box(
-//                modifier = Modifier
-//                    .height(32.dp)
-//                    .defaultMinSize(minWidth = 64.dp)
-//                    .background(Color(0x1A0D84FF), shape = RoundedCornerShape(200.dp)),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = if (item.status==DownloadStatus.DOWNLOADING) {
-//                        "暂停"
-//                    } else {
-//                        "开始"
-//                    },
-//                    fontSize = 14.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    color = Color(0xFF0D84FF),
-//                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-//                )
-//            }
+            Box(
+                modifier = Modifier
+                    .height(32.dp)
+                    .defaultMinSize(minWidth = 64.dp)
+                    .background(Color(0x1A0D84FF), shape = RoundedCornerShape(200.dp))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {
+                            if (item.status == DownloadStatus.DOWNLOADING) {
+                                DownloadService.pauseDownload(context, item)
+                                Toast.makeText(context, "已暂停下载", Toast.LENGTH_SHORT).show()
+                            } else {
+                                DownloadService.startDownload(context, item)
+                                Toast.makeText(context, "已开始下载", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    )
+                ,
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (item.status == DownloadStatus.DOWNLOADING) "暂停" else "开始",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0D84FF),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
         }
     }
 }

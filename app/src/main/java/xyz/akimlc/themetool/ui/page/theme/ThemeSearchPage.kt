@@ -36,7 +36,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.room.Room
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -52,10 +54,12 @@ import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
 import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.GlobalProductData
 import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
@@ -64,12 +68,18 @@ import xyz.akimlc.themetool.viewmodel.SearchThemeViewModel.ProductData
 @Composable
 fun ThemeSearchPage(
     navController: NavController,
-    viewModel: SearchThemeViewModel,
-    downloadViewModel: DownloadViewModel
 ) {
-
-    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
+    val db = remember {
+        Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
+    }
+    val dao = remember { db.downloadDao() }
+
+    val downloadViewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
+    val searchThemeViewModel: SearchThemeViewModel = viewModel()
+    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val keywords = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val tabs = listOf(
@@ -132,9 +142,9 @@ fun ThemeSearchPage(
                             ).show()
                             return@TextButton
                         }
-                        viewModel.clearSearchResults()
-                        viewModel.clearGlobalThemeResults()
-                        viewModel.searchTheme(keywords.value) {
+                        searchThemeViewModel.clearSearchResults()
+                        searchThemeViewModel.clearGlobalThemeResults()
+                        searchThemeViewModel.searchTheme(keywords.value) {
                             Toast.makeText(
                                 context,
                                 context.getString(R.string.toast_no_theme_found),
@@ -153,16 +163,16 @@ fun ThemeSearchPage(
                                 context.getString(R.string.toast_only_english_supported),
                                 Toast.LENGTH_SHORT
                             ).show()
-                            viewModel.clearGlobalThemeResults()
+                            searchThemeViewModel.clearGlobalThemeResults()
                         } else {
-                            viewModel.searchGlobalTheme(keyword) {
+                            searchThemeViewModel.searchGlobalTheme(keyword) {
                                 Toast.makeText(
                                     context,
                                     context.getString(R.string.toast_no_global_theme_found),
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                            viewModel.searchTheme(keyword) {
+                            searchThemeViewModel.searchTheme(keyword) {
                                 Toast.makeText(
                                     context,
                                     context.getString(R.string.toast_no_global_theme_found),
@@ -189,8 +199,8 @@ fun ThemeSearchPage(
                     state = pagerState,
                 ) { page ->
                     when (page) {
-                        0 -> DomesticThemeResultView(viewModel, downloadViewModel)
-                        1 -> GlobalThemeResultView(viewModel, downloadViewModel)
+                        0 -> DomesticThemeResultView(searchThemeViewModel, downloadViewModel)
+                        1 -> GlobalThemeResultView(searchThemeViewModel, downloadViewModel)
                     }
                 }
             }
@@ -266,7 +276,7 @@ fun DomesticThemeResultView(viewModel: SearchThemeViewModel, downloadViewModel: 
             }
             if (isShow.value) {
                 selectedProduct.value?.let { product ->
-                    ThemeInfoDialog(isShow, product, themeInfoState.value, downloadViewModel)
+                    ThemeInfoDialog(isShow, product, downloadViewModel)
                 }
             }
         }

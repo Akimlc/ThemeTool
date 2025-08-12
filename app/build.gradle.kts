@@ -1,3 +1,4 @@
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Properties
@@ -19,9 +20,10 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.4.0"
+        versionName = "2.0.0"
         versionCode = getGitCommitCount()
     }
+
     val properties = Properties()
     runCatching { properties.load(project.rootProject.file("local.properties").inputStream()) }
     val keystorePath = properties.getProperty("KEYSTORE_PATH") ?: System.getenv("KEYSTORE_PATH")
@@ -81,9 +83,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "21"
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -119,7 +118,15 @@ dependencies {
     implementation("com.umeng.umsdk:common:9.4.7")
     implementation("com.umeng.umsdk:asms:1.4.0")
 
+    //ROOM
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     ksp("androidx.room:room-compiler:2.7.2")
+
+    //MMKV
+    implementation("com.tencent:mmkv:2.2.2")
+
+    implementation("com.squareup.retrofit2:retrofit:2.12.0")
+    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.12.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.8.3")
 }

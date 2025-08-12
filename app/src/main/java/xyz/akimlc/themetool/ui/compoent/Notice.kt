@@ -16,10 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Cancel
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
+import xyz.akimlc.themetool.state.AppSettingsState
 
 
 @Composable
@@ -36,7 +38,6 @@ fun WarningNotice(
             .padding(top = 8.dp)
             .padding(horizontal = 12.dp),
         insideMargin = PaddingValues(vertical = 12.dp),
-        color = backgroundColor
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -77,7 +78,6 @@ fun ErrorNotice(
             .padding(vertical = 12.dp)
             .padding(horizontal = 12.dp),
         insideMargin = PaddingValues(vertical = 12.dp),
-        color = backgroundColor
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -108,7 +108,13 @@ fun ErrorNotice(
 fun InfoNotice(
     text: String
 ){
-    val isDark = isSystemInDarkTheme()
+    val colorMode = AppSettingsState.colorMode.intValue
+    val isDark = when (colorMode) {
+        0 -> isSystemInDarkTheme() // 跟随系统
+        1 -> false // 强制浅色
+        2 -> true  // 强制深色
+        else -> isSystemInDarkTheme()
+    }
 
     val backgroundColor = if (isDark) Color(0xFF0F274B) else Color(0xFFE1EBF7)
 
@@ -121,7 +127,9 @@ fun InfoNotice(
             .padding(vertical = 12.dp)
             .padding(horizontal = 12.dp),
         insideMargin = PaddingValues(vertical = 12.dp),
-        color = backgroundColor
+        colors = CardDefaults.defaultColors(
+            color = backgroundColor
+        )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

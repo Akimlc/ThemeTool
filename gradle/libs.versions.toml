@@ -1,15 +1,15 @@
 [versions]
 agp = "8.10.1"
-coilCompose = "3.1.0"
-gson = "2.12.1"
+coilCompose = "3.3.0"
+gson = "2.13.1"
 kotlin = "2.2.0"
 coreKtx = "1.16.0"
 kotlinx-serialization-json = "1.8.1"
 activityCompose = "1.10.1"
 kotlinxCoroutinesAndroid = "1.10.2"
-miuix = "0.4.7"
-navigationCompose = "2.9.0"
-okhttp = "4.12.0"
+miuix = "0.5.0"
+navigationCompose = "2.9.3"
+okhttp = "5.1.0"
 runtimeLivedata = "1.8.3"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

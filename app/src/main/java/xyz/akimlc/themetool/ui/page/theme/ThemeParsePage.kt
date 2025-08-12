@@ -24,7 +24,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.room.Room
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
@@ -34,28 +36,38 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
+import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
 import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
 import xyz.akimlc.themetool.ui.compoent.LabeledTextField
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
+import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 import xyz.akimlc.themetool.viewmodel.ParseViewModel
 
 @Composable
 fun ThemeParsePage(
     navController: NavController,
-    viewModel: ParseViewModel,
-    downloadViewmodel: DownloadViewModel
 ) {
     val context = LocalContext.current
+
+    val db = remember {
+        Room.databaseBuilder(context, AppDatabase::class.java, "download.db").build()
+    }
+    val dao = remember { db.downloadDao() }
+
+    val downloadViewModel: DownloadViewModel = viewModel(
+        factory = DownloadViewModelFactory(dao)
+    )
+    val parseViewModel: ParseViewModel = viewModel()
     val scroll = MiuixScrollBehavior(rememberTopAppBarState())
     var shareLink by remember { mutableStateOf("") }
-    val themeInfo by viewModel.themeInfoState
-    val errorMessage by viewModel.errorMessage
+    val themeInfo by parseViewModel.themeInfoState
+    val errorMessage by parseViewModel.errorMessage
 
     LaunchedEffect(errorMessage) {
         errorMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            viewModel.clearError()
+            parseViewModel.clearError()
         }
     }
 
@@ -84,7 +96,7 @@ fun ThemeParsePage(
                 TextButton(
                     text = stringResource(id = R.string.btn_parse),
                     onClick = {
-                        viewModel.parseTheme(shareLink.toString())
+                        parseViewModel.parseTheme(shareLink.toString())
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier
@@ -97,7 +109,7 @@ fun ThemeParsePage(
             item {
                 ThemeInfoCard(
                     themeInfo,
-                    downloadViewmodel
+                    downloadViewModel
                 )
             }
         }

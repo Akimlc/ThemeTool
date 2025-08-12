@@ -1,9 +1,9 @@
-package xyz.akimlc.themetool.data.model.font
+package xyz.akimlc.themetool.data.model.response.font
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class InternationFontModel(
+data class GlobalFontResponse(
     val apiCode: Int,
     val apiMessage: String,
     val apiData: ApiData
@@ -17,7 +17,8 @@ data class ApiData(
 
 @Serializable
 data class Cards(
-    val products: List<Products>? = null
+    val products: List<Products>? = null,
+    val cardType : String
 )
 
 @Serializable
