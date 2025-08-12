@@ -23,6 +23,7 @@ android {
         versionName = "2.0.0"
         versionCode = getGitCommitCount()
     }
+
     val properties = Properties()
     runCatching { properties.load(project.rootProject.file("local.properties").inputStream()) }
     val keystorePath = properties.getProperty("KEYSTORE_PATH") ?: System.getenv("KEYSTORE_PATH")
