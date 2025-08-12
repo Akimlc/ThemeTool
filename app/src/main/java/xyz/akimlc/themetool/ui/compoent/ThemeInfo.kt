@@ -76,7 +76,7 @@ fun DomesticFontInfoDialog(
     InfoDialog(
         isShow = isShow,
         title = stringResource(R.string.title_font_info),
-        nameLabelRes = R.string.label_font_name,
+        nameLabelRes = R.string.dialog_font_name,
         name = product.name,
         urlLabelRes = R.string.label_font_url,
         parse = { Parse().parseDomesticFont(product.uuid, product.name) },
@@ -105,7 +105,7 @@ fun <T> InfoDialog(
     val parsedData = remember { mutableStateOf<T?>(null) }
 
     LaunchedEffect(isShow.value) {
-        if (isShow.value) {
+        if (isShow.value && parsedData.value == null) {
             isLoading.value = true
             coroutineScope.launch {
                 parsedData.value = parse()
@@ -120,7 +120,7 @@ fun <T> InfoDialog(
         onDismissRequest = { isShow.value = false }
     ) {
         Column {
-            Text(stringResource(nameLabelRes, name))
+            Text(name)
             if (isLoading.value) {
                 Text(stringResource(R.string.parsing))
             } else {

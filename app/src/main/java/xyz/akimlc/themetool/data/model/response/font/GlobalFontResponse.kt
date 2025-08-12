@@ -17,7 +17,8 @@ data class ApiData(
 
 @Serializable
 data class Cards(
-    val products: List<Products>? = null
+    val products: List<Products>? = null,
+    val cardType : String
 )
 
 @Serializable

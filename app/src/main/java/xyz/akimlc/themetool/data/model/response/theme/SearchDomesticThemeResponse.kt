@@ -20,7 +20,8 @@ data class DomesticThemeApiData(
 
 @Serializable
 data class Card(
-    val products: List<ProductData>? = null
+    val products: List<ProductData>? = null,
+    val cardType: String
 )
 
 @Serializable

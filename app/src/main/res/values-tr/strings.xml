@@ -125,4 +125,5 @@ Bu uygulamayı kullanmaya hoş geldiniz (bundan böyle "bu Uygulama" olarak anı
     <string name="generate_font">oluşturma</string>
     <string name="translator_section_title">Translator</string>
     <string name="translator_summary">Turkish Translation</string>
+    <string name="dialog_font_name">Font adı:%1$1</string>
 </resources>

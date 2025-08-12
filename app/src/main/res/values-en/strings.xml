@@ -125,4 +125,5 @@
     <string name="generate_font">Generate</string>
     <string name="translator_section_title">Çevirmen</string>
     <string name="translator_summary">Türkçe çeviri</string>
+    <string name="dialog_font_name">字体名字:%1$1</string>
 </resources>
