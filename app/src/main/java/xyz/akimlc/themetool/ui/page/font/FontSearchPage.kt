@@ -484,11 +484,3 @@ fun FontListItem(
         }
     }
 }
-
-
-@Composable
-fun PlaceholderItem() {
-    CircularProgressIndicator(
-        modifier = Modifier.size(48.dp)
-    )
-}
