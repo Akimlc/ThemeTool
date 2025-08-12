@@ -38,6 +38,7 @@ import androidx.room.Room
 import coil3.compose.AsyncImage
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
@@ -473,7 +474,9 @@ fun FontListItem(
             .height(70.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        color = cardColor
+        colors = CardDefaults.defaultColors(
+            color = cardColor
+        )
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             AsyncImage(

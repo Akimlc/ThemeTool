@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Cancel
@@ -126,7 +127,9 @@ fun InfoNotice(
             .padding(vertical = 12.dp)
             .padding(horizontal = 12.dp),
         insideMargin = PaddingValues(vertical = 12.dp),
-        color = backgroundColor
+        colors = CardDefaults.defaultColors(
+            color = backgroundColor
+        )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

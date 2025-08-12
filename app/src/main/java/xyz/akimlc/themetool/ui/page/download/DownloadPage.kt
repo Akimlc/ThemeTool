@@ -3,6 +3,7 @@ package xyz.akimlc.themetool.ui.page.download
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -200,10 +201,10 @@ fun DownloadItem(item: DownloadEntity) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
+            Image(
                 painter = painterResource(R.drawable.ic_download_icon),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
