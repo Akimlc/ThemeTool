@@ -1,10 +1,15 @@
 package xyz.akimlc.themetool.ui.page.settings
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -23,8 +28,10 @@ import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.Route
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem
+import xyz.akimlc.themetool.ui.compoent.UpdateDialog
 import xyz.akimlc.themetool.utils.LanguageHelper.Companion.setLocale
 import xyz.akimlc.themetool.utils.PreferenceUtil
+import xyz.akimlc.themetool.utils.UpdateHelper
 
 @Composable
 fun SettingsPage(
@@ -36,6 +43,12 @@ fun SettingsPage(
     val language = AppSettingsState.language
     val colorMode = AppSettingsState.colorMode
     val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
+
+
+    val isShow = remember { mutableStateOf(false) }
+    var versionName by remember { mutableStateOf("") }
+    var newChangelog by remember { mutableStateOf("") }
+    var downloadUrl by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -88,7 +101,35 @@ fun SettingsPage(
                         selectedIndex = colorMode.intValue,
                         onSelectedIndexChange = { index ->
                             colorMode.intValue = index
-                            PreferenceUtil.setInt("color_mode",index)
+                            PreferenceUtil.setInt("color_mode", index)
+                        }
+                    )
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                        .padding(vertical = 8.dp)
+                ) {
+                    SuperArrowItem(
+                        title = "检查更新",
+                        icon = R.drawable.ic_update,
+                        onClick = {
+                            Toast.makeText(context, "正在检测更新...", Toast.LENGTH_SHORT).show()
+                            UpdateHelper.manualCheckUpdate(
+                                context = context,
+                                onNewVersion = { version, changelog, url ->
+                                    isShow.value = true
+                                    versionName = version
+                                    newChangelog = changelog
+                                    downloadUrl = url
+                                },
+                                onLatest = {
+                                    Toast.makeText(context, "已是最新版本", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            )
                         }
                     )
                 }
@@ -109,6 +150,8 @@ fun SettingsPage(
             }
         }
     }
+
+    UpdateDialog(isShow, versionName, newChangelog, downloadUrl, isManual = true)
 }
 
 
