@@ -1,7 +1,6 @@
 package xyz.akimlc.themetool.ui.page.font
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -40,7 +39,6 @@ import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
-import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
@@ -50,7 +48,6 @@ import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.CheckboxLocation
 import top.yukonga.miuix.kmp.extra.SuperCheckbox
-import top.yukonga.miuix.kmp.extra.SuperDropdown
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.AppDatabase
@@ -75,7 +72,7 @@ fun FontSearchPage(
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf("V9", "V10", "V11", "V12", "V130", "V140", "V150")
+   // val options = listOf("V150", "V140", "V130", "V12", "V11", "V10", "V9")
     val selectedRegion by viewModel.selectedRegion.collectAsState()
     var page by remember { mutableStateOf(0) }
     val isSearching by viewModel.isSearching.collectAsState()
@@ -133,12 +130,10 @@ fun FontSearchPage(
                     selectedIndex = selectedIndex,
                     onSelectedIndexChange = { selectedIndex = it },
                     onSearch = {
-                        val version = options.getOrNull(selectedIndex) ?: ""
                         hasSearched = true
                         viewModel.clearSearchResults()
-                        viewModel.searchFont(selectedRegion, keyword, version, 0)
+                        viewModel.searchFont(selectedRegion, keyword, 0)
                     },
-                    options = options,
                 )
             }
 
@@ -227,7 +222,6 @@ fun FontSearchBar(
     selectedIndex: Int,
     onSelectedIndexChange: (Int) -> Unit,
     onSearch: () -> Unit,
-    options: List<String>
 ) {
     Column {
         TextField(
@@ -259,14 +253,6 @@ fun FontSearchBar(
                 checked = selectedRegion==Region.DOMESTIC,
                 onCheckedChange = { if (it) onRegionChange(Region.DOMESTIC) }
             )
-            AnimatedVisibility(visible = selectedRegion==Region.DOMESTIC) {
-                SuperDropdown(
-                    title = stringResource(R.string.dropdown_theme_version),
-                    items = options,
-                    selectedIndex = selectedIndex,
-                    onSelectedIndexChange = onSelectedIndexChange
-                )
-            }
             SuperCheckbox(
                 checkboxLocation = CheckboxLocation.Right,
                 title = stringResource(R.string.checkbox_international),
@@ -283,159 +269,6 @@ fun FontSearchBar(
                 .padding(horizontal = 12.dp)
                 .padding(bottom = 6.dp)
         )
-    }
-}
-
-@Composable
-fun FontSearchPagewqeqwe(
-    navController: NavController,
-) {
-    val viewModel: SearchFontViewModel = viewModel()
-    val fontDetailViewModel: FontDetailViewModel = viewModel()
-    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    val context = LocalContext.current
-    var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf("V9", "V10", "V11", "V12", "V130", "V140", "V150")
-    val selectedRegion by viewModel.selectedRegion.collectAsState()
-    var page by remember { mutableStateOf(0) }
-    val isSearching by viewModel.isSearching.collectAsState()
-    val isLoadingMore by viewModel.isLoadingMore.collectAsState()
-    val hasMore by viewModel.hasMore.collectAsState()
-    val productList by viewModel.productList.collectAsState()
-    var keyword by remember { mutableStateOf("") }
-
-    val isShowFontDialog = remember { mutableStateOf(false) }
-    val selectProduct = remember { mutableStateOf<SearchFontViewModel.ProductData?>(null) }
-    val hapticFeedback = LocalHapticFeedback.current
-    val dao = remember {
-        Room.databaseBuilder(context, AppDatabase::class.java, "download.db")
-            .build()
-            .downloadDao()
-    }
-
-    val downloadViewModel: DownloadViewModel = viewModel(
-        factory = DownloadViewModelFactory(dao)
-    )
-    val isDarkTheme = isSystemInDarkTheme()
-    LaunchedEffect(viewModel.toastEvent) {
-        viewModel.toastEvent.collect { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            // 顶部 appbar + 顶部线性进度条
-            Column {
-                TopAppBar(
-                    title = stringResource(R.string.title_font_search),
-                    scrollBehavior = scrollBehavior,
-                )
-                AnimatedVisibility(visible = isSearching) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
-            }
-        }
-    ) { paddingValues ->
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .overScrollVertical()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-        ) {
-            item {
-                FontSearchBar(
-                    keyword = keyword,
-                    onKeywordChange = { keyword = it },
-                    selectedRegion = selectedRegion,
-                    onRegionChange = {
-                        viewModel.clearSearchResults()
-                        viewModel.setSelectedRegion(it)
-                    },
-                    selectedIndex = selectedIndex,
-                    onSelectedIndexChange = { selectedIndex = it },
-                    onSearch = {
-                        val version = options.getOrNull(selectedIndex) ?: ""
-                        viewModel.clearSearchResults()
-                        viewModel.searchFont(selectedRegion, keyword, version, 0)
-                    },
-                    options = options,
-                )
-            }
-            if (productList.isEmpty()) {
-                if (!isSearching) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("sadasdsadas")
-                        }
-                    }
-                }
-            } else {
-                itemsIndexed(productList) { index, product ->
-                    // 滑动到最后自动加载下一页（保留现有逻辑）
-                    if (index==productList.lastIndex && !isSearching && !isLoadingMore && hasMore) {
-                        viewModel.loadMore()
-                    }
-
-                    FontListItem(
-                        product = product,
-                        index = index,
-                        isDarkTheme = isDarkTheme,
-                        isLast = index==productList.lastIndex,
-                        onClick = {
-                            when (selectedRegion) {
-                                Region.DOMESTIC -> {
-                                    isShowFontDialog.value = true
-                                    selectProduct.value = product
-                                }
-
-                                Region.GLOBAL -> {
-                                    navController.navigate(FontPageList.detail(product.uuid))
-                                }
-                            }
-                        }
-                    )
-                }
-
-                // 分页加载中 footer
-                if (isLoadingMore) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(modifier = Modifier.size(36.dp))
-                        }
-                    }
-                } else if (!hasMore) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "已无更多")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (isShowFontDialog.value) {
-        selectProduct.value?.let { data ->
-            DomesticFontInfoDialog(isShowFontDialog, data, downloadViewModel)
-        }
     }
 }
 

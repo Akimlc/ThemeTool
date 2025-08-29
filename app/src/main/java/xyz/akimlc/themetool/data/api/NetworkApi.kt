@@ -34,7 +34,6 @@ interface NetworkApi {
     @GET("app/v9/uipages/search/FONT/index")
     suspend fun searchDomesticFont(
         @Query("keywords") keywords: String,
-        @Query("miuiUIVersion") miuiUIVersion: String,
         @Query("cardStart") cardStart: Int
     ): DomesticFontResponse
 

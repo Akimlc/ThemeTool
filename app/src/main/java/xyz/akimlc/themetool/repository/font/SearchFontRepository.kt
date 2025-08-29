@@ -10,7 +10,6 @@ class SearchFontRepository {
     suspend fun searchFont(
         region: Region,
         keyword: String,
-        version: String,
         page: Int
     ): List<SearchFontViewModel.ProductData> {
         return try {
@@ -18,7 +17,6 @@ class SearchFontRepository {
                 Region.DOMESTIC -> {
                     val result = NetworkUtils().domesticApi.searchDomesticFont(
                         keywords = keyword,
-                        miuiUIVersion = version,
                         cardStart = page
                     )
                     result.apiData.cards.flatMap { card ->
