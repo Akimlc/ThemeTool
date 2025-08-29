@@ -113,6 +113,11 @@ fun DownloadPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (downloadList.isEmpty()) {
+                item{
+                    InfoNotice(
+                        text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
+                    )
+                }
                 item {
                     Spacer(modifier = Modifier.height(48.dp))
                     Icon(
@@ -133,6 +138,9 @@ fun DownloadPage(
                 item {
                     InfoNotice(
                         text = "下载的路径为：Download/ThemeTool"
+                    )
+                    InfoNotice(
+                        text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
                     )
                 }
                 items(downloadList, key = { it.id }) { item ->

@@ -115,16 +115,12 @@ fun InfoNotice(
         2 -> true  // 强制深色
         else -> isSystemInDarkTheme()
     }
-
     val backgroundColor = if (isDark) Color(0xFF0F274B) else Color(0xFFE1EBF7)
-
     val textColor = Color(0xFF0D84ff)
-
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
+            .padding(vertical = 8.dp)
             .padding(horizontal = 12.dp),
         insideMargin = PaddingValues(vertical = 12.dp),
         colors = CardDefaults.defaultColors(
