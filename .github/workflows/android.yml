@@ -1,9 +1,9 @@
 name: Android CI
+
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ dev ]
+  release:
+    types: [published, created, edited]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,15 +37,16 @@ jobs:
           name: ThemeTool-release.apk
           path: ./app/build/outputs/apk/release/*.apk
       - name: Post to Telegram ci channel
-        if: ${{ success() && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && github.ref_type != 'tag' }}
+        if: ${{ success() }}
         env:
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           COMMIT_MESSAGE: |+
             New CI from ThemeTool
+            Release: ${{ github.event.release.tag_name }}
 
             ```
-            ${{ github.event.head_commit.message }}
+            ${{ github.event.release.body }}
             ```
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
