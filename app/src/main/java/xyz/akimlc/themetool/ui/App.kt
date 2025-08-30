@@ -157,7 +157,6 @@ fun MainLayout(
             )
         }
     )
-
 }
 
 fun NavGraphBuilder.pagerContent(
