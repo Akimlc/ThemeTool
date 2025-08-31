@@ -48,12 +48,12 @@ fun AboutPage(
         item {
             BackgroundArea(colorMode = colorMode.intValue)
         }
-
         item {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
+                    .padding(top = 8.dp)
             ) {
                 Column {
                     SuperArrow(
