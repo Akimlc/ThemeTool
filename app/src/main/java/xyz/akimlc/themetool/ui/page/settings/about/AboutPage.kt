@@ -1,7 +1,6 @@
 package xyz.akimlc.themetool.ui.page.settings.about
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,14 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -27,19 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.BuildConfig
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.AboutPageList
-import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.theme.isDarkTheme
 
 @Composable
@@ -48,116 +41,100 @@ fun AboutPage(
 ) {
     val colorMode = AppSettingsState.colorMode
     val uriHandler = LocalUriHandler.current
-    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    Scaffold(
-        topBar = {
-            BackTopAppBar(
-                title = stringResource(R.string.about_title),
-                scrollBehavior = scrollBehavior,
-                navController = navController
-            )
+    AppScaffold(
+        title = stringResource(R.string.about_title),
+        navController = navController
+    ) {
+        item {
+            BackgroundArea(colorMode = colorMode.intValue)
         }
-    ){ padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .overScrollVertical()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = padding,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item {
-                BackgroundArea(colorMode = colorMode.intValue)
-            }
 
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                ) {
-                    Column {
-                        SuperArrow(
-                            title = "Akimlc",
-                            summary = "Developer",
-                            onClick = {
-                                uriHandler.openUri("https://github.com/Akimlc")
-                            },
-                            leftAction = {
-                                Image(
-                                    painter = painterResource(R.mipmap.ic_akimlc),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(end = 12.dp)
-                                        .size(38.dp)
-                                        .clip(RoundedCornerShape(48.dp))
-                                )
-                            }
-                        )
-                        SuperArrow(
-                            title = stringResource(R.string.about_thanks_list),
-                            onClick = {
-                                navController.navigate(AboutPageList.THANKS)
-                            }
-                        )
-                    }
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                Column {
+                    SuperArrow(
+                        title = "Akimlc",
+                        summary = "Developer",
+                        onClick = {
+                            uriHandler.openUri("https://github.com/Akimlc")
+                        },
+                        leftAction = {
+                            Image(
+                                painter = painterResource(R.mipmap.ic_akimlc),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 12.dp)
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(48.dp))
+                            )
+                        }
+                    )
+                    SuperArrow(
+                        title = stringResource(R.string.about_thanks_list),
+                        onClick = {
+                            navController.navigate(AboutPageList.THANKS)
+                        }
+                    )
                 }
             }
+        }
 
-            // 交流反馈
-            item {
-                SmallTitle(stringResource(R.string.title_feedback))
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                ) {
-                    Column {
-                        SuperArrow(
-                            title = stringResource(R.string.group_qq),
-                            onClick = {
-                                uriHandler.openUri("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1017168342&card_type=group&source=qrcode")
-                            }
-                        )
-                        SuperArrow(
-                            title = stringResource(R.string.channel_telegram),
-                            onClick = { uriHandler.openUri("https://t.me/Theme_Tool") }
-                        )
-                        SuperArrow(
-                            title = stringResource(R.string.group_telegram),
-                            onClick = { uriHandler.openUri("https://t.me/ThemeToolChat") }
-                        )
-                    }
+        // 交流反馈
+        item {
+            SmallTitle(stringResource(R.string.title_feedback))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                Column {
+                    SuperArrow(
+                        title = stringResource(R.string.group_qq),
+                        onClick = {
+                            uriHandler.openUri("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1017168342&card_type=group&source=qrcode")
+                        }
+                    )
+                    SuperArrow(
+                        title = stringResource(R.string.channel_telegram),
+                        onClick = { uriHandler.openUri("https://t.me/Theme_Tool") }
+                    )
+                    SuperArrow(
+                        title = stringResource(R.string.group_telegram),
+                        onClick = { uriHandler.openUri("https://t.me/ThemeToolChat") }
+                    )
                 }
             }
+        }
 
-            item {
-                SmallTitle(stringResource(R.string.title_other))
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                ) {
-                    Column {
-                        SuperArrow(
-                            title = stringResource(R.string.donate),
-                            summary = stringResource(R.string.donate_summary),
-                            onClick = {
-                                navController.navigate(AboutPageList.DONATION)
-                            }
-                        )
-                        SuperArrow(
-                            title = stringResource(R.string.reference),
-                            onClick = {
-                                navController.navigate(AboutPageList.REFERENCES)
-                            }
-                        )
-                    }
+        item {
+            SmallTitle(stringResource(R.string.title_other))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                Column {
+                    SuperArrow(
+                        title = stringResource(R.string.donate),
+                        summary = stringResource(R.string.donate_summary),
+                        onClick = {
+                            navController.navigate(AboutPageList.DONATION)
+                        }
+                    )
+                    SuperArrow(
+                        title = stringResource(R.string.reference),
+                        onClick = {
+                            navController.navigate(AboutPageList.REFERENCES)
+                        }
+                    )
                 }
             }
         }
     }
-
 }
 
 @Composable

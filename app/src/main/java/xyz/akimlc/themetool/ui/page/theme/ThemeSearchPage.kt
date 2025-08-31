@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -29,7 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,16 +43,14 @@ import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.TabRow
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.AppDatabase
-import xyz.akimlc.themetool.ui.compoent.BackDoubleTopAppBar
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.GlobalThemeInfoDialog
 import xyz.akimlc.themetool.ui.compoent.ThemeInfoDialog
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
@@ -90,122 +85,103 @@ fun ThemeSearchPage(
     val selectedTabIndex by remember { derivedStateOf { pagerState.currentPage } }
 
     val listState = rememberLazyListState()
-    Scaffold(
-        topBar = {
-            BackDoubleTopAppBar(
-                title = stringResource(R.string.title_theme_search),
-                scrollBehavior = scrollBehavior,
-                navController = navController,
-                onDoubleTop = {
-                    coroutineScope.launch {
-                        listState.animateScrollToItem(0)
+    AppScaffold(
+        title = stringResource(R.string.title_theme_search),
+        navController = navController,
+    ) {
+        item {
+            TextField(
+                value = keywords.value,
+                onValueChange = {
+                    keywords.value = it
+                },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .padding(horizontal = 12.dp),
+                label = stringResource(id = R.string.label_search_theme),
+                singleLine = true
+            )
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 6.dp)
+                    .padding(bottom = 8.dp),
+                colors = ButtonDefaults.textButtonColorsPrimary(),
+                text = stringResource(id = R.string.theme_search),
+                onClick = {
+                    if (keywords.value.isBlank()) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_input_keywords),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@TextButton
+                    }
+                    searchThemeViewModel.clearSearchResults()
+                    searchThemeViewModel.clearGlobalThemeResults()
+                    searchThemeViewModel.searchTheme(keywords.value) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_no_theme_found),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    // 检查是否为纯英文
+                    val keyword = keywords.value
+                    val isEnglishOnly = keyword.matches(Regex("^[a-zA-Z0-9\\s]+$"))
+
+                    if (!isEnglishOnly) {
+                        // 不是英文就提示，国际搜索不执行
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_only_english_supported),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        searchThemeViewModel.clearGlobalThemeResults()
+                    } else {
+                        searchThemeViewModel.searchGlobalTheme(keyword) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_no_global_theme_found),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        searchThemeViewModel.searchTheme(keyword) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_no_global_theme_found),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             )
-        }) { paddingValue ->
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxHeight()
-                .overScrollVertical()
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(paddingValue),
-        ) {
-
-            item {
-                TextField(
-                    value = keywords.value,
-                    onValueChange = {
-                        keywords.value = it
-                    },
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .padding(horizontal = 12.dp),
-                    label = stringResource(id = R.string.label_search_theme),
-                    singleLine = true
-                )
-                TextButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 6.dp)
-                        .padding(bottom = 8.dp),
-                    colors = ButtonDefaults.textButtonColorsPrimary(),
-                    text = stringResource(id = R.string.theme_search),
-                    onClick = {
-                        if (keywords.value.isBlank()) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.toast_input_keywords),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@TextButton
-                        }
-                        searchThemeViewModel.clearSearchResults()
-                        searchThemeViewModel.clearGlobalThemeResults()
-                        searchThemeViewModel.searchTheme(keywords.value) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.toast_no_theme_found),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        // 检查是否为纯英文
-                        val keyword = keywords.value
-                        val isEnglishOnly = keyword.matches(Regex("^[a-zA-Z0-9\\s]+$"))
-
-                        if (!isEnglishOnly) {
-                            // 不是英文就提示，国际搜索不执行
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.toast_only_english_supported),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            searchThemeViewModel.clearGlobalThemeResults()
-                        } else {
-                            searchThemeViewModel.searchGlobalTheme(keyword) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.toast_no_global_theme_found),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            searchThemeViewModel.searchTheme(keyword) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.toast_no_global_theme_found),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
+        }
+        stickyHeader {
+            TabRow(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                tabs = tabs,
+                selectedTabIndex = selectedTabIndex,
+                onTabSelected = { index ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
                     }
-                )
-            }
-            stickyHeader {
-                TabRow(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    tabs = tabs,
-                    selectedTabIndex = selectedTabIndex,
-                    onTabSelected = { index ->
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    }
-                )
-                HorizontalPager(
-                    userScrollEnabled = false,
-                    state = pagerState,
-                ) { page ->
-                    when (page) {
-                        0 -> DomesticThemeResultView(searchThemeViewModel, downloadViewModel)
-                        1 -> GlobalThemeResultView(searchThemeViewModel, downloadViewModel)
-                    }
+                }
+            )
+            HorizontalPager(
+                userScrollEnabled = false,
+                state = pagerState,
+            ) { page ->
+                when (page) {
+                    0 -> DomesticThemeResultView(searchThemeViewModel, downloadViewModel)
+                    1 -> GlobalThemeResultView(searchThemeViewModel, downloadViewModel)
                 }
             }
         }
     }
+
 }
 
 @Composable

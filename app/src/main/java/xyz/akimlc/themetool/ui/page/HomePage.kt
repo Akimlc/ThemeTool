@@ -1,26 +1,19 @@
 package xyz.akimlc.themetool.ui.page
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTitle
-import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.FontPageList
 import xyz.akimlc.themetool.ui.ThemePageList
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.SuperArrowItem
 
 
@@ -35,35 +28,20 @@ data class MenuItem(
 fun HomePage(
     navController: NavController,
 ) {
-    val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = stringResource(R.string.nav_home),
-                scrollBehavior = topAppBarScrollBehavior
-            )
+    AppScaffold(
+        title = stringResource(R.string.nav_home)
+    ) {
+        item {
+            ThemeSection(navController)
         }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .overScrollVertical()
-                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
-            contentPadding = paddingValues
-        ) {
-            item {
-                ThemeSection(navController)
-            }
-            item {
-                FontSection(navController)
-            }
+        item {
+            FontSection(navController)
         }
     }
 }
 
 @Composable
 fun ThemeSection(navController: NavController) {
-
     val themeItems = remember {
         listOf(
             MenuItem(

@@ -7,12 +7,10 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,16 +26,12 @@ import androidx.navigation.NavController
 import androidx.room.Room
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.data.model.Info.ThemeInfo
-import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.LabeledTextField
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
@@ -59,7 +52,6 @@ fun ThemeParsePage(
         factory = DownloadViewModelFactory(dao)
     )
     val parseViewModel: ParseViewModel = viewModel()
-    val scroll = MiuixScrollBehavior(rememberTopAppBarState())
     var shareLink by remember { mutableStateOf("") }
     val themeInfo by parseViewModel.themeInfoState
     val errorMessage by parseViewModel.errorMessage
@@ -71,47 +63,35 @@ fun ThemeParsePage(
         }
     }
 
-    Scaffold(
-        topBar = {
-            BackTopAppBar(
-                title = stringResource(id = R.string.title_theme_parse),
-                scrollBehavior = scroll,
-                navController = navController
+    AppScaffold(
+        title = stringResource(id = R.string.title_theme_parse),
+        navController = navController
+    ) {
+        item {
+            LabeledTextField(
+                modifier = Modifier.padding(top = 8.dp),
+                value = shareLink,
+                onValueChange = { shareLink = it },
+                label = stringResource(id = R.string.label_input_theme_link),
             )
-        }) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxHeight()
-                .overScrollVertical()
-                .padding(top = 12.dp)
-                .nestedScroll(scroll.nestedScrollConnection),
-            contentPadding = paddingValues
-        ) {
-            item {
-                LabeledTextField(
-                    value = shareLink,
-                    onValueChange = { shareLink = it },
-                    label = stringResource(id = R.string.label_input_theme_link),
-                )
-                TextButton(
-                    text = stringResource(id = R.string.btn_parse),
-                    onClick = {
-                        parseViewModel.parseTheme(shareLink.toString())
-                    },
-                    colors = ButtonDefaults.textButtonColorsPrimary(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 6.dp)
-                        .padding(bottom = 8.dp),
-                )
-            }
-            item {
-                ThemeInfoCard(
-                    themeInfo,
-                    downloadViewModel
-                )
-            }
+            TextButton(
+                text = stringResource(id = R.string.btn_parse),
+                onClick = {
+                    parseViewModel.parseTheme(shareLink.toString())
+                },
+                colors = ButtonDefaults.textButtonColorsPrimary(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 6.dp)
+                    .padding(bottom = 8.dp),
+            )
+        }
+        item {
+            ThemeInfoCard(
+                themeInfo,
+                downloadViewModel
+            )
         }
     }
 }
@@ -163,14 +143,19 @@ fun ThemeInfoCard(themeInfo: ThemeInfo?, downloadViewModel: DownloadViewModel) {
                 TextButton(
                     onClick = {
                         //Go to 下载管理界面
-                        downloadViewModel.fetchDownloadInfo(themeInfo.themeUrl,context)
-                        Toast.makeText(context, context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
+                        downloadViewModel.fetchDownloadInfo(themeInfo.themeUrl, context)
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.added_to_download_list),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     },
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.btn_download)
                 )
             }
+
         }
     }
 }

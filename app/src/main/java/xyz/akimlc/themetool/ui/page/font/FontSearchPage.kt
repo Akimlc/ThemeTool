@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -39,19 +37,15 @@ import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
-import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.CheckboxLocation
 import top.yukonga.miuix.kmp.extra.SuperCheckbox
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.AppDatabase
 import xyz.akimlc.themetool.ui.FontPageList
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.DomesticFontInfoDialog
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
@@ -69,10 +63,9 @@ fun FontSearchPage(
 ) {
     val viewModel: SearchFontViewModel = viewModel()
     val fontDetailViewModel: FontDetailViewModel = viewModel()
-    val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     var selectedIndex by remember { mutableIntStateOf(0) }
-   // val options = listOf("V150", "V140", "V130", "V12", "V11", "V10", "V9")
+    // val options = listOf("V150", "V140", "V130", "V12", "V11", "V10", "V9")
     val selectedRegion by viewModel.selectedRegion.collectAsState()
     var page by remember { mutableStateOf(0) }
     val isSearching by viewModel.isSearching.collectAsState()
@@ -100,111 +93,97 @@ fun FontSearchPage(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = stringResource(R.string.title_font_search),
-                scrollBehavior = scrollBehavior,
+    AppScaffold(
+        title = stringResource(R.string.title_font_search),
+        navController = navController
+    ) {
+        item {
+            FontSearchBar(
+                keyword = keyword,
+                onKeywordChange = { keyword = it },
+                selectedRegion = selectedRegion,
+                onRegionChange = {
+                    viewModel.clearSearchResults()
+                    viewModel.setSelectedRegion(it)
+                    hasSearched = false
+                },
+                selectedIndex = selectedIndex,
+                onSelectedIndexChange = { selectedIndex = it },
+                onSearch = {
+                    hasSearched = true
+                    viewModel.clearSearchResults()
+                    viewModel.searchFont(selectedRegion, keyword, 0)
+                },
             )
-//
         }
-    ) { paddingValues ->
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .overScrollVertical()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-        ) {
+        if (productList.isEmpty() && hasSearched) {
             item {
-                FontSearchBar(
-                    keyword = keyword,
-                    onKeywordChange = { keyword = it },
-                    selectedRegion = selectedRegion,
-                    onRegionChange = {
-                        viewModel.clearSearchResults()
-                        viewModel.setSelectedRegion(it)
-                        hasSearched = false
-                    },
-                    selectedIndex = selectedIndex,
-                    onSelectedIndexChange = { selectedIndex = it },
-                    onSearch = {
-                        hasSearched = true
-                        viewModel.clearSearchResults()
-                        viewModel.searchFont(selectedRegion, keyword, 0)
-                    },
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isSearching) {
+                        CircularProgressIndicator(modifier = Modifier.size(48.dp))
+                    } else {
+                        Text("已无更多结果")
+                    }
+                }
+            }
+        } else {
+            itemsIndexed(productList) { index, product ->
+                if (index==productList.lastIndex && !isSearching && !isLoadingMore && hasMore) {
+                    viewModel.loadMore()
+                }
+
+                FontListItem(
+                    product = product,
+                    index = index,
+                    isDarkTheme = isDarkTheme,
+                    isLast = index==productList.lastIndex,
+                    onClick = {
+                        when (selectedRegion) {
+                            Region.DOMESTIC -> {
+                                isShowFontDialog.value = true
+                                selectProduct.value = product
+                            }
+
+                            Region.GLOBAL -> {
+                                navController.navigate(FontPageList.detail(product.uuid))
+                            }
+                        }
+                    }
                 )
             }
 
-            if (productList.isEmpty() && hasSearched) {
+            if (isLoadingMore) {
                 item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 24.dp),
+                            .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (isSearching) {
-                            CircularProgressIndicator(modifier = Modifier.size(48.dp))
-                        } else {
-                            Text("已无更多结果")
-                        }
+                        CircularProgressIndicator(modifier = Modifier.size(36.dp))
                     }
                 }
-            } else {
-                itemsIndexed(productList) { index, product ->
-                    if (index==productList.lastIndex && !isSearching && !isLoadingMore && hasMore) {
-                        viewModel.loadMore()
-                    }
-
-                    FontListItem(
-                        product = product,
-                        index = index,
-                        isDarkTheme = isDarkTheme,
-                        isLast = index==productList.lastIndex,
-                        onClick = {
-                            when (selectedRegion) {
-                                Region.DOMESTIC -> {
-                                    isShowFontDialog.value = true
-                                    selectProduct.value = product
-                                }
-
-                                Region.GLOBAL -> {
-                                    navController.navigate(FontPageList.detail(product.uuid))
-                                }
-                            }
-                        }
-                    )
-                }
-
-                if (isLoadingMore) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(modifier = Modifier.size(36.dp))
-                        }
-                    }
-                } else if (!hasMore) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "已无更多")
-                        }
+            } else if (!hasMore) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "已无更多")
                     }
                 }
             }
         }
-    }
 
+    }
     if (isShowFontDialog.value) {
         selectProduct.value?.let { data ->
             DomesticFontInfoDialog(isShowFontDialog, data, downloadViewModel)
@@ -231,7 +210,7 @@ fun FontSearchBar(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(8.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search
             ),

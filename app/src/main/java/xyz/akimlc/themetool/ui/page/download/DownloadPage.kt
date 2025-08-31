@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -31,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,26 +40,22 @@ import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Info
 import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ThemeToolApplication
 import xyz.akimlc.themetool.data.db.DownloadEntity
 import xyz.akimlc.themetool.data.model.DownloadStatus
 import xyz.akimlc.themetool.service.DownloadService
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.InfoNotice
-import xyz.akimlc.themetool.ui.compoent.getAdaptiveBlackWhite
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 
@@ -80,76 +73,43 @@ fun DownloadPage(
     val showDialog = remember { mutableStateOf(false) }
     val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = stringResource(R.string.download),
-                scrollBehavior = topAppBarScrollBehavior,
-                actions = {
-                    IconButton(
-                        modifier = Modifier
-                            .padding(end = 18.dp)
-                            .size(40.dp),
-                        onClick = {
-                            showDialog.value = true
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_clear),
-                            contentDescription = null,
-                            tint = getAdaptiveBlackWhite()
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .overScrollVertical()
-                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
-            contentPadding = paddingValues,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (downloadList.isEmpty()) {
-                item{
-                    InfoNotice(
-                        text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                    Icon(
-                        imageVector = MiuixIcons.Useful.Info,
-                        contentDescription = "No downloads",
-                        modifier = Modifier.size(48.dp),
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.no_downloads),
-                        color = Color.Gray,
-                        fontSize = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
-            } else {
-                item {
-                    InfoNotice(
-                        text = "下载的路径为：Download/ThemeTool"
-                    )
-                    InfoNotice(
-                        text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
-                    )
-                }
-                items(downloadList, key = { it.id }) { item ->
-                    DownloadItem(item)
-                }
+    AppScaffold(title = stringResource(R.string.download)) {
+        if (downloadList.isEmpty()) {
+            item {
+                InfoNotice(
+                    text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(48.dp))
+                Icon(
+                    imageVector = MiuixIcons.Useful.Info,
+                    contentDescription = "No downloads",
+                    modifier = Modifier.size(48.dp),
+                    tint = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.no_downloads),
+                    color = Color.Gray,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(48.dp))
+            }
+        } else {
+            item {
+                InfoNotice(
+                    text = "下载的路径为：Download/ThemeTool"
+                )
+                InfoNotice(
+                    text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
+                )
+            }
+            items(downloadList, key = { it.id }) { item ->
+                DownloadItem(item)
             }
         }
     }
-
     if (showDialog.value) {
         SuperDialog(
             show = showDialog,
@@ -258,7 +218,7 @@ fun DownloadItem(item: DownloadEntity) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = {
-                            if (item.status == DownloadStatus.DOWNLOADING) {
+                            if (item.status==DownloadStatus.DOWNLOADING) {
                                 DownloadService.pauseDownload(context, item)
                                 Toast.makeText(context, "已暂停下载", Toast.LENGTH_SHORT).show()
                             } else {
@@ -266,12 +226,11 @@ fun DownloadItem(item: DownloadEntity) {
                                 Toast.makeText(context, "已开始下载", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    )
-                ,
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (item.status == DownloadStatus.DOWNLOADING) "暂停" else "开始",
+                    text = if (item.status==DownloadStatus.DOWNLOADING) "暂停" else "开始",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF0D84FF),

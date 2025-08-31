@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -52,15 +50,12 @@ import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.utils.overScrollVertical
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.AppDatabase
-import xyz.akimlc.themetool.ui.compoent.BackTopAppBar
+import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 import xyz.akimlc.themetool.viewmodel.FontDetailViewModel
@@ -80,7 +75,6 @@ fun FontDetailPage(
     val dao = remember { db.downloadDao() }
     val downloadViewModel: DownloadViewModel = viewModel(factory = DownloadViewModelFactory(dao))
     val backgroundColor = MiuixTheme.colorScheme.background
-    val scrollBehavior = MiuixScrollBehavior()
     val fontData by viewModel.fontDetail.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val fontName = fontData?.fontName
@@ -111,152 +105,144 @@ fun FontDetailPage(
         return
     }
 
-    Scaffold(
-        topBar = {
-            BackTopAppBar(
-                title = fontName ?: "",
-                scrollBehavior = scrollBehavior,
-                navController = navController
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .overScrollVertical()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(top = paddingValues.calculateTopPadding())
-        ) {
-            item {
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
-                ) {
-                    itemsIndexed(previewUrl) { index, imageUrl ->
-                        AsyncImage(
-                            model = imageUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .width(224.dp)
-                                .height(498.dp)
-                                .clickable {
-                                    coroutineScope.launch {
-                                        selectedImageIndex.value = index
-                                        isPreviewVisible.value = true // 显示预览
-                                    }
+    AppScaffold(
+        title = fontName ?: "",
+        navController,
+    ) {
+        item {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp)
+            ) {
+                itemsIndexed(previewUrl) { index, imageUrl ->
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(224.dp)
+                            .height(498.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    selectedImageIndex.value = index
+                                    isPreviewVisible.value = true // 显示预览
                                 }
+                            }
 
-                        )
-                    }
+                    )
                 }
             }
+        }
 
-            item {
-                Card(
+        item {
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .fillMaxWidth()
+            ) {
+                Row(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
                         .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
+                    AsyncImage(
+                        model = fontAuthorIcon,
+                        contentDescription = null,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AsyncImage(
-                            model = fontAuthorIcon,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(25.dp))
-                        )
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                    )
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                fontAuthor ?: stringResource(R.string.unknown_author),
-                                modifier = Modifier.basicMarquee(
-                                    iterations = Int.MAX_VALUE,
-                                    initialDelayMillis = 1000,
-                                    velocity = 30.dp
-                                )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            fontAuthor ?: stringResource(R.string.unknown_author),
+                            modifier = Modifier.basicMarquee(
+                                iterations = Int.MAX_VALUE,
+                                initialDelayMillis = 1000,
+                                velocity = 30.dp
                             )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    TextButton(
+                        text = stringResource(R.string.copy),
+                        onClick = {
+                            val clipboard =
+                                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText("Font URL", fontDownloadUrl)
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.copy_success),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    )
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(Modifier.width(8.dp))
 
-                        TextButton(
-                            text = stringResource(R.string.copy),
-                            onClick = {
-                                val clipboard =
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clip = ClipData.newPlainText("Font URL", fontDownloadUrl)
-                                clipboard.setPrimaryClip(clip)
+                    TextButton(
+                        text = stringResource(R.string.download),
+                        onClick = {
+                            fontDownloadUrl?.let {
+                                downloadViewModel.fetchDownloadInfo(it, context)
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.copy_success),
+                                    context.getString(R.string.added_to_download_list),
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-
-                        TextButton(
-                            text = stringResource(R.string.download),
-                            onClick = {
-                                fontDownloadUrl?.let {
-                                    downloadViewModel.fetchDownloadInfo(it, context)
-                                    Toast.makeText(context, context.getString(R.string.added_to_download_list), Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            colors = ButtonDefaults.textButtonColorsPrimary()
-                        )
-                    }
+                        },
+                        colors = ButtonDefaults.textButtonColorsPrimary()
+                    )
                 }
             }
         }
+    }
 
-        if (selectedImageIndex.value!=null && isPreviewVisible.value) {
-            Dialog(
-                onDismissRequest = {
-                    isPreviewVisible.value = false
-                    selectedImageIndex.value = null
-                },
-                properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-                    decorFitsSystemWindows = false
-                )
+    if (selectedImageIndex.value!=null && isPreviewVisible.value) {
+        Dialog(
+            onDismissRequest = {
+                isPreviewVisible.value = false
+                selectedImageIndex.value = null
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false
+            )
+        ) {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                        .clickable {
+                            isPreviewVisible.value = false
+                            selectedImageIndex.value = null
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
+                    AsyncImage(
+                        model = previewUrl[selectedImageIndex.value!!],
+                        contentDescription = null,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black)
-                            .clickable {
-                                isPreviewVisible.value = false
-                                selectedImageIndex.value = null
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AsyncImage(
-                            model = previewUrl[selectedImageIndex.value!!],
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
         }
+
     }
 }

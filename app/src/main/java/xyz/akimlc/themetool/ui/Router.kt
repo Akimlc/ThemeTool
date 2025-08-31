@@ -39,9 +39,12 @@ object FontPageList {
 
     // ZIP 字体打包页
     const val ZIP = "font/zip"
+
+    //设计师界面
+    const val DESIGNER = "font/designer"
 }
 
-object AboutPageList{
+object AboutPageList {
     //引用页面
     const val REFERENCES = "about/references"
 
