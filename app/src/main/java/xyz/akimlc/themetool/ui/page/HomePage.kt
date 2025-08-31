@@ -29,7 +29,8 @@ fun HomePage(
     navController: NavController,
 ) {
     AppScaffold(
-        title = stringResource(R.string.nav_home)
+        title = stringResource(R.string.nav_home),
+        navController = navController
     ) {
         item {
             ThemeSection(navController)

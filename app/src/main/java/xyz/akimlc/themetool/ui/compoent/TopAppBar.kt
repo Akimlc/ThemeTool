@@ -32,9 +32,8 @@ fun BackTopAppBar(
     title: String,
     scrollBehavior: ScrollBehavior? = null,
     navController: NavController,
+    actions: @Composable (() -> Unit)? = null
 ) {
-    val context = LocalContext.current
-
     TopAppBar(
         title = title,
         scrollBehavior = scrollBehavior,
@@ -48,6 +47,34 @@ fun BackTopAppBar(
                 }
             )
         },
+        actions = {
+            actions?.invoke()
+        }
+    )
+}
+
+
+@Composable
+fun AppTopAppBar(
+    title: String,
+    navController: NavController? = null,
+    scrollBehavior: ScrollBehavior? = null,
+    actions: @Composable (() -> Unit)? = null
+) {
+    TopAppBar(
+        title = title,
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (navController != null) {
+                TopButton(
+                    modifier = Modifier.padding(start = 18.dp),
+                    imageVector = MiuixIcons.Useful.Back,
+                    contentDescription = "返回",
+                    onClick = { navController.popBackStack() }
+                )
+            }
+        },
+        actions = { actions?.invoke() }
     )
 }
 

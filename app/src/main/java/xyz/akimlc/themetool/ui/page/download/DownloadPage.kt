@@ -40,11 +40,10 @@ import androidx.navigation.NavController
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.icons.useful.Info
@@ -56,6 +55,7 @@ import xyz.akimlc.themetool.data.model.DownloadStatus
 import xyz.akimlc.themetool.service.DownloadService
 import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.InfoNotice
+import xyz.akimlc.themetool.ui.compoent.getAdaptiveBlackWhite
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
 
@@ -71,9 +71,26 @@ fun DownloadPage(
     val downloadList by viewModel.downloads.collectAsState(initial = emptyList())
 
     val showDialog = remember { mutableStateOf(false) }
-    val topAppBarScrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
 
-    AppScaffold(title = stringResource(R.string.download)) {
+    AppScaffold(
+        title = stringResource(R.string.download),
+        actions = {
+            IconButton(
+                modifier = Modifier
+                    .padding(end = 18.dp)
+                    .size(40.dp),
+                onClick = {
+                    showDialog.value = true
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_clear),
+                    contentDescription = null,
+                    tint = getAdaptiveBlackWhite()
+                )
+            }
+        }
+    ) {
         if (downloadList.isEmpty()) {
             item {
                 InfoNotice(

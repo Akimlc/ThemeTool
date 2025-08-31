@@ -65,7 +65,7 @@ fun ThemeParsePage(
 
     AppScaffold(
         title = stringResource(id = R.string.title_theme_parse),
-        navController = navController
+        navController = navController,
     ) {
         item {
             LabeledTextField(

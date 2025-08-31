@@ -75,24 +75,19 @@ fun SubPageScaffold(
 fun AppScaffold(
     title: String,
     navController: NavController? = null,
+    actions: @Composable (() -> Unit)? = null,
     content: LazyListScope.() -> Unit
 ) {
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         topBar = {
-            if (navController == null) {
-                TopAppBar(
-                    title = title,
-                    scrollBehavior = scrollBehavior
-                )
-            } else {
-                BackTopAppBar(
-                    title = title,
-                    scrollBehavior = scrollBehavior,
-                    navController = navController,
-                )
-            }
+            AppTopAppBar(
+                title = title,
+                navController = navController,
+                scrollBehavior = scrollBehavior,
+                actions = actions
+            )
         }
     ) { innerPadding ->
         LazyColumn(
