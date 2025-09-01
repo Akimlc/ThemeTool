@@ -37,6 +37,7 @@ import top.yukonga.miuix.kmp.extra.SuperDialog
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.ui.compoent.LabeledTextField
+import xyz.akimlc.themetool.ui.compoent.WarningNotice
 import xyz.akimlc.themetool.utils.FileUtils
 import xyz.akimlc.themetool.utils.font.TTF2MTZ.Companion.convert
 
@@ -77,6 +78,9 @@ fun MtzFontPage(navController: NavController) {
         title = stringResource(R.string.title_ttf_to_mtz),
         navController = navController
     ) {
+        item {
+            WarningNotice("导入的字体需要主题破解才能正常应用，请确保已破解主题后再使用")
+        }
         item {
             LabeledTextField(
                 modifier = Modifier.padding(top = 8.dp),
