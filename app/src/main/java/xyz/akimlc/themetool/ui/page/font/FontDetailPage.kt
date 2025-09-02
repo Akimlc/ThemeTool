@@ -92,8 +92,11 @@ fun FontDetailPage(
     val isPreviewVisible = remember { mutableStateOf(false) }
 
     LaunchedEffect(uuid) {
-        viewModel.loadFontData(uuid)
+        if (viewModel.fontDetail.value==null) {
+            viewModel.loadFontData(uuid)
+        }
     }
+
 
     if (isLoading || fontData==null) {
         Box(
