@@ -72,10 +72,11 @@ class Parse {
                 val downloadUrlRoot = "$fileServer$downloadUrl/$fontName.mtz"
                 val fileSize = fontDetail.getString("fileSize").toIntOrNull()  //字体大小
 
-                //获取作者名字和头像
+                //获取作者名字和头像 和DesignerId
                 val designerCard = cards.getJSONObject(2)
                 val authorName = designerCard.optString("designerName", " ")
                 val authorIcon = designerCard.optString("designerIcon", " ")
+                val authorId = designerCard.optString("designerId", " ")
 
                 //获取预览图
                 val overviewCard = cards.getJSONObject(0)
@@ -86,6 +87,7 @@ class Parse {
                 }
                 Log.d(TAG, "parseFont: $fontName")
                 return@withContext FontDetail(
+                    designerId = authorId,
                     fontName = fontName,
                     fontAuthor = authorName,
                     fontAuthorIcon = authorIcon,
@@ -141,7 +143,7 @@ class Parse {
     }
 
 
-    suspend fun parseDomesticFont(uuid: String,name: String): Info.DomesticFontInfo? =
+    suspend fun parseDomesticFont(uuid: String, name: String): Info.DomesticFontInfo? =
         withContext(Dispatchers.IO) {
             val url = "https://thm.market.xiaomi.com/thm/download/v2/$uuid"
             val request = Request.Builder().url(url).build()

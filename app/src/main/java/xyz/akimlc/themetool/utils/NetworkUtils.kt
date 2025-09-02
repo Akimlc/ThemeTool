@@ -11,7 +11,12 @@ import java.util.concurrent.TimeUnit
 class NetworkUtils {
 
     object HttpClient {
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true) // 断开重试
+            .build()
     }
 
     val json = Json { ignoreUnknownKeys = true }
@@ -51,6 +56,22 @@ class NetworkUtils {
             .build()
     }
 
+    private val designerProductRetrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://thm.market.intl.xiaomi.com/")
+            .client(client)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+    }
+
+    private val designerInfoRetrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://api.zhuti.intl.xiaomi.com")
+            .client(client)
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+    }
+
 
     val domesticApi: NetworkApi by lazy {
         domesticRetrofit.create(NetworkApi::class.java)
@@ -58,5 +79,12 @@ class NetworkUtils {
 
     val globalApi: NetworkApi by lazy {
         globalRetrofit.create(NetworkApi::class.java)
+    }
+
+    val designerProductApi by lazy {
+        designerProductRetrofit.create(NetworkApi::class.java)
+    }
+    val designerInfoApi by lazy {
+        designerInfoRetrofit.create(NetworkApi::class.java)
     }
 }

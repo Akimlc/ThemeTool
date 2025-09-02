@@ -41,7 +41,9 @@ object FontPageList {
     const val ZIP = "font/zip"
 
     //设计师界面
-    const val DESIGNER = "font/designer"
+    const val DESIGNER = "font/designer/{designerId}"
+
+    fun designer(designerId: String) = "font/designer/$designerId"
 }
 
 object AboutPageList {

@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import xyz.akimlc.themetool.R
 import xyz.akimlc.themetool.data.db.AppDatabase
+import xyz.akimlc.themetool.ui.FontPageList
 import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.viewmodel.DownloadViewModel
 import xyz.akimlc.themetool.viewmodel.DownloadViewModelFactory
@@ -82,6 +84,7 @@ fun FontDetailPage(
     val fontAuthorIcon = fontData?.fontAuthorIcon
     val previewUrl = fontData?.previewUrl ?: emptyList()
     val fontDownloadUrl = fontData?.fontDownloadUrl
+    val designerId = fontData?.designerId
 
     val selectedImageIndex = remember { mutableStateOf<Int?>(null) }
 
@@ -145,7 +148,14 @@ fun FontDetailPage(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {
+                                navController.navigate(FontPageList.designer(designerId.toString()))
+                            }
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
@@ -161,11 +171,12 @@ fun FontDetailPage(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             fontAuthor ?: stringResource(R.string.unknown_author),
-                            modifier = Modifier.basicMarquee(
-                                iterations = Int.MAX_VALUE,
-                                initialDelayMillis = 1000,
-                                velocity = 30.dp
-                            )
+                            modifier = Modifier
+                                .basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    initialDelayMillis = 1000,
+                                    velocity = 30.dp
+                                )
                         )
                     }
 

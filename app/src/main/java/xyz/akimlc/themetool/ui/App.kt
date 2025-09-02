@@ -34,6 +34,7 @@ import xyz.akimlc.themetool.state.AppSettingsState
 import xyz.akimlc.themetool.ui.page.HomePage
 import xyz.akimlc.themetool.ui.page.MainPage
 import xyz.akimlc.themetool.ui.page.download.DownloadPage
+import xyz.akimlc.themetool.ui.page.font.FontDesignerPage
 import xyz.akimlc.themetool.ui.page.font.FontDetailPage
 import xyz.akimlc.themetool.ui.page.font.FontSearchPage
 import xyz.akimlc.themetool.ui.page.font.MtzFontPage
@@ -202,6 +203,12 @@ fun NavGraphBuilder.pagerContent(
     }
     composable(AboutPageList.DONATION) {
         DonationPage(navController)
+    }
+    composable(
+        route = FontPageList.DESIGNER
+    ) { backStackEntry ->
+        val designerId = backStackEntry.arguments?.getString("designerId") ?: ""
+        FontDesignerPage(navController, designerId)
     }
 }
 

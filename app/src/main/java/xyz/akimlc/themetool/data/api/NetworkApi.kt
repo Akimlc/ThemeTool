@@ -3,6 +3,8 @@ package xyz.akimlc.themetool.data.api
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
+import xyz.akimlc.themetool.data.model.response.font.DesignerInfoResponse
+import xyz.akimlc.themetool.data.model.response.font.DesignerProductResponse
 import xyz.akimlc.themetool.data.model.response.font.DomesticFontResponse
 import xyz.akimlc.themetool.data.model.response.font.GlobalFontResponse
 import xyz.akimlc.themetool.data.model.response.theme.SearchDomesticThemeResponse
@@ -47,5 +49,17 @@ interface NetworkApi {
         @Query("region") region: String = "MC",
         @Query("isGlobal") isGlobal: Boolean = true
     ): GlobalFontResponse
+
+    @GET("thm/social/designer/product")
+    suspend fun getDesignerProduct(
+        @Query("designerId") designerId: String,
+        @Query("page") page: Int,
+        @Query("category") category: String = "Font"
+    ): DesignerProductResponse
+
+    @GET("app/v9/social/designer/info")
+    suspend fun getDesignerInfo(
+        @Query("designerId") designerId: String
+    ): DesignerInfoResponse
 
 }
