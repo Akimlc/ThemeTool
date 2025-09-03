@@ -93,25 +93,26 @@ fun DownloadPage(
     ) {
         if (downloadList.isEmpty()) {
             item {
-                InfoNotice(
-                    text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(48.dp))
-                Icon(
-                    imageVector = MiuixIcons.Useful.Info,
-                    contentDescription = "No downloads",
-                    modifier = Modifier.size(48.dp),
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.no_downloads),
-                    color = Color.Gray,
-                    fontSize = 16.sp
-                )
-                Spacer(modifier = Modifier.height(48.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    InfoNotice(
+                        text = "目前下载功能还不是很稳定，如遇到下载失败的，请复制链接前往浏览器/专业的下载器下载"
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Icon(
+                        imageVector = MiuixIcons.Useful.Info,
+                        contentDescription = "No downloads",
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.no_downloads),
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+                }
             }
         } else {
             item {
