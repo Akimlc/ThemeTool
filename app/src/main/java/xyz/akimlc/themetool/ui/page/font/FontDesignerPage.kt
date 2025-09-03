@@ -1,6 +1,8 @@
 package xyz.akimlc.themetool.ui.page.font
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.Text
+import xyz.akimlc.themetool.ui.FontPageList
 import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.viewmodel.DesignerViewModel
 
@@ -43,15 +46,20 @@ fun FontDesignerPage(
     val designerProduct = viewModel.designerProducts.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadDesignerInfoData(designerId)
-        viewModel.loadDesignerProductData(designerId)
+    LaunchedEffect(designerId) {
+        if (viewModel.designerInfo.value==null) {
+            viewModel.loadDesignerInfoData(designerId)
+        }
+        if (viewModel.designerProducts.value.isEmpty()) {
+            viewModel.loadDesignerProductData(designerId)
+        }
     }
 
     val isDarkTheme = isSystemInDarkTheme()
 
     AppScaffold(
         title = "作者详情",
+        navController = navController
     ) {
         if (isLoading.value) {
             item {
@@ -69,11 +77,13 @@ fun FontDesignerPage(
             }
             items(designerProduct.value.size) { index ->
                 DesignerProductItem(
-                    imageUrl = designerProduct.value[index].imageUrl,
+                    product = designerProduct.value[index],
                     isDark = isDarkTheme,
-                    index = index
+                    index = index,
+                    navController = navController
                 )
             }
+
         }
     }
 
@@ -118,9 +128,10 @@ fun DesignerInfoCard(
 
 @Composable
 fun DesignerProductItem(
-    imageUrl: String,
+    product: DesignerViewModel.designerProductData,
     isDark: Boolean,
-    index: Int
+    index: Int,
+    navController: NavController
 ) {
     val backgroundColors = if (isDark) {
         listOf(
@@ -142,6 +153,13 @@ fun DesignerProductItem(
     val cardColor = backgroundColors[index % backgroundColors.size]
     Card(
         modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    navController.navigate(FontPageList.detail(product.uuid))
+                }
+            )
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .height(70.dp)
             .fillMaxWidth(),
@@ -151,57 +169,11 @@ fun DesignerProductItem(
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             AsyncImage(
-                model = imageUrl,
+                model = product.imageUrl,
                 contentDescription = null,
                 modifier = Modifier.size(width = 240.dp, height = 30.dp)
             )
         }
     }
 
-}
-
-fun LazyListScope.DesignerProduct(isDark: Boolean, viewModel: DesignerViewModel) {
-    val productList = listOf(
-        "https://t17.market.mi-img.com/download/ThemeMarket/03ba40f54b682458b9c85f0504c98214d32e588eb",
-        "https://t17.market.mi-img.com/download/ThemeMarket/03ba40f54b682458b9c85f0504c98214d32e588eb",
-    )
-
-    //val collectAsState = viewModel.designerProducts.collectAsState()
-    val backgroundColors = if (isDark) {
-        listOf(
-            Color(0xFF6B6B6A),
-            Color(0xFF858581),
-            Color(0xFF8B8C86),
-            Color(0xFF8F8E83),
-            Color(0xFF90927E)
-        )
-    } else {
-        listOf(
-            Color(0xFFF4F2F1),
-            Color(0xFFEBEBE7),
-            Color(0xFFF1F2EC),
-            Color(0xFFF5F4E9),
-            Color(0xFFF6F8E4)
-        )
-    }
-    items(productList.size) { index ->
-        val cardColor = backgroundColors[index % backgroundColors.size]
-        Card(
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 4.dp)
-                .height(70.dp)
-                .fillMaxWidth(),
-            colors = CardDefaults.defaultColors(
-                color = cardColor
-            )
-        ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AsyncImage(
-                    model = productList[index],
-                    contentDescription = null,
-                    modifier = Modifier.size(width = 240.dp, height = 30.dp)
-                )
-            }
-        }
-    }
 }
