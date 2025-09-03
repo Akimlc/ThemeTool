@@ -1,6 +1,7 @@
 package xyz.akimlc.themetool.ui.page.font
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import xyz.akimlc.themetool.ui.FontPageList
 import xyz.akimlc.themetool.ui.compoent.AppScaffold
 import xyz.akimlc.themetool.viewmodel.DesignerViewModel
@@ -42,56 +45,79 @@ fun FontDesignerPage(
     designerId: String
 ) {
     val viewModel: DesignerViewModel = viewModel()
-    val designerInfo = viewModel.designerInfo.collectAsState()
-    val designerProduct = viewModel.designerProducts.collectAsState()
-    val isLoading = viewModel.isLoading.collectAsState()
+    val designerInfo by viewModel.designerInfo.collectAsState()
+    val designerProducts by viewModel.designerProducts.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val hasMore by viewModel.hasMore.collectAsState()
+    val backgroundColor = MiuixTheme.colorScheme.background
+    val isDarkTheme = isSystemInDarkTheme()
 
     LaunchedEffect(designerId) {
-        if (viewModel.designerInfo.value==null) {
+        if (designerInfo==null) {
             viewModel.loadDesignerInfoData(designerId)
         }
-        if (viewModel.designerProducts.value.isEmpty()) {
-            viewModel.loadDesignerProductData(designerId)
+        if (designerProducts.isEmpty()) {
+            viewModel.designerProducts(designerId, 0)
         }
     }
 
-    val isDarkTheme = isSystemInDarkTheme()
-
+    //进来的时候，显示进度条加载数据
+    if (designerInfo==null && designerProducts.isEmpty() && isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor)
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
     AppScaffold(
         title = "作者详情",
         navController = navController
     ) {
-        if (isLoading.value) {
+        item {
+            DesignerInfoCard(designerInfo)
+        }
+        designerProducts.forEachIndexed { index, product ->
             item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize(), // ⬅️ 用 fillParentMaxSize 占满父布局
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-        } else {
-            item {
-                DesignerInfoCard(designerInfo.value)
-            }
-            items(designerProduct.value.size) { index ->
                 DesignerProductItem(
-                    product = designerProduct.value[index],
+                    product = product,
                     isDark = isDarkTheme,
                     index = index,
                     navController = navController
                 )
             }
 
+            // 滑动到底部自动加载更多
+            if (index==designerProducts.lastIndex && hasMore && !isLoading) {
+                viewModel.loadMore()
+            }
+        }
+
+        // 加载状态提示
+        if (isLoading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(backgroundColor)
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
-
 }
+
 
 @Composable
 fun DesignerInfoCard(
-    info: DesignerViewModel.designerInfoData?
+    info: DesignerViewModel.DesignerInfoData?
 ) {
     Row(
         modifier = Modifier
@@ -128,7 +154,7 @@ fun DesignerInfoCard(
 
 @Composable
 fun DesignerProductItem(
-    product: DesignerViewModel.designerProductData,
+    product: DesignerViewModel.DesignerProductData,
     isDark: Boolean,
     index: Int,
     navController: NavController
