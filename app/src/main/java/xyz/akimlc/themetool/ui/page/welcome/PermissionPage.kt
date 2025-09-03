@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +25,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,13 +51,13 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.Checkbox
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.icons.basic.ArrowRight
 import xyz.akimlc.themetool.R
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun PermissionPage(
     pagerState: PagerState,
@@ -98,7 +103,8 @@ fun PermissionPage(
             icon = painterResource(R.drawable.ic_folder),
             title = "文件管理权限",
             description = "用于存储下载的文件",
-            onClick = {
+            checkPermission = { Environment.isExternalStorageManager() },
+            requestPermission = {
                 requestStoragePermission(context)
             }
         )
@@ -108,9 +114,17 @@ fun PermissionPage(
             icon = painterResource(R.drawable.ic_notification),
             title = "通知权限",
             description = "用于下载的时候发送通知",
-            onClick = {
-                requestNotification(context)
-            }
+            checkPermission = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )==PackageManager.PERMISSION_GRANTED
+                } else {
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+                }
+            },
+            requestPermission = { requestNotification(context) }
         )
         Spacer(Modifier.weight(1f))
         Row(
@@ -132,21 +146,30 @@ fun PermissionPage(
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
+
 @Composable
 fun PermissionItem(
     icon: Painter,
     title: String,
+    checkPermission: () -> Boolean,
     description: String,
-    onClick: () -> Unit
+    requestPermission: () -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
+    var checked by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = Unit) {
+        // 初始化状态
+        checked = checkPermission()
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    onClick()
+                    requestPermission()
+                    checked = checkPermission()
                 },
                 indication = null, // 取消波纹效果
                 interactionSource = remember { MutableInteractionSource() },
@@ -181,12 +204,7 @@ fun PermissionItem(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Icon(
-                imageVector = MiuixIcons.Basic.ArrowRight,
-                contentDescription = null,
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
+            Checkbox(checked = checked, onCheckedChange = null) // 不可手动改变
         }
     }
 }
