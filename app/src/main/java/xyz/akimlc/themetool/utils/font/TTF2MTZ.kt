@@ -22,6 +22,7 @@ import javax.xml.transform.stream.StreamResult
 class TTF2MTZ {
     companion object {
         private const val TAG = "TTF2MTZ"
+
         fun convert(
             context: Context,
             fontUri: Uri?,
@@ -32,91 +33,82 @@ class TTF2MTZ {
             onFinish: () -> Unit
         ) {
             CoroutineScope(Dispatchers.IO).launch {
-                onProgressUpdate(0f)
-                val zipFile = File(context.getExternalFilesDir("mtz"), "$fontName.mtz")
-                val fontsDir = File(context.getExternalFilesDir("mtz"), "font/fonts")
-                val previewDir = File(context.getExternalFilesDir("mtz"), "font/preview")
-                val configDir = File(context.getExternalFilesDir("mtz"), "font/description.xml")
-                val configFile = File(context.getExternalFilesDir("mtz"), "font/description.xml")
-                //生成文件夹
-                if (!fontsDir.exists()) fontsDir.mkdirs()
-                if (!previewDir.exists()) previewDir.mkdirs()
-
                 try {
-                    if (fontUri==null) {
-                        throw IllegalArgumentException("字体 Uri 为空")
-                    }
-                    val contentResolver = context.contentResolver
-                    val inputStream = contentResolver.openInputStream(fontUri)
-                        ?: throw Exception("无法打开字体文件")
+                    onProgressUpdate(0f)
+
+                    // 输出路径
+                    val workDir = context.getExternalFilesDir("mtz")!!
+                    val zipFile = File(workDir, "$fontName.mtz")
+                    val fontsDir = File(workDir, "font/fonts").apply { mkdirs() }
+                    val previewDir = File(workDir, "font/preview").apply { mkdirs() }
+                    val configFile = File(workDir, "font/description.xml")
+
+                    // 检查字体 Uri
+                    requireNotNull(fontUri) { "字体 Uri 为空" }
+
                     // 复制字体文件
-                    val fontFile = File(fontsDir, importFont)
-                    inputStream.use { input ->
-                        FileOutputStream(fontFile).use { output ->
+                    context.contentResolver.openInputStream(fontUri)?.use { input ->
+                        FileOutputStream(File(fontsDir, importFont)).use { output ->
+                            input.copyTo(output)
+                        }
+                    } ?: error("无法打开字体文件")
+                    onProgressUpdate(0.2f)
+
+                    // 生成字体预览图并移动
+                    val previewFiles = ImageUtils().generateFontPreviewImages(
+                        context,
+                        File(fontsDir, importFont),
+                        fontName
+                    )
+                    previewFiles.forEach { file ->
+                        val dest = File(previewDir, file.name)
+                        if (file.renameTo(dest)) {
+                            Log.d(TAG, "图片移动成功: ${dest.absolutePath}")
+                        } else {
+                            Log.e(TAG, "图片移动失败: ${file.absolutePath}")
+                        }
+                    }
+
+                    // 统一重命名字体
+                    File(fontsDir, importFont).renameTo(File(fontsDir, "Roboto-Regular.ttf"))
+                    onProgressUpdate(0.4f)
+
+                    // 复制并修改 description.xml
+                    context.assets.open("mtz/font/description.xml").use { input ->
+                        FileOutputStream(configFile).use { output ->
                             input.copyTo(output)
                         }
                     }
-                    onProgressUpdate(0.2f)
-                    //生成字体预览图片
-                    val previewFiles =
-                        ImageUtils().generateFontPreviewImages(context, fontFile, fontName)
-
-                    //移动图片
-                    for (file in previewFiles) {
-                        val previewFileDest = File(previewDir, file.name)
-                        if (file.renameTo(previewFileDest)) {
-                            Log.d("SearchPage", "图片移动成功: ${previewFileDest.absolutePath}")
-                        } else {
-                            Log.e("SearchPage", "图片移动失败: ${file.absolutePath}")
-                        }
+                    val document =
+                        DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(configFile)
+                    document.documentElement.apply {
+                        getElementsByTagName("title").item(0).textContent = fontName
+                        getElementsByTagName("author").item(0).textContent = fontAuthor
+                        getElementsByTagName("designer").item(0).textContent = fontAuthor
                     }
-
-                    //将字体文件重命名
-                    fontFile.renameTo(File(fontsDir, "Roboto-Regular.ttf"))
-                    onProgressUpdate(0.4f)
-
-                    val assetManager = context.assets
-                    assetManager.open("mtz/font/description.xml").use { inputStream ->
-                        FileOutputStream(configDir).use { outputStream ->
-                            inputStream.copyTo(outputStream)
-                        }
-                    }
-
-                    val docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                    val document = docBuilder.parse(configFile)
-
-                    //修改信息
-                    val root = document.documentElement
-                    val titleNameNode = root.getElementsByTagName("title").item(0)
-                    val authorNode = root.getElementsByTagName("author").item(0)
-                    val designerNode = root.getElementsByTagName("designer").item(0)
-                    authorNode.textContent = fontAuthor
-                    designerNode.textContent = fontAuthor
-                    titleNameNode.textContent = fontName
-                    onProgressUpdate(0.6f)
-                    // 保存修改后的 description.xml
                     TransformerFactory.newInstance().newTransformer().apply {
-                        setOutputProperty(OutputKeys.INDENT, "yes") // 美化输出
+                        setOutputProperty(OutputKeys.INDENT, "yes")
                         transform(DOMSource(document), StreamResult(configFile))
                     }
-                    // 压缩文件
-                    FileUtils().zipDirectory(
-                        File(context.getExternalFilesDir("mtz"), "font"),
-                        zipFile
-                    )
+                    onProgressUpdate(0.6f)
+
+                    // 压缩为 MTZ
+                    FileUtils().zipDirectory(File(workDir, "font"), zipFile)
                     onProgressUpdate(0.8f)
 
+                    // 移动到 Download/ThemeTool/MTZ
                     val downloadDir = File(
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                         "ThemeTool/MTZ"
-                    )
-                    if (!downloadDir.exists()) downloadDir.mkdirs()
+                    ).apply { mkdirs() }
                     val destinationFile = File(downloadDir, "$fontName.mtz")
-                    val moved = zipFile.renameTo(destinationFile)
-                    onProgressUpdate(1f)
-                    onFinish()
+
+                    val moved = zipFile.renameTo(destinationFile) || zipFile.copyTo(
+                        destinationFile,
+                        overwrite = true
+                    ).exists()
                     if (moved) {
-                        Log.d(TAG, "文件已移动到: ${destinationFile.absolutePath}")
+                        Log.d(TAG, "文件已保存到: ${destinationFile.absolutePath}")
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
@@ -125,22 +117,21 @@ class TTF2MTZ {
                             ).show()
                         }
                     } else {
-                        throw Exception("文件移动失败")
+                        error("文件移动失败")
                     }
+
+                    onProgressUpdate(1f)
                 } catch (e: Exception) {
+                    Log.e(TAG, "字体转换失败", e)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "字体转换失败: ${e.message}", Toast.LENGTH_SHORT)
                             .show()
                     }
-
                 } finally {
-                    withContext(Dispatchers.IO) {
-                        onFinish()
-
-                    }
+                    onFinish()
                 }
             }
         }
-
     }
+
 }
